@@ -1,0 +1,11 @@
+# 原始爬取素材(23MB+,非書籍成品,不進版控)
+docs/
+
+# 建置暫存
+.pdfbuild/
+_udd*/
+*.output
+
+# OS/編輯器雜訊
+.DS_Store
+Thumbs.db

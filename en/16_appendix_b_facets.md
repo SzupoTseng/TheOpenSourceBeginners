@@ -1,0 +1,217 @@
+# Appendix B　The Three Facets at a Glance: Most Hyped / Most Deployed / Rising Heat
+
+> Re-queue all 196 projects by "which kind of fame you're paying for." A single project may span more than one facet; here it's grouped by the primary tag from the main text, with unmarked ones listed at the end.
+
+## 🏆 Most Hyped: Buzz and Belief
+
+- **002 freeCodeCamp** — The world's largest open-source coding-education platform and community ecosystem
+- **003 awesome** — The open-source world's mightiest top-tier resource directory and cheat-sheet navigation list
+- **004 system-design-primer** — The system-design bible for engineers worldwide leveling up to architect and cracking Big Tech interviews
+- **005 JavaScript Algorithms & Data Structures** — The strongest open-source visual algorithm implementations and hacker-interview bible on the planet
+- **009 Electron** — The uncrowned king of cross-platform desktop apps worldwide and the landmark bedrock of web tech landing on the desktop
+- **011 Tree-sitter** — The incremental compiler core that governs syntax highlighting, semantic understanding, and AI coding assistants under modern code editors
+- **013 Mojo** — Python's flexibility + C++'s brute speed, built by the father of LLVM, born to squeeze silicon-level compute for AI…
+- **016 React** — The absolute big brother of front-end UI worldwide and the ceiling of the componentization ecosystem
+- **017 Angular** — Google's enterprise-grade front-end behemoth and rigorous architectural paradigm
+- **018 Three.js** — The sole open-source overlord of modern web 3D, spatial computing, and metaverse interaction
+- **019 Svelte** — The compile-time front-end geek framework with no Virtual DOM
+- **021 Storybook** — The open-source standard for modern front-end component isolation, sandbox debugging, and Design Systems
+- **022 SvelteKit** — The new king of modern full-stack web and AI edge delivery, banking on extreme compile-time optimization and zero Virtual DOM overhead
+- **023 TanStack Query (React Query)** — The uncrowned king of state management, async data sync, and caching for modern full-stack front ends and AI interfaces
+- **024 Shadcn UI** — The fastest-growing project by Star count on Earth, the new king of modern front-end and AI interface design systems, banking on "copy-paste, not install-package"
+- **025 Zustand** — The fastest-growing project by Star count on Earth, the blazing new king of modern full-stack front ends that utterly kills the global-state-management black box
+- **026 Panda CSS** — The fastest-growing project by Star count on Earth, banking on "compile-time dynamic-to-static, Zero-Runtime overhead" modern full-stack…
+- **027 tRPC** — The end-to-end, strongly-typed, type-safe interface revolution that utterly eliminates front-to-back-end friction
+- **028 NestJS** — The most rigorously architected Node.js enterprise back-end framework, bringing the Dependency Injection (DI) paradigm to the fore
+- **031 axios** — The uncrowned king of HTTP request libraries carrying the most traffic across front ends and Node.js runtimes worldwide
+- **035 grpc-go** — Google's officially and ruthlessly maintained industrial standard governing modern cross-language high-performance microservices and AI cluster communication
+- **037 Hono** — The fastest on Earth, banking on "zero-dependency runtime, perfect compatibility with the big three runtimes and WebAsse…
+- **044 Kysely** — The new king of native SQL query builders, built in pure TypeScript with zero-runtime overhead
+- **046 TypeSpec** — Microsoft's official new king of universal API-contract languages, pushing "code-first, extreme anti-corruption" API design to its zenith
+- **048 Valibot** — The fastest-growing project by Star count on Earth, the modern modular strong-type… banking on "extreme tree-shaking, 90% bundle-size cut"
+- **049 SQLGlot** — Hottest in the global LLM Agent circle, banking on "zero-code, perfectly converting complex-semantic RAG into 100% deterministic structured…
+- **050 ArkType** — The fastest on Earth, the new king of front-end data validation banking on "compile-time 100% inline type-syntax parsing and zero-runtime overhead"
+- **052 Zod** — The uncrowned king of structured API data validation for global full-stack and LLM use, and the landmark bedrock of strong-typed anti-corruption and leak-proofing
+- **087 Puppeteer** — Google's officially maintained gold standard governing modern advanced web crawling and automation control
+- **089 Prettier** — The mandatory code-formatting tool and the front-end standard that ends team layout infighting
+- **091 Vitest** — The blazing new king that ditches legacy Jest, built on the Vite core, governing modern front-end and full-stack unit testing
+- **093 Sentry** — The uncrowned king of runtime error monitoring and observability for modern full-stack and AI applications
+- **094 Playwright** — Microsoft's officially and ruthlessly maintained absolute standard governing modern full-stack cross-browser automation, end-to-end testing, and AI web operation
+- **098 Biome** — The fastest on Earth, built in Rust, the next-generation front-end compile-time… that flattens and replaces both Prettier and ESLint in one shot
+- **111 Public APIs** — The all-purpose free-API bazaar every side-project dev and rookie hacker worldwide needs
+- **186 Kotaemon** — Hottest in the global LLM RAG ecosystem of 2026, banking on "zero-config, high-privacy, perfectly converting complex-semantic documents into multi-level timeline diagrams…
+- **188 MindOS-Core** — Hottest in the global LLM Agent circle, banking on "zero-code, perfectly dimension-reducing and compressing the LLM's long-chain reasoning and graph semantics while guarding against…
+- **189 TypeChat** — Microsoft-led semantic contract that compiles any of the LLM's freeform spoken output 100% into strongly-typed front-end/back-end TypeScript objects…
+- **191 MindOS-Streaming** — Hottest in the global LLM Agent circle, banking on "zero-code, perfectly dimension-reducing and compressing the LLM's long-chain reasoning and graph semantics while guarding against…
+
+(40 projects in this facet)
+
+## 👥 Most Deployed: The Silent Bedrock
+
+- **010 Flutter** — Google's cross-platform multi-target UI framework behemoth and the ceiling of the native-rendering ecosystem
+- **012 Chrono / date-fns** — The invisible megalith guarding the lowest-level, high-precision timezone and time parsing behind all software, microservices, and AI time-series computation worldwide
+- **029 Apache Tomcat** — The absolute evergreen of Java web application servers worldwide and the digital foundation of legacy Big Tech
+- **033 Spring Boot** — The rock-solid big brother of the Java ecosystem for enterprise back ends and large financial institutions worldwide
+- **034 Node.js** — The uncrowned king that utterly changed the web-development paradigm and pushed JavaScript into server-side high concurrency
+- **041 MongoDB** — The open-source NoSQL database overlord with the highest market share worldwide, document-oriented
+- **043 MySQL (InnoDB)** — The open-source relational database backbone with the highest market share worldwide and the longest-lived of the internet era
+- **045 Apache Cassandra** — Built on Amazon Dynamo theory, the sole, most rock-solid backbone for decentralized writes across global high-concurrency internet and Big Tech big data
+- **047 SQLite** — First in installed base worldwide, fully decentralized, single-file, the absolute evergreen stone governing all human consumer devices and edge-embedded storage
+- **051 Vitess** — YouTube's officially and ruthlessly maintained, indispensable "cloud-native sharding and elastic horizontal scaling" for the ultra-massive MySQL data of global Big Tech…
+- **066 Docker** — The forefather of the cloud-native container revolution and the ironclad infrastructure of modern software deployment
+- **067 Nginx** — The big brother of high-performance HTTP and reverse-proxy servers and the ironclad traffic-splitting gateway of global network traffic
+- **068 Helm** — The "App Store" of the Kubernetes (K8s) ecosystem and the golden backbone of cloud-native microservice orchestration
+- **069 Cilium / Open vSwitch** — The core ecosystem bedrock of cloud-native Kubernetes network traffic splitting and ultra-high-performance software routing
+- **070 Apache ZooKeeper / etcd** — The sole golden backbone of distributed coordination, distributed locking, and state-consistency management for global big data
+- **071 Consul** — The sole, unshakable ecosystem foundation of dynamic config management, microservice registration/discovery, and distributed-lock health defense for global Big Tech
+- **072 HAProxy** — The ironclad, rebar-strong evergreen backbone of high-concurrency load balancing and Layer 4/7 network traffic scheduling for global Big Tech and data centers
+- **073 etcd** — The sole source of truth in the global Kubernetes (K8s) ecosystem and the load-bearing wall of strongly-consistent distributed Key-Value
+- **075 Apache Spark** — The absolute behemoth of global big-data cluster in-memory computation and distributed data cleaning
+- **076 Hadoop HDFS / Hive** — The world-opening load-bearing wall of global big-data industrial storage and the bedrock of the offline data lake
+- **077 Apache Hive** — The absolute, unshakable evergreen backbone of global big-data distributed data warehouses and offline analytics
+- **078 RabbitMQ** — Built on the AMQP protocol, the evergreen message queue with the highest market share for global traditional finance and microservice async decoupling
+- **080 Apache Airflow** — The unshakable golden defense of global Big Tech distributed workflow scheduling, DAG task orchestration, and big-data cleaning
+- **081 Apache Hudi** — The unshakable, ironclad bedrock of global Big Tech streaming data lakes, distributed incremental storage, and ACID transaction management
+- **082 Apache Pulsar** — The unshakable, ironclad backbone of global Big Tech and financial-institution storage-compute separation and massive multi-tenant async message orchestration
+- **083 Apache Beam** — The unshakable, heavy-industry scheduling bedrock of global Big Tech unified batch & stream pipelines
+- **084 Apache Flink** — The unshakable, ironclad bedrock of global Big Tech and financial-institution distributed stream computing, stateful real-time cleaning, and second-level risk control
+- **085 SonarQube** — The impartial code-quality and vulnerability auto-audit officer in Big Tech CI/CD pipelines
+- **086 Locust** — The modern distributed stress-testing tank that defines a million-user bombardment system in pure Python code
+- **088 Jenkins** — The absolute historical evergreen of global continuous integration and continuous deployment (CI/CD) and the ops foundation of Big Tech
+- **090 Ansible** — The absolute evergreen and Big Tech defense line of "unattended" config management for global IT infrastructure and automated ops
+- **092 Apache Maven** — The absolute load-bearing wall of dependency management and build automation for the global Java industry and large financial institutions
+- **095 Logstash / Fluentd** — The sole, unshakable ecosystem foundation of global Big Tech log big-data collection, cleaning, and the ELK cloud-native observability pipeline
+- **096 Prometheus** — A top CNCF graduated project, the unshakable, ironclad monitoring bedrock of global cloud-native and microservice time-series metrics monitoring
+- **100 Linux Kernel** — The absolute throne of the modern information industry and the cloud-native empire
+- **101 FFmpeg** — The sole, unshakable source of truth for global audio-video processing, decode/transcode, and AI multimodal cleaning
+- **109 OpenSSL** — The invisible megalith guarding global network security and HTTPS/TLS encrypted transmission
+
+(37 projects in this facet)
+
+## 🔥 Rising Heat: The New Stars Rewriting the Rules
+
+- **020 Tailwind CSS** — The modern gold-standard kit of utility-first CSS that subverts the traditional web-layout paradigm
+- **030 LiveKit** — The absolute lifeline of open-source WebRTC for building the GPT-4o experience and ultra-low-latency voice AI communication
+- **032 FastAPI** — The high-performance Python web framework and the absolute default kit for modern AI model API development
+- **036 Litestar** — Built for Python async microservices and AI APIs, the extreme… whose performance crushes legacy Flask/FastAPI
+- **042 Prisma** — The absolute anti-corrosion agent of strongly-typed, type-safe database ORM for modern Node.js/TypeScript full-stack teams
+- **055 Qdrant** — The blazing, industrial-grade cloud-native vector database and RAG core memory built in Rust
+- **056 Chroma** — Currently the most beginner- and indie-dev-friendly open-source embedded vector database worldwide
+- **057 Neo4j (graph database core)** — Fastest-rising in heat in 2026, deeply bound to GraphRAG, the open-source graph-database overlord that breaks the blind-men-and-the-elephant limits of traditional vector RAG
+- **058 NebulaGraph** — A new star of composite vector-and-graph databases, banking on "microsecond-level real-time knowledge-graph retrieval, deeply bound to GraphRAG"
+- **059 HugeGraph** — Initiated by Baidu, CNCF-hosted, an open-source distributed graph-database behemoth born for ten-billion-scale ultra-massive entity-relationship networks
+- **060 EpiDB** — Fastest-rising in heat in 2026, providing edge multimodal Agents with "offline-embedded, built-in forgetting curve, and sovereign security isolation"…
+- **061 Vectara** — Hottest in 2026, the all-in-one advanced RAG data… banking on "zero-config, fully offline, built-in chip-level semantic reranking and cross-language alignment"
+- **079 FastStream** — 2026's newest breakout, the absolute default… for TypeScript/Python async microservices and AI message-driven architecture development
+- **097 Spider** — The fastest on Earth, built in Rust, the hardcore mining… that crawls tens of thousands of pages in parallel per second and turns them into AI training corpus and knowledge-base feed
+- **108 Directus** — The efficiency masterpiece that unlocks any cold SQL database into a modern headless CMS and universal data API in one click
+- **110 AppFlowy** — The open-source Notion built in Rust and Flutter, a data defense line with 100% privacy control
+- **112 PyAutoGUI** — Pushed hard by Microsoft and the AI-agent circle, fastest-rising in heat in 2026, the open-source… that fully hands the human "desktop OS and office automation" to the LLM
+- **115 Ollama** — The phenomenal marvel of local LLM inference and privatized AI
+- **116 DeepSeek-R1 (and related open-weight architectures)** — The epoch-making nuke declaring the democratization of LLMs and the reinforcement-learning revolution
+- **117 vLLM** — The industry-standard optimization engine that astonishingly boosts server-side LLM inference throughput
+- **118 OpenVINO** — Intel's official acceleration inference engine that runs LLMs at blazing speed on AI PC edge chips
+- **119 Llama.cpp** — The hardcore, chip-level inference-acceleration miracle that redefines edge-AI matrix multiplication in pure C/C++
+- **120 ComfyUI** — The new king of multimodal image and video generation creative infrastructure, based on node-based flow control
+- **121 InvokeAI** — Built for professional artists and designers, the open-source Stable Diffusion creative… whose interface fluidity crushes traditional WebUIs
+- **122 Xinference** — Built for Big Tech, the all-purpose inference platform that deploys LLMs, multimodal, and voice apps locally or across distributed clusters in one click
+- **123 KubeRay** — Co-built by Microsoft and the Ray open-source community, the industrial-standard foundation for large-scale scheduling of AI distributed training and inference on K8s clusters
+- **124 LLaMA-Factory** — The open-source weapon with the fastest-rising heat in LLM fine-tuning and adversarial optimization in 2026
+- **125 LitServe** — Initiated by the Lightning AI team, built for the AI ecosystem, the open-source blazing async LLM AP… with the fastest-rising throughput
+- **126 Hugging Face Hub / Transformers Core** — The "empire on which the sun never sets" and the federated universal hub of the global open-source AI and LLM ecosystem
+- **127 Open-Sora** — Hottest in multimodal generation in 2026, the open-source milestone architecture aiming to break the video-generation monopoly of Western Big Tech
+- **128 LeptonAI** — The blazing cloud-native engine for large-scale secure hosting and one-click serving of all open-source LLMs on Big Tech K8s clusters in 2026
+- **129 TGI (Text Generation Inference)** — Officially and ruthlessly maintained by Hugging Face, the de facto universal optimization engine for large-scale online serving in data-center Big Tech
+- **130 Embedded-LanceDB** — Currently hottest worldwide, the embedded open-source vector-database new star banking on "zero-config, high-privacy, single-file, time-series-and-vector composite"
+- **131 SGLang** — Fastest-rising in heat in 2026, built for hardware-level NPU/GPU hybrid squeezing on AI PCs and the edge, crafting microsecond-level streaming…
+- **132 SGLang-Router** — Fastest-rising in heat in 2026, fully backed by Microsoft and the Linux Foundation, built for Mixture-of-Experts (MoE) and multimodal cluster real…
+- **133 TensorRT-LLM-Wrapper** — Fully backed by the Linux Foundation, banking on "slashing multimodal inference time-to-first-token (TTFT) several-fold, built-in memory paging and dynamic…
+- **134 SGLang-Kernel** — Hottest in 2026, initiated by UC Berkeley, built for LLM inference "KV Cache radix-tree global sharing and structured…
+- **135 FlashAttention-3** — Newly released by AMD / NVIDIA jointly with academia, banking on slashing the matrix-multiplication first… of multimodal inference and long-context…
+- **136 SGL-Kernel** — Hottest in 2026, banking on "chip-level async scheduling and operator fusion" at the hardware level for multimodal inference and long-context self-attention matrix multiplication…
+- **145 Fabric** — The efficiency master that structurally extracts the crystallized wisdom of top Big Tech engineers into an open-source AI prompt micro-component library
+- **146 Claude Code** — The phenomenal terminal-Agent big brother that triggered an open-source-architecture earthquake
+- **147 LangGraph** — Declaring the end of the linear-Chain era, the modern standard for building complex graph-architecture multi-agents
+- **148 DSPy** — Open-sourced by Stanford, the revolutionary AI framework that treats prompts as code to compile, declaring the death of hand-written prompt engineering
+- **149 GPTPilot** — The open-source "fully autonomous AI software engineer," a radical pioneer exploring AI building an App from zero to one given a spec
+- **150 CrewAI** — The popular multi-agent orchestration framework banking on role-based multi-agent role-play and team collaboration
+- **151 OpenUI** — Launched by Weights & Biases, the efficiency master that renders front-end component code in real time from natural-language descriptions
+- **152 Open WebUI** — Currently the hottest privatized AI chat and enterprise-grade RAG collaboration platform worldwide
+- **153 LlamaIndex** — The data-architecture framework born to connect LLMs to massive messy external data and build advanced RAG knowledge bases
+- **154 Phidata** — The open-source hardcore Agent framework that lets LLMs autonomously operate SQL, call APIs, and self-schedule tools
+- **155 Letta (formerly MemGPT)** — Built for LLMs/Agents, the open-source virtual-memory management… that utterly shatters the Context Window limit
+- **156 anything-llm** — Currently the hottest worldwide, the full-featured open-source RAG system banking on 100% absolute privacy defense for enterprise knowledge bases
+- **157 Storm** — Co-built by Stanford and the open-source community, the breakout framework that extends AI from mere answering to "fully autonomous scientific research and knowledge discovery"
+- **158 Devika** — 100% open-source, the fully autonomous AI software engineer new star pitted against commercial Devin
+- **159 GraphRAG** — Microsoft's official breakout open-source project that fully upgrades the RAG knowledge base into "fully automatic mind maps and entity-relationship networks"
+- **160 LlamaIndex Workflows** — Declaring the death of traditional linear Agent frameworks, the revolutionary foundation that brings complex stateful event flows into AI engineering
+- **161 BGE-Reranker** — Hottest in the global LLM RAG ecosystem, the open-source reranking acceleration core banking on "precision that strangles hallucinations"
+- **162 Ragged** — Hottest in the global LLM RAG ecosystem, the all-purpose local document structuring and RAG… banking on "zero-config, high-privacy, out-of-the-box"
+- **163 Haystack** — The modern AI development framework deeply focused on advanced Agentic RAG and complex big-data pipeline orchestration
+- **164 RankGPT** — 2026's newest breakout, hottest in multimodal and advanced RAG, the money-saving acceleration core banking on high-speed reranking of multi-path hybrid retrieval feature vectors
+- **165 Vanna.ai** — 2026's newest breakout, the Text-to-… for "code-free advanced semantic bridging of LLMs and enterprise SQL databases, with built-in safety circuit breakers"
+- **166 Txtai** — Hottest in the global LLM RAG ecosystem, the all-purpose local document structuring and RAG… banking on "zero-config, high-privacy, out-of-the-box"
+- **167 Semantic Kernel** — Microsoft's official offering that deeply embeds advanced RAG data pipelines and AI agents into enterprise C# / Java / Python…
+- **168 Unstructured** — The data-cleaning marvel that parses chaotic enterprise documents and layouts into clean AI feed in one click
+- **169 Langfuse** — Fastest-rising in production-landing heat for LLMs in 2026, the open-source… banking on token-level full-chain tracing and LLMOps observability
+- **170 Textbase** — Fastest-rising in heat in 2026, the open-source component banking on "local-embedded, lifelong cognitive memory management for edge small models"
+- **171 ToolBench** — Hottest in 2026, open-sourced by academia, the heavy… banking on "dynamic algorithm-level pruning and deadlock prevention" for high-frequency LLM external-tool calls
+- **172 AgentOps** — Hottest in multi-agent system production landing in 2026, banking on AI behavior auditing and preventing "AI…
+- **173 Layout-Parser** — Fastest-rising in open-source heavy RAG data-engineering heat in 2026, banking on "zero-config, high-privacy, built for complex layouts and financial-report tables…
+- **174 Model-Engine** — Hottest in 2026, banking on "zero-config, one-click" wrapping of mainstream open-source models worldwide into OpenAI spec, with built-in dynamic VRAM optimization…
+- **175 SQLAgent-Core** — 2026's restructuring framework for advanced semantic bridging of LLMs and relational databases, with built-in safety circuit breakers and injection prevention
+- **176 SWE-agent** — Hottest in 2026, the open-source autonomous AI software engineer… banking on "AI autonomously analyzing and fixing vulnerabilities in million-line legacy projects"
+- **177 Outlines** — Hottest in 2026, banking on "algorithm-level finite-state-machine pruning, guaranteeing 100% forced structured JSON output from LLMs"…
+- **178 FlashRAG** — Hottest in the global LLM RAG ecosystem, the all-purpose local document reconstruction… banking on "zero-config, high-privacy, single-executable, visual table parsing"
+- **179 MIPRO** — Hottest in 2026, open-sourced by Stanford, the LLM "reinforcement-learning automated Promp…" that utterly declares the death of hand-written prompt engineering
+- **180 LightRAG** — Currently the fastest-rising in heat worldwide, the revolutionary open-source RAG… banking on "zero-config, high-privacy, perfectly fusing traditional vectors and structured knowledge graphs"
+- **181 Chunkr** — Hottest in 2026, built for advanced RAG, banking on "multimodal visual layout and pixel-level fragmentation of complex tables"…
+- **182 AI-Gateway (Envoy-AI)** — Fastest-rising in heat in 2026, fully backed by Microsoft and the Linux Foundation, banking on "zero-config, high-concurrency LLM streaming API…
+- **183 Openlit** — Hottest in 2026, based on the OpenTelemetry industry standard, the cloud-native… built for LLMs and multi-agent matrices
+- **184 Roo Code (formerly Roo Cline)** — Fastest-rising in heat in 2026, deeply glued to the VS Code terminal and Git, letting AI autonomously control the local compiler…
+- **185 OpenAI-Proxy / LLM-Router** — Hottest in 2026, the open-source cross-multi-cloud dynamic gateway… built for large-scale serving of LLM and Agent matrices
+- **187 OpenCtx** — Hottest in 2026, pushed hard by the Sourcegraph team, banking on glue-free semantic bridging of LLMs and enterprise-wide code/docs…
+- **190 Chunkr-VLM** — Hottest in 2026, built for advanced RAG, banking on "fully offline, pixel-level semantic parsing of complex charts using vision LLMs…
+- **192 MinerU** — Hottest in open-source heavy RAG data engineering in 2026, banking on "one-click conversion of multimodal complex financial reports and layouts into AI…
+- **193 MindOS-CoT** — Hottest in the global LLM Agent circle, the open-source data-orchestration… banking on "zero-code, streaming translation and compression control of the reasoning brain's long-chain thought"
+- **194 MindOS-Turbo** — Hottest in the LLM Agent circle in 2026, banking on "zero-code, at the gateway layer implementing DeepSeek-R1's long chain-of-thought…
+- **195 LLM-Reranker** — Hottest in 2026, built for advanced multimodal RAG, banking on "using LLM self-attention to dynamically… hundred-path retrieval results"…
+- **196 MindOS-Streaming-v2** — Hottest in the global LLM Agent circle, banking on "zero-code, perfectly dimension-reducing and compressing the LLM's long-chain reasoning and graph semantics while guarding against…
+
+(87 projects in this facet)
+
+## Unmarked / Mixed
+
+- **001 build-your-own-x** — The hardcore engineer's "build-a-wheel-from-scratch" tech tutorial library
+- **006 Vite** — The uncrowned king of modern front-end build tooling and blazing dev experience
+- **007 Tauri** — The next-generation cross-platform desktop app framework that utterly subverts Electron with Rust
+- **008 Bun** — The blazing JavaScript runtime that rebuilds software infrastructure in the Zig language
+- **014 Next.js** — The ruler of modern front-end full-stack architecture and uncrowned king of performance
+- **015 Astro** — The ruler of the new-generation web "Islands Architecture" front-end performance revolution
+- **038 PostgreSQL** — The absolute gold standard of modern open-source relational databases
+- **039 Redis** — The high-performance in-memory data-structure store with the highest market share worldwide
+- **040 Drizzle ORM** — The new king of SQL skinning in the modern TypeScript ecosystem, pursuing extreme speed and "zero abstraction"
+- **053 Milvus** — The open-source distributed vector-database behemoth born for massive, billion-scale data
+- **054 ClickHouse** — The open-source speed monster of modern big-data real-time columnar analytics (OLAP)
+- **062 Kubernetes (K8s)** — The absolute empire of modern cloud-native architecture and container orchestration
+- **063 Traefik** — The modern reverse-proxy and gateway gatekeeper born for microservices and cloud-native dynamic containers
+- **064 Istio** — The absolute standard of cloud-native large-scale microservice governance and service mesh
+- **065 Portainer** — The out-of-the-box master of visual GUI management for Docker containers and Kubernetes clusters
+- **074 Apache Kafka** — The "central nervous system" of the digital empire and the event-streaming platform overlord
+- **099 VS Code (Code-OSS)** — The gateway overlord of the global software-developer ecosystem and toolchain
+- **102 n8n** — The open-source, self-hostable "glue of everything" and automated-workflow (RPA) engine
+- **103 PocketBase** — The open-source minimalist full-stack miracle, written in Go, that packs all back-end infrastructure into a single file
+- **104 Keycloak** — The absolute defense line of open-source Identity and Access Management (IAM), led by Red Hat
+- **105 Paperless-ngx** — Automate Your Entire Document Life
+- **106 Appwrite** — The highly flexible, exceptionally clean open-source Backend-as-a-Service (BaaS) built for full-stack and indie developers
+- **107 Payload CMS** — Fastest-rising in heat worldwide in recent years, the code-first open-source TypeScript Headless C…
+- **113 PyTorch** — The absolute ruling foundation of global generative AI and LLM R&D
+- **114 LiteLLM** — Big Tech's strategic shield for eliminating AI vendor lock-in
+- **137 AutoGPT** — The open-source pioneer and paradigm lab of autonomous AI Agents
+- **138 Dify** — The uncrowned visual king of open-source enterprise LLM application development platforms (LLMOps)
+- **139 Flowise** — The ultra-lightweight visual AI canvas based on the Node.js and LangChain ecosystem
+- **140 Aider** — The ceiling of open-source terminal AI pair-programming assistants, deeply integrated with Git
+- **141 Mem0** — The intelligent long-term memory and hyper-personalized management layer built for AI Agents
+- **142 AutoGen** — Microsoft-led open-source multi-agent conversation and autonomous collaboration framework
+- **143 Jan** — The phenomenal, 100% privatized, offline-running local AI desktop client and inference hub
+- **144 RagFlow** — The open-source deep-document-understanding RAG engine born for complex financial reports and messily-laid-out documents
