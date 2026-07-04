@@ -14,7 +14,7 @@
 
 **起源**：由 Meta（當時的 Facebook AI Research）於 2016 年開源，血緣上承接更古老的 Lua 版 Torch。當時學術界被 TensorFlow 1.x 的**靜態計算圖**折磨得苦不堪言——你得先把整張圖「宣告」完、編譯成 session 才能跑，除錯時看不到中間張量、下一個 `print` 得等到圖跑完。PyTorch 用一句話掀翻了它：**「圖就是你的 Python 程式碼本身。」** 到了大模型時代，幾乎所有你聽過的模型——GPT、LLaMA、Stable Diffusion、Whisper——訓練框架都是它。
 
-**技術核心**：它的第一個殺招是 **define-by-run（動態計算圖）**。傳統框架要你先建圖再餵資料；PyTorch 反過來，你每執行一行張量運算，它就**當場**在背後記錄一條「磁帶（tape）」，這條磁帶就是計算圖。反向傳播時，它的 **autograd 引擎**沿磁帶做**反向模式自動微分（reverse-mode automatic differentiation）**，用鏈式法則自動算出每個參數的梯度——你只要寫 `loss.backward()`，成千上萬個偏導數就自己流回來了。第二個殺招是 2.0 版（2023）推出的 **`torch.compile`**：它靠 **TorchDynamo** 攔截 Python 的位元組碼幀（利用 PEP 523 的 frame evaluation API），把動態圖「捕捉」成靜態圖，再交給 **TorchInductor** 後端——對 GPU 自動生成 **Triton** kernel、對 CPU 生成 C++/OpenMP 程式碼，**兼顧了動態圖的除錯爽感與靜態圖的執行速度**。底層則是 **ATen** 張量庫與 **c10** 核心，真正的算力靠 CUDA/cuDNN/cuBLAS。分散式訓練上，**DDP（DistributedDataParallel）** 用 NCLL 做梯度 all-reduce 讓多卡同步；面對塞不進單卡的兆級模型，**FSDP（Fully Sharded Data Parallel）** 把參數、梯度、優化器狀態全部**分片（shard）** 到各張卡上（ZeRO 思想的原生實作），用到某層才臨時 all-gather 回完整權重，算完立刻丟掉。
+**技術核心**：它的第一個殺招是 **define-by-run（動態計算圖）**。傳統框架要你先建圖再餵資料；PyTorch 反過來，你每執行一行張量運算，它就**當場**在背後記錄一條「磁帶（tape）」，這條磁帶就是計算圖。反向傳播時，它的 **autograd 引擎**沿磁帶做**反向模式自動微分（reverse-mode automatic differentiation）**，用鏈式法則自動算出每個參數的梯度——你只要寫 `loss.backward()`，成千上萬個偏導數就自己流回來了。第二個殺招是 2.0 版（2023）推出的 **`torch.compile`**：它靠 **TorchDynamo** 攔截 Python 的位元組碼幀（利用 PEP 523 的 frame evaluation API），把動態圖「捕捉」成靜態圖，再交給 **TorchInductor** 後端——對 GPU 自動生成 **Triton** kernel、對 CPU 生成 C++/OpenMP 程式碼，**兼顧了動態圖的除錯爽感與靜態圖的執行速度**。底層則是 **ATen** 張量庫與 **c10** 核心，真正的算力靠 CUDA/cuDNN/cuBLAS。分散式訓練上，**DDP（DistributedDataParallel）** 用 **NCCL（NVIDIA Collective Communications Library）** 做梯度 all-reduce 讓多卡同步——具體是跑 **ring all-reduce** 演算法，把 GPU 排成邏輯環、梯度分塊沿環傳遞聚合，通訊量攤平到不隨 GPU 數量線性暴增；面對塞不進單卡的兆級模型，**FSDP（Fully Sharded Data Parallel）** 把參數、梯度、優化器狀態全部**分片（shard）** 到各張卡上（對應 ZeRO Stage 3 的原生實作），用到某層才臨時 all-gather 回完整權重，算完立刻丟掉。
 
 **解決的痛點**：研究員與工程師要「像寫普通 Python 一樣自由地搭建、除錯神經網路」，同時又要在幾千張 GPU 上把訓練規模拉到兆級參數的兩難。
 
@@ -24,7 +24,7 @@
 
 **新人須知（大廠第一週）**：①只要你進的是任何跟模型訓練、微調沾邊的團隊，第一天 `import torch` 幾乎是必然。②最少要會：`nn.Module` 怎麼定義前向傳播、`optimizer.zero_grad()`／`loss.backward()`／`optimizer.step()` 這組「訓練三步曲」為什麼順序不能錯、以及 `tensor.to("cuda")` 把資料搬上 GPU。③新人最常踩的雷——**忘了 `zero_grad()` 導致梯度累加**，訓出來的模型莫名其妙不收斂；以及在推理時忘記 `model.eval()` 與 `torch.no_grad()`，讓 BatchNorm/Dropout 行為錯亂、還白白吃掉幾倍顯存。
 
-**優點 / 罩門**：API 直覺、生態壓倒性（HuggingFace、Lightning、大半論文程式碼都用它）、`torch.compile` 補上了速度短板。罩門是**動態圖的靈活是有代價的**——部署到生產時，Python 執行時的開銷與 GIL 讓純推理效率不如專用引擎，通常還要再導出成 `torch.export`／ONNX／交給 TensorRT、vLLM 才能壓榨吞吐；多卡分散式的除錯（NCLL 掛死、rank 不同步）也是出了名的難搞。
+**優點 / 罩門**：API 直覺、生態壓倒性（HuggingFace、Lightning、大半論文程式碼都用它）、`torch.compile` 補上了速度短板。罩門是**動態圖的靈活是有代價的**——部署到生產時，Python 執行時的開銷與 GIL 讓純推理效率不如專用引擎，通常還要再導出成 `torch.export`／ONNX／交給 TensorRT、vLLM 才能壓榨吞吐；多卡分散式的除錯（NCCL 掛死、rank 不同步）也是出了名的難搞。
 
 **競品對照**：
 
@@ -131,7 +131,7 @@
 
 **起源**：由中國 AI 實驗室 **DeepSeek**（背後是量化基金「幻方量化 High-Flyer」）於 2025 年 1 月發布，一夜之間震動全球資本市場。在它之前，「頂級推理能力（math/code 的長鏈思考）」被認為是閉源旗艦模型的專利、且要靠海量人工標註的思維鏈資料。DeepSeek-R1 用一份 **MIT 授權、權重全開、可自由商用**的模型，加上一篇把訓練方法幾乎攤開的技術報告，直接宣告：**這件事開源做得到，而且成本遠比想像的低。**
 
-**技術核心**：它最革命性的，是訓練「推理能力」的方法。傳統做法是先用大量人工寫好的思維鏈做**監督微調（SFT）**再對齊；DeepSeek 的先導實驗 **R1-Zero** 卻**完全跳過 SFT，直接對基礎模型做純強化學習**——用的是他們自研的 **GRPO（Group Relative Policy Optimization，群組相對策略優化）**，相比經典的 PPO **不需要另訓一個 critic（價值網路）**，而是對同一問題採樣一組答案、用組內的相對好壞當基準來估計優勢（advantage），大幅省下記憶體與算力。獎勵訊號極簡——答案對不對、格式（`<think>` 標籤）合不合規。神奇的是，在這種純 RL 下，模型**自發湧現**出長思維鏈、自我驗證、甚至中途「等一下，我重新想想」的反思行為（報告裡著名的「aha moment」）。底層架構承接 **DeepSeek-V3**：一個 **671B 參數的 MoE（Mixture of Experts，混合專家）** 模型，但每個 token 只**激活約 37B** 參數——靠路由器動態選專家，用稀疏換算力。搭配 **MLA（Multi-head Latent Attention，多頭潛在注意力）**，把 KV-Cache 壓縮成低秩潛在向量，大幅降低長上下文的顯存佔用。他們還把 R1 的推理能力**蒸餾（distill）** 進 Qwen、Llama 等較小的稠密模型，讓一張消費級顯示卡也能跑出不錯的推理。
+**技術核心**：它最革命性的，是訓練「推理能力」的方法。傳統做法是先用大量人工寫好的思維鏈做**監督微調（SFT）**再對齊；DeepSeek 的先導實驗 **R1-Zero** 卻**完全跳過 SFT，直接對基礎模型做純強化學習**——用的是他們自研的 **GRPO（Group Relative Policy Optimization，群組相對策略優化）**，相比經典的 PPO **不需要另訓一個 critic（價值網路）**，而是對同一問題採樣一組答案、用組內的相對好壞當基準來估計優勢（advantage），大幅省下記憶體與算力。獎勵訊號刻意極簡且完全規則式——**準確率獎勵**（答案對不對，數學題可直接判、程式題跑測試案例）與**格式獎勵**（推理過程是否老實包在 `<think>...</think>`、最終答案是否包在 `<answer>...</answer>` 裡），不靠額外訓練的獎勵模型評分，降低 reward hacking 的空間。神奇的是，在這種純 RL 下，模型**自發湧現**出長思維鏈、自我驗證、甚至中途「等一下，我重新想想」的反思行為（報告裡著名的「aha moment」）。底層架構承接 **DeepSeek-V3**：一個 **671B 參數的 MoE（Mixture of Experts，混合專家）** 模型，但每個 token 只**激活約 37B** 參數。路由器不是均分流量的簡單門控——採**細粒度專家切分**＋少數**常駐共享專家（shared experts）** 吃跨任務的共通知識、其餘專家才做稀疏路由，且捨棄傳統會拖累模型效果的輔助負載平衡損失，改用**無輔助損失的負載平衡（auxiliary-loss-free）**：給每個專家一個可動態調整的偏置項，某專家被選太多次就調低偏置、太少就調高，用這條動態偏置撐住專家利用率均衡，讓稀疏路由在省算力的同時不犧牲路由品質。搭配 **MLA（Multi-head Latent Attention，多頭潛在注意力）**——把每個 token 的 Key/Value 聯合壓縮投影成一個低秩潛在向量存進快取、真正計算注意力時才升維還原，官方數據顯示可把 KV-Cache 壓縮到接近傳統多頭注意力的一成左右，大幅降低長上下文的顯存佔用。他們還把 R1 的推理能力**蒸餾（distill）** 進 Qwen、Llama 等較小的稠密模型，讓一張消費級顯示卡也能跑出不錯的推理。
 
 **解決的痛點**：頂級推理能力長期被閉源大廠壟斷、且被認為貴到只有巨頭玩得起。R1 消滅的是「開源社群永遠追不上推理前沿」的悲觀假設。
 
@@ -170,7 +170,7 @@
 
 **起源**：由加州大學柏克萊 **Sky Computing Lab** 於 2023 年開源，源自論文《Efficient Memory Management for Large Language Model Serving with PagedAttention》（SOSP 2023）。當時大家用 HuggingFace Transformers 直接做線上推理，GPU 利用率低得可憐——研究團隊一分析，發現**罪魁禍首是 KV-Cache 的記憶體管理爛透了**：多達 60–80% 的顯存因為碎片與過度預留而被白白浪費。vLLM 就是這個問題的解答，如今已是伺服器端 LLM 推理的事實標準。
 
-**技術核心**：先講清楚痛點——自迴歸生成時，模型每算一個 token 都要用到前面所有 token 的 Key/Value 向量，把它們快取起來就是 **KV-Cache**。問題是每個請求的輸出長度事先不知道，傳統做法只能**按最大可能長度連續預留一整塊顯存**，導致嚴重的**內部碎片與外部碎片**。vLLM 的殺招 **PagedAttention** 直接搬用作業系統**虛擬記憶體分頁**的思想：把每個序列的 KV-Cache 切成固定大小的**區塊（block）**，這些 block 在物理顯存裡**可以不連續**，由一張**區塊表（block table）** 把邏輯位置映射到物理位置——就像 OS 的 page table 把虛擬頁映射到物理頁。這一招把顯存浪費壓到**近乎零（near-zero waste）**，還帶來一個附贈神技：**copy-on-write 的區塊共享**——並行採樣（parallel sampling）、beam search 時，多個候選序列的共同前綴（prompt）可以**共用同一份物理 KV block**，直到某條路徑要寫入才複製，省下大量重複顯存。第二根支柱是 **continuous batching（連續批次／迭代級調度）**：傳統靜態批次要等整批裡最慢的請求跑完才能收工，vLLM 改成**每一步生成迭代都重新調度**——誰生成完了就立刻踢出、空出的位置馬上放新請求進來，讓 GPU 幾乎不空轉。再加上 **tensor parallelism（張量並行）** 與 **pipeline parallelism（流水線並行）** 把大模型切到多卡、支援 **AWQ/GPTQ/FP8** 等量化、以及 speculative decoding，綜合吞吐相比樸素實作可高出一個數量級。
+**技術核心**：先講清楚痛點——自迴歸生成時，模型每算一個 token 都要用到前面所有 token 的 Key/Value 向量，把它們快取起來就是 **KV-Cache**。問題是每個請求的輸出長度事先不知道，傳統做法只能**按最大可能長度連續預留一整塊顯存**，導致嚴重的**內部碎片與外部碎片**。vLLM 的殺招 **PagedAttention** 直接搬用作業系統**虛擬記憶體分頁**的思想：把每個序列的 KV-Cache 切成固定大小的**區塊（block）**，這些 block 在物理顯存裡**可以不連續**，由一張**區塊表（block table）** 把邏輯位置映射到物理位置——就像 OS 的 page table 把虛擬頁映射到物理頁。這一招把顯存浪費壓到**近乎零（near-zero waste）**，還帶來一個附贈神技：**copy-on-write 的區塊共享**——並行採樣（parallel sampling）、beam search 時，多個候選序列的共同前綴（prompt）可以**共用同一份物理 KV block**，直到某條路徑要寫入才複製，省下大量重複顯存。第二根支柱是 **continuous batching（連續批次／迭代級調度）**：傳統靜態批次要等整批裡最慢的請求跑完才能收工，vLLM 改成**每一步生成迭代都重新調度**——誰生成完了就立刻踢出、空出的位置馬上放新請求進來，讓 GPU 幾乎不空轉。再加上 **tensor parallelism（張量並行）** 與 **pipeline parallelism（流水線並行）** 把大模型切到多卡、以及 speculative decoding（用小模型草擬多個 token、大模型一次性驗證，命中就省下整輪前向）。量化上支援 **AWQ**（依推理時實際觀測到的激活值分布，找出對輸出影響最大的少數「顯著權重通道」保留較高精度、其餘壓到低位元，藉此把量化誤差集中在無傷大雅的地方）、**GPTQ**（逐層用近似二階/Hessian 資訊做一次性權重量化、把每層的重建誤差降到最低）與 **FP8** 等格式壓縮權重顯存，綜合吞吐相比樸素實作可高出一個數量級。
 
 **解決的痛點**：LLM 線上服務「GPU 買了一堆、吞吐卻上不去、成本降不下來」的核心痛——本質是顯存被 KV-Cache 碎片吃光，導致同時能服務的併發請求數遠低於硬體理論上限。
 
@@ -834,7 +834,7 @@
 **Repo**：`sgl-project/sglang` 之子套件 `sgl-kernel/`（PyPI: `sgl-kernel`，LLM 推理 kernel 庫）——2026-07 查證為真實子套件，與本篇「SGL-Kernel」實為同物。
 **面向**：🔥 最新熱度（新興／待證實）
 **GitHub 體檢**：⭐ 資料不詳｜核心維護者 SGLang 社群（推定）｜貢獻者 資料不詳｜授權 Apache-2.0（推定）｜主語言 CUDA／C++（推定）
-（★「SGLang-Kernel」與後面 137 的 **sgl-kernel** 名稱高度近似，**很可能是同一套 kernel 庫的異名或重複條目**；此條保守標為**待證實**，真實且有明確 pip 套件的是 137 `sgl-kernel`。）
+（★「SGLang-Kernel」與後面 136 的 **sgl-kernel** 名稱高度近似，**很可能是同一套 kernel 庫的異名或重複條目**；此條保守標為**待證實**，真實且有明確 pip 套件的是 136 `sgl-kernel`。）
 
 **起源（推述）**：SGLang 這類推理框架的高層調度（RadixAttention、continuous batching）要真正落到 GPU 上跑得快，離不開一批**手寫優化的 CUDA kernel**——注意力計算、KV-Cache 讀寫、量化 GEMM 等。把這些底層 kernel 抽成獨立套件，方便跨框架複用與獨立編譯。「SGLang-Kernel」若存在，動機應是承載這批與 KV-Cache 相關的核心算子。
 
@@ -846,7 +846,7 @@
 
 **在 AI Agent 時代的角色**：作為 SGLang 的底層加速件，間接支撐高併發 Agent 服務的推理效能，一般開發者不直接接觸。
 
-**新人須知（大廠第一週）**：①除非你在推理框架／CUDA kernel 團隊，否則碰不到，且它多半是 SGLang 的內部相依。②最少要懂：LLM 推理的瓶頸常在 KV-Cache 的記憶體頻寬，而非純算力。③新人最常踩的雷——**把「SGLang-Kernel」當成一個獨立可依賴的穩定專案**：它極可能是 137 `sgl-kernel` 的異名或框架內部件，**引用前務必回上游確認真正的套件名與來源**，別憑名字臆測。
+**新人須知（大廠第一週）**：①除非你在推理框架／CUDA kernel 團隊，否則碰不到，且它多半是 SGLang 的內部相依。②最少要懂：LLM 推理的瓶頸常在 KV-Cache 的記憶體頻寬，而非純算力。③新人最常踩的雷——**把「SGLang-Kernel」當成一個獨立可依賴的穩定專案**：它極可能是 136 `sgl-kernel` 的異名或框架內部件，**引用前務必回上游確認真正的套件名與來源**，別憑名字臆測。
 
 **優點 / 罩門**：概念上是推理效能的真正發力點。罩門是**作為獨立條目高度存疑、資料不詳**，且底層 kernel 與特定 GPU 架構、框架版本強耦合，可攜性與獨立可用性都待驗證。
 
@@ -864,7 +864,7 @@
 > **框架的聰明只是紙上談兵，真正讓 GPU 跑起來的，是一行行貼著記憶體階層寫出來的 kernel——高層架構越漂亮，底層 kernel 越沉默地決定成敗。**
 
 > 🔍 老手視角──真正的門道
-> KV-Cache kernel 確實是 LLM 推理的效能命門，這個方向毫無疑問。但對「SGLang-Kernel」這個具體條目，老手的判斷是——**它極可能就是 137 的 `sgl-kernel`，被重複列了一次**。選型與引用時的紀律：**遇到近義的重複名稱，永遠去上游核對唯一的權威來源**，別讓一個 AI 生成清單裡的重複條目，變成你依賴圖裡的幽靈套件。真正該學、該用的是那個查得到、裝得起來的 `sgl-kernel`。
+> KV-Cache kernel 確實是 LLM 推理的效能命門，這個方向毫無疑問。但對「SGLang-Kernel」這個具體條目，老手的判斷是——**它極可能就是 136 的 `sgl-kernel`，被重複列了一次**。選型與引用時的紀律：**遇到近義的重複名稱，永遠去上游核對唯一的權威來源**，別讓一個 AI 生成清單裡的重複條目，變成你依賴圖裡的幽靈套件。真正該學、該用的是那個查得到、裝得起來的 `sgl-kernel`。
 
 ---
 
@@ -914,7 +914,7 @@
 **Repo**：`sgl-project/sglang` 之子套件 `sgl-kernel/`（PyPI: `sgl-kernel`）——2026-07 查證為真實 pip 套件（CUTLASS 量化 GEMM／注意力 kernel），非獨立專案。
 **面向**：🔥 最新熱度
 **GitHub 體檢**：⭐ 隨 SGLang 主專案（`sgl-kernel` 為其 pip 子套件）｜核心維護者 SGLang／LMSYS 社群｜貢獻者 資料不詳｜授權 Apache-2.0｜主語言 CUDA／C++
-（★`sgl-kernel` 是 SGLang 生態中**真實存在**的 CUDA kernel 套件，作為 SGLang 的底層算子相依；與 135「SGLang-Kernel」很可能指同一件事，此條依真實的 `sgl-kernel` 撰寫。）
+（★`sgl-kernel` 是 SGLang 生態中**真實存在**的 CUDA kernel 套件，作為 SGLang 的底層算子相依；與 134「SGLang-Kernel」很可能指同一件事，此條依真實的 `sgl-kernel` 撰寫。）
 
 **起源**：隨 SGLang 推理框架成長，團隊把它依賴的一批**高效能 GPU 算子**抽成獨立的 `sgl-kernel` 套件（可 `pip install`）。動機是把 CUDA kernel 的編譯、維護與版本管理，從龐大的框架主體中解耦出來，方便獨立迭代、複用，並整合來自 FlashInfer、CUTLASS 等上游的優秀 kernel。
 
@@ -944,9 +944,9 @@
 > **一個推理框架能跑多快，最終不由它的架構圖決定，而由它 kernel 套件裡那幾千行 CUDA 決定——`sgl-kernel` 就是 SGLang 藏在引擎蓋下、真正發力的那顆心臟。**
 
 > 🔍 老手視角──真正的門道
-> `sgl-kernel` 的存在本身，是「推理框架走向成熟」的訊號——把 kernel 從框架主體拆出獨立維護，代表 SGLang 開始認真對待底層效能的工程化。大廠評估 SGLang 時，其實也在間接評估這個 kernel 套件的**更新速度與對新 GPU 架構的跟進**：kernel 不跟架構，框架再聰明也白搭。給新人的門道：與 135「SGLang-Kernel」對照可見——**同一件真實的東西，可能在不同清單裡以不同名字出現**；辨別真偽的唯一方法，是回到上游倉庫核對能不能 `pip install`、有沒有人提交。查得到、裝得起、有人維護，才是可以依賴的標準。
+> `sgl-kernel` 的存在本身，是「推理框架走向成熟」的訊號——把 kernel 從框架主體拆出獨立維護，代表 SGLang 開始認真對待底層效能的工程化。大廠評估 SGLang 時，其實也在間接評估這個 kernel 套件的**更新速度與對新 GPU 架構的跟進**：kernel 不跟架構，框架再聰明也白搭。給新人的門道：與 134「SGLang-Kernel」對照可見——**同一件真實的東西，可能在不同清單裡以不同名字出現**；辨別真偽的唯一方法，是回到上游倉庫核對能不能 `pip install`、有沒有人提交。查得到、裝得起、有人維護，才是可以依賴的標準。
 
 ---
 
 > 🧭 本篇小結
-> 這後半段 12 個專案，把「AI 推理與訓練底座」的完整縱深攤在你眼前：從 **LitServe** 這種面向通用模型的高層 Serving，到 **Hugging Face** 統御一切的生態樞紐；從 **Open-Sora** 對閉源影片生成的正面破壁，到 **LeptonAI** 把模型端上雲的工程管線；再往下鑽，是 **TGI／SGLang** 這對推理引擎在 continuous batching 與 RadixAttention 上的吞吐之爭、**LanceDB** 讓向量檢索退回成一個檔案的優雅，最後直抵最底層——**FlashAttention-3** 與 **sgl-kernel** 那些貼著 GPU 記憶體階層寫出的 CUDA 心臟。一條清晰的規律貫穿始終：**越往下層，效能越由「記憶體怎麼搬」而非「算力多大」決定；越往上層，價值越由「生態與標準」而非「單點技術」決定。** 同時，這一段也刻意保留了幾個**標註「待證實」的可疑名目**（133 SGLang-Router、134 TensorRT-LLM-Wrapper、135 SGLang-Kernel），提醒你一件比任何技術細節都重要的選型紀律——**面對一份清單裡查不到清晰上游、或與他項高度重名的「衍生專案」，第一步永遠是「證實它存在且有人維護」，而非假設它能用。** 底座之上，是真正與人對話、替人辦事的那層——下一篇《AI・Agent 框架與應用》，我們就從「引擎」走向「駕駛」，看這些算力如何被編排成會思考、會行動的智能體。
+> 這後半段 12 個專案，把「AI 推理與訓練底座」的完整縱深攤在你眼前：從 **LitServe** 這種面向通用模型的高層 Serving，到 **Hugging Face** 統御一切的生態樞紐；從 **Open-Sora** 對閉源影片生成的正面破壁，到 **LeptonAI** 把模型端上雲的工程管線；再往下鑽，是 **TGI／SGLang** 這對推理引擎在 continuous batching 與 RadixAttention 上的吞吐之爭、**LanceDB** 讓向量檢索退回成一個檔案的優雅，最後直抵最底層——**FlashAttention-3** 與 **sgl-kernel** 那些貼著 GPU 記憶體階層寫出的 CUDA 心臟。一條清晰的規律貫穿始終：**越往下層，效能越由「記憶體怎麼搬」而非「算力多大」決定；越往上層，價值越由「生態與標準」而非「單點技術」決定。** 同時，這一段也刻意保留了幾個**標註「待證實」的可疑名目**（132 SGLang-Router、133 TensorRT-LLM-Wrapper、134 SGLang-Kernel），提醒你一件比任何技術細節都重要的選型紀律——**面對一份清單裡查不到清晰上游、或與他項高度重名的「衍生專案」，第一步永遠是「證實它存在且有人維護」，而非假設它能用。** 底座之上，是真正與人對話、替人辦事的那層——下一篇《AI・Agent 框架與應用》，我們就從「引擎」走向「駕駛」，看這些算力如何被編排成會思考、會行動的智能體。
