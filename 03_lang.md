@@ -10,11 +10,11 @@
 **標籤**：`#前端建構` `#ESM` `#HMR` `#esbuild` `#Rollup` `#DevX` `#No-Bundle`
 **Repo**：`https://github.com/vitejs/vite`
 **面向**：🏆 最紅｜👥 最多人用
-**GitHub 體檢**：⭐ 約 70k｜核心維護者 Evan You ＋ VoidZero 團隊｜貢獻者 1,000+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 80k｜核心維護者 Evan You ＋ VoidZero 團隊（2026 年 6 月併入 Cloudflare）｜貢獻者 1,000+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 Vue.js 作者尤雨溪（Evan You）於 2020 年發起。當年大型前端專案用 Webpack 打包，冷啟動與熱更新（HMR）動輒等上數分鐘——改一行 CSS，喝完一杯咖啡畫面才刷新。Vite（法文「快」）就是為了一勞永逸地殺死這種等待而生。
 
-**技術核心**：它的殺招是**「No-Bundle」的開發範式**。傳統打包器啟動時要把整個相依圖打成一大包才給你看畫面；Vite 反其道而行，開發階段**直接把原始碼交給瀏覽器的原生 ES Modules**，由瀏覽器按需（on-demand）發請求載入模組，Vite 只當一個「即時轉譯的中間人」。真正耗時的第三方相依（node_modules）則用 Go 寫的 **esbuild** 做**預構建（pre-bundling）**——把成百上千個 CommonJS 小檔合併、轉成 ESM，速度比 JS 寫的打包器快 10 到 100 倍。HMR 更是精妙：它維護一張模組相依圖，你改哪個檔就只失效那條路徑上的節點，透過 WebSocket 精準熱替換，**更新速度與專案總體積完全解耦**。生產環境則交給成熟的 **Rollup**（未來由 Rust 寫的 Rolldown 統一），做 tree-shaking 與 code splitting。
+**技術核心**：它的殺招是**「No-Bundle」的開發範式**。傳統打包器啟動時要把整個相依圖打成一大包才給你看畫面；Vite 反其道而行，開發階段**直接把原始碼交給瀏覽器的原生 ES Modules**，由瀏覽器按需（on-demand）發請求載入模組，Vite 只當一個「即時轉譯的中間人」。第三方相依（node_modules）的預構建與生產打包，早期分別交給 Go 寫的 **esbuild** 與 JS 寫的 **Rollup** 兩具引擎；★2026 年 3 月 Vite 8 穩定版起，兩者已被同團隊、相容 Rollup 外掛 API 的 Rust 打包器 **Rolldown**（同年 5 月釋出 1.0）統一取代，連 esbuild 原本負責的 TS/JSX 轉譯也交棒給同源的 Rust 工具鏈 **Oxc**——單一引擎不只更快，也收斂了過去雙引擎交界處的邊角行為差異。HMR 則靠維護一張模組相依圖，你改哪個檔就只失效那條路徑上的節點，透過 WebSocket 精準熱替換，**更新速度與專案總體積完全解耦**。
 
 **解決的痛點**：數百萬前端工程師面對龐大 Monorepo 時，構建慢、開發體驗（DX）差、記憶體動輒 OOM 的剛性痛。
 
@@ -22,9 +22,9 @@
 
 **在 AI Agent 時代的角色**：可做「智慧程式碼分割 Agent」——分析真實用戶的瀏覽路徑與點擊日誌，自動調整 `vite.config.js` 的 chunk 策略，優化首屏加載（FCP）。也能把 Agent 做成插件嵌進開發伺服器：當 esbuild／TypeScript 報錯時，終端不只吐冷冰冰的 Error，而是由 Agent 直接給出修改建議、一鍵 auto-fix。
 
-**新人須知（大廠第一週）**：①你 clone 下公司前端專案跑 `npm run dev`，那個「一秒就起來」的伺服器十之八九就是 Vite。②最少要會：看懂 `vite.config.ts` 的 `plugins` 與 `resolve.alias`，知道 `dev` 走 ESM、`build` 走 Rollup 是兩套路徑。③新人最常踩的雷——**「開發時好好的，上線後崩潰」**。因為開發環境是原生 ESM、生產是 Rollup 打包，兩者行為不完全一致（例如對 CommonJS 互操作、環境變數的處理），一定要在合併前跑一次 `vite build && vite preview`。
+**新人須知（大廠第一週）**：①你 clone 下公司前端專案跑 `npm run dev`，那個「一秒就起來」的伺服器十之八九就是 Vite。②最少要會：看懂 `vite.config.ts` 的 `plugins` 與 `resolve.alias`，知道 `dev` 走原生 ESM、`build` 走打包（現由 Rolldown 產出）是兩套路徑。③新人最常踩的雷——**「開發時好好的，上線後崩潰」**。因為開發環境走原生 ESM、生產環境是打包後的產物（現由 Rolldown 統一產出），兩者行為仍不完全一致（例如對 CommonJS 互操作、環境變數的處理），一定要在合併前跑一次 `vite build && vite preview`。
 
-**優點 / 罩門**：開發啟動達毫秒級、HMR 與體積解耦、插件 API 優雅且相容 Rollup 生態。罩門正是那條**開發／生產雙軌的行為裂縫**，以及深度依賴 esbuild／Rollup 兩個外部引擎——它們的邊角行為就是你的邊角 bug。
+**優點 / 罩門**：開發啟動達毫秒級、HMR 與體積解耦、插件 API 優雅且相容 Rollup 生態、Rolldown 統一引擎後邊角案例大減。罩門是**開發走原生 ESM、生產走打包**這條路徑差異是架構性的先天設計，換引擎也消不掉——對 CommonJS 互操作、副作用執行時機敏感的程式碼，仍得在合併前實測。
 
 **競品對照**：
 
@@ -40,7 +40,7 @@
 > **Vite 最聰明的地方，是把最耗時的模組解析工作外包給了瀏覽器內核，自己只當流量的調度員——真正的效能革命，常常不是算得更快，而是想清楚「哪些事根本不必自己做」。**
 
 > 🔍 老手視角──真正的門道
-> Vite 的崛起是一場「借力打力」的範式轉移：它賭對了「現代瀏覽器已經夠強，可以自己解析模組」這件事。評估前端基礎設施時，它早已是事實標準；但真正拉開差距的，是大型 Monorepo 叢集下把 Vite 與 Rust 工具鏈（SWC／Rspack）混合編排、壓榨 CI/CD 最後一秒的功力。商業切入點：做一套**分散式遠端編譯快取（Distributed Build Cache）**，讓上百人團隊的提交在雲端共享 Vite 預構建產物，把整團隊的構建時間收斂到秒級——這在 B2B 是極高價值的效能軟體。
+> Vite 的崛起是一場「借力打力」的範式轉移：它賭對了「現代瀏覽器已經夠強，可以自己解析模組」這件事。2026 年 6 月 Cloudflare 收購 Vite 母公司 VoidZero（連同 Rolldown、Oxc、Vitest 一併併入），公開理由正是「AI coding agent 大量寫碼後，工具鏈的速度與行為可預測性變成剛需」——這印證了選型判斷的走向：評估前端基礎設施時 Vite 早已是事實標準，真正拉開差距的是把它跟自家 Rust 工具鏈混合編排、壓榨 CI/CD 最後一秒的功力。可落地的商業機會：做一套**分散式遠端編譯快取（Distributed Build Cache）**，讓上百人團隊的提交在雲端共享 Rolldown 預構建產物，把整團隊的構建時間收斂到秒級。
 
 ---
 
@@ -49,7 +49,7 @@
 **標籤**：`#桌面應用` `#Rust` `#WebView` `#跨平台` `#最小權限` `#輕量化`
 **Repo**：`https://github.com/tauri-apps/tauri`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 90k｜核心維護者 Daniel Thompson-Yvetot 等核心組｜貢獻者 500+｜授權 MIT / Apache-2.0｜主語言 Rust
+**GitHub 體檢**：⭐ 約 105k｜核心維護者 Daniel Thompson-Yvetot 等核心組｜貢獻者 500+｜授權 MIT / Apache-2.0｜主語言 Rust
 
 **起源**：由 Daniel Thompson-Yvetot 等人於 2020 年發起，直指 Electron 被詬病十年的老毛病——**肥大、吞記憶體、啟動慢**。它的立場很鮮明：桌面軟體不該讓一個記事本也吃掉幾百 MB。
 
@@ -61,7 +61,7 @@
 
 **在 AI Agent 時代的角色**：它是**本地私有化 AI 桌面客戶端**的絕佳底座。搭配 Ollama／llama.cpp，用 Rust 後端直接調用本機 GPU/NPU 跑大模型、前端用 React 做流暢介面，整個 App 只有 10MB 左右，是「隱私型 AI 助理」的理想外殼。也能靠 Rust 直呼系統 API（截圖、模擬鍵鼠）＋多模態模型（VLM），做出類似 Computer Use 的本地桌面自動化 Agent。
 
-**新人須知（大廠第一週）**：①當團隊要做「輕量、安全性要求高」的內部工具或客戶端，選型會議上 Tauri 幾乎必被點名。②最少要會：讀懂 `tauri.conf.json` 與 capabilities 檔，知道前端呼叫後端要走 `invoke()` 加 `#[tauri::command]`。③新人最常踩的雷——**以為「一次寫好到處一致」**。因為渲染靠系統 WebView，舊版 Windows 10 與最新 Windows 11 的 CSS/JS 行為可能有細微差異，跨版本相容性測試的成本被很多人低估。
+**新人須知（大廠第一週）**：①當團隊要做「輕量、安全性要求高」的內部工具或客戶端，選型會議上 Tauri 幾乎必被點名。②最少要會：讀懂 `tauri.conf.json` 與 capabilities 檔，知道前端呼叫後端要走 `invoke()` 加 `#[tauri::command]`。③新人最常踩的雷——**以為「一次寫好到處一致」**。因為渲染靠系統 WebView，Windows 上還得吃到 Edge WebView2 執行環境（多數 Win11 內建，部分 Win10 機器要額外部署 Evergreen Bootstrapper 才裝得起來），舊版 Windows 10 與最新 Windows 11 的 CSS/JS 行為也可能有細微差異，跨版本相容性測試與部署前置檢查的成本被很多人低估。
 
 **優點 / 罩門**：體積小到不可思議、記憶體開銷極低、Rust 後端帶來記憶體安全與高效能。罩門是**渲染一致性隨系統 WebView 版本漂移**，拉高測試成本；而且一旦要寫複雜後端邏輯，開發者必須具備一定的 Rust 底子，門檻不低。
 
@@ -88,11 +88,11 @@
 **標籤**：`#JavaScript執行環境` `#Zig` `#JavaScriptCore` `#All-in-one` `#冷啟動` `#工具鏈`
 **Repo**：`https://github.com/oven-sh/bun`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 75k｜核心維護者 Jarred Sumner ＋ Oven 團隊｜貢獻者 800+｜授權 MIT｜主語言 Zig
+**GitHub 體檢**：⭐ 約 90k｜核心維護者 Jarred Sumner ＋ Oven 團隊｜貢獻者 800+｜授權 MIT｜主語言 Zig
 
 **起源**：由 Jarred Sumner 於 2022 年發起。當時 JS 後端生態的執行（Node.js）與周邊工具（npm、Webpack、Jest）繁瑣、臃腫又慢，Jarred 乾脆拋棄整套老架構，用現代系統語言 **Zig** 從零打造一個**全包型（all-in-one）**的極速環境。
 
-**技術核心**：它做了兩個大膽決定。第一，**摒棄 Node.js 用了十多年的 Google V8，改用 Apple 為 Safari 開發的 JavaScriptCore（JSC）引擎**——JSC 在啟動速度與記憶體佔用上有原生優勢，這是 Bun 冷啟動快 4 倍的根源。第二，底層全用 Zig 手寫，對記憶體配置與 CPU 指令集（AVX2、SIMD）做近乎病態的硬體級優化。更關鍵的是它**「一個二進位打天下」**：執行環境、套件管理器、打包器、測試器全內建。`bun install` 靠全域快取＋硬連結（hardlink／clonefile）避免重複拷貝，比 `npm install` 快 20 倍以上；內建 test runner 比 Jest 快近百倍；原生支援 TypeScript 與 JSX，不需任何預編譯配置。它高度相容 Node.js API，讓遷移成本壓到很低。
+**技術核心**：它做了兩個大膽決定。第一，**摒棄 Node.js 用了十多年的 Google V8，改用 Apple 為 Safari 開發的 JavaScriptCore（JSC）引擎**。JSC 走 LLInt（位元組碼直譯器）→Baseline→DFG→FTL 的四級漸進式 JIT，函式一開始就用直譯器跑，只有反覆執行的熱路徑才逐步升溫到高階優化編譯——這讓它不必像 V8 那樣暖機，是 Bun 官方基準宣稱冷啟動快上 4 倍的根源，也特別適合 Serverless 這種短生命週期場景。第二，底層全用 Zig 手寫，對記憶體配置與 CPU 指令集（AVX2、SIMD）做近乎病態的硬體級優化。更關鍵的是它**「一個二進位打天下」**：執行環境、套件管理器、打包器、測試器全內建。`bun install` 靠全域快取＋硬連結（hardlink／clonefile）避免重複拷貝，官方基準對 npm 可拉開數十倍差距；內建 test runner 省掉 Jest 的轉譯與模組載入開銷，第三方 benchmark 常見數十倍量級的落差；原生支援 TypeScript 與 JSX 直接執行，但和 esbuild 一樣**只做去型別的 transpile、不做型別檢查**，型別安全仍得靠 `tsc --noEmit` 或編輯器把關。它高度相容 Node.js API，讓遷移成本壓到很低。
 
 **解決的痛點**：JS/TS 工程師在日常開發、跑測試、裝套件、以及 Serverless 冷啟動時，速度慢、工具鏈支離破碎的極致痛。
 
@@ -127,15 +127,15 @@
 **標籤**：`#桌面應用` `#Chromium` `#Node.js` `#跨平台` `#IPC` `#多進程`
 **Repo**：`https://github.com/electron/electron`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 115k｜核心維護者 OpenJS 基金會團隊｜貢獻者 1,000+｜授權 MIT｜主語言 C++／TypeScript
+**GitHub 體檢**：⭐ 約 120k｜核心維護者 OpenJS 基金會團隊｜貢獻者 1,000+｜授權 MIT｜主語言 C++／TypeScript
 
 **起源**：由 GitHub 團隊於 2013 年發起（早期名為 Atom Shell）。在它之前，做跨平台桌面軟體要分別養 C++（Qt）、Objective-C、C# 多個團隊。Electron 橫空出世，讓開發者**直接用 HTML/CSS/JS 與現成前端框架，一鍵打包出原生桌面 App**，是軟體工程史上最偉大的 DX 解放之一。
 
-**技術核心**：它的本質是把兩個龐然大物**黏在一起**——負責畫面的 **Chromium**（渲染前台）與負責碰系統的 **Node.js**（後台，管檔案讀寫、系統呼叫）。這讓前端程式碼既能畫出精美 UI，又能拿到作業系統最高權限。架構上採**多進程模型**：一個 **main process**（跑 Node，掌管視窗與生命週期）＋多個 **renderer process**（跑 Chromium，各自渲染一個視窗），彼此透過 **IPC**（進程間通訊，以結構化複製序列化訊息）非同步溝通。安全上，現代 Electron 預設關閉 `nodeIntegration`、開啟 `contextIsolation`，前端只能透過 preload 腳本裡的 `contextBridge` 拿到白名單 API——這是防止惡意網頁提權的關鍵防線。它的招牌客戶名單華麗：VS Code、Slack、Discord、Spotify。
+**技術核心**：它的本質是把兩個龐然大物**黏在一起**——負責畫面的 **Chromium**（渲染前台）與負責碰系統的 **Node.js**（後台，管檔案讀寫、系統呼叫）。這讓前端程式碼既能畫出精美 UI，又能拿到作業系統最高權限。架構上採**多進程模型**：一個 **main process**（跑 Node，掌管視窗與生命週期）＋多個 **renderer process**（跑 Chromium，各自渲染一個視窗），彼此透過 **IPC**（進程間通訊，以結構化複製序列化訊息）非同步溝通。安全上，現代 Electron 預設關閉 `nodeIntegration`、開啟 `contextIsolation`，前端只能透過 preload 腳本裡的 `contextBridge` 拿到白名單 API——這是防止惡意網頁提權的關鍵防線。它的招牌客戶名單華麗：VS Code、Slack、Discord、GitHub Desktop（注意 Spotify 桌面版其實走的是更早的 CEF／Chromium Embedded Framework，並非 Electron，兩者常被混為一談）。
 
 **解決的痛點**：頂級科技公司想「一套網頁碼、通吃所有 PC 系統、且介面美感拉滿」的剛性生產力需求。
 
-**理論基礎**：**基於 Chromium 內核的嵌入式運行時（Chromium-based Runtime Embeddings）**與多進程安全沙盒模型——每個 renderer 跑在受限沙盒裡，即使被攻破也難以直接危害系統。
+**理論基礎**：多進程瀏覽器架構的學術根源可追到 Adam Barth 等人 2008 年的論文《Isolating Web Programs in Modern Browser Architectures》——這正是 Chromium 多進程沙盒設計的理論藍本；Electron 直接繼承這套模型與後續強化的 **Site Isolation**，讓每個 renderer 跑在受限沙盒裡，即使被攻破也難以直接危害系統。
 
 **在 AI Agent 時代的角色**：Electron 是 **OS 級自動化 Agent 的完美溫床**。當 VLM 演進出「操作人類電腦（Computer Use／OSWorld）」的能力，可用它的 Node.js 後台自主截取螢幕、以多模態模型研判 UI 佈局，再模擬鍵鼠、跨軟體幫用戶填 Excel、發 Slack——把 AI 助理從網頁對話框徹底解放到整個桌面。
 
@@ -166,9 +166,9 @@
 **標籤**：`#跨平台` `#Dart` `#Skia` `#Impeller` `#自繪引擎` `#行動開發` `#HotReload`
 **Repo**：`https://github.com/flutter/flutter`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 170k｜核心維護者 Flutter 團隊｜貢獻者 1,000+｜授權 BSD-3-Clause｜主語言 Dart
+**GitHub 體檢**：⭐ 約 175k｜核心維護者 Flutter 團隊｜貢獻者 1,000+｜授權 BSD-3-Clause｜主語言 Dart
 
-**起源**：2017 年正式發布，全程用 **Dart** 語言打造。在它之前，跨平台行動開發（如 React Native）要透過 JavaScript 橋接（Bridge）呼叫原生元件，複雜動畫極易掉幀卡頓。Flutter 直接掀翻這個限制，迅速成為全球跨端應用的生態老大哥。
+**起源**：2015 年於 Dart 開發者高峰會以「Sky」原型現身，2017 年釋出首個 Alpha，直到 2018 年底才在倫敦發表 **v1.0 正式穩定版**，全程用 **Dart** 語言打造。在它之前，跨平台行動開發（如 React Native）要透過 JavaScript 橋接（Bridge）呼叫原生元件，複雜動畫極易掉幀卡頓。Flutter 直接掀翻這個限制，迅速成為全球跨端應用的生態老大哥。
 
 **技術核心**：它的核心奇蹟是**「完全拋棄作業系統的原生 UI 元件」**。它內嵌高效能圖形引擎——早期用 Google 的 **Skia**，近年全面升級為自研的 **Impeller**——**像 3D 遊戲一樣，以每秒 60 或 120 幀的速度，直接在畫布上一個像素一個像素地「畫」出所有 Widget**。這讓它徹底解耦系統平台，達成 **Pixel-Perfect（像素級多端絕對一致）**。架構上它有**三棵樹**：不可變的 **Widget 樹**（純配置描述）、負責掛載與生命週期的 **Element 樹**、以及真正管佈局與繪製的 **RenderObject 樹**——每次 UI 更新，框架比對 Widget 樹的差異，只更新受影響的 Element 與 RenderObject，這是它高效的祕密。Impeller 相對 Skia 的關鍵改進是**預編譯著色器（shader precompilation）**，根治了 Skia 時代首次動畫要現場編譯 shader 導致的卡頓。開發時 Dart 以 JIT 執行、支援秒級 **Hot Reload**；發布時 Dart **AOT 編譯成原生機器碼**，兼顧開發爽感與上線效能。
 
@@ -200,7 +200,7 @@
 
 ---
 
-## 011　Tree-sitter — 讓編輯器與 AI「一微秒讀懂程式碼」的增量解析引擎
+## 011　Tree-sitter — 讓編輯器與 AI「瞬間讀懂程式碼」的增量解析引擎
 
 **標籤**：`#語法解析` `#增量解析` `#AST` `#GLR` `#編譯器前端` `#C語言` `#CodeAI`
 **Repo**：`https://github.com/tree-sitter/tree-sitter`
@@ -209,7 +209,7 @@
 
 **起源**：由 Max Brunsfeld 於 2017 年發起並開源（GitHub/Atom 團隊的核心遺產）。過去編輯器與工具想「讀懂」程式碼，多半靠脆弱的正則表達式（Regex）——檔案一長到數萬行，語法高亮就瘋狂卡頓，且根本無法精確語義分析。Tree-sitter 專為「在你敲鍵盤的當下，提供毫秒級增量語法解析」而生。
 
-**技術核心**：核心純 **C** 語言寫成，奇蹟在**「增量解析（Incremental Parsing）」＋強大的 GLR 狀態機**。當你在 VS Code／Neovim 改了一行 code，Tree-sitter **不重掃整個檔案**，而是**復用未受影響的子樹、只對編輯區域附近的節點做局部重解析**，在不到一微秒內動態重生成精準的 **抽象語法樹（AST）**。它用的是 **GLR（Generalized LR）演算法**——相比傳統 LR 只能處理無歧義文法，GLR 能同時追蹤多條可能的解析路徑，優雅吃下真實程式語言裡的文法歧義，還內建強悍的**錯誤恢復（error recovery）**：你程式碼寫到一半、括號還沒閉合，它照樣給你一棵「大致正確」的樹，高亮不會整片崩掉。每門語言的文法寫在 `grammar.js` 這個 DSL 裡，編譯成 C 的解析表；它零執行時相依、可嵌入任何程式，還附一套 S-表達式查詢語言（query）供你做模式比對與高亮規則。Neovim、Zed、GitHub 的語義程式碼導航全靠它。
+**技術核心**：核心純 **C** 語言寫成，奇蹟在**「增量解析（Incremental Parsing）」＋強大的 GLR 狀態機**。當你在 VS Code／Neovim 改了一行 code，Tree-sitter **不重掃整個檔案**，而是**復用未受影響的子樹、只對編輯區域附近的節點做局部重解析**——重解析的成本大致正比於**編輯區域大小、而非整份檔案**（近似 O(edit) 而非 O(file)），這讓它在動輒數萬行的原始碼裡仍能維持毫秒等級的即時反應，動態重生成精準的 **抽象語法樹（AST）**。它用的是 **GLR（Generalized LR）演算法**——相比傳統 LR 只能處理無歧義文法，GLR 能同時追蹤多條可能的解析路徑，優雅吃下真實程式語言裡的文法歧義，還內建強悍的**錯誤恢復（error recovery）**：你程式碼寫到一半、括號還沒閉合，它照樣給你一棵「大致正確」的樹，高亮不會整片崩掉。每門語言的文法寫在 `grammar.js` 這個 DSL 裡，編譯成 C 的解析表；它零執行時相依、可嵌入任何程式，還附一套 S-表達式查詢語言（query）供你做模式比對與高亮規則。Neovim、Zed、GitHub 的語義程式碼導航全靠它。
 
 **解決的痛點**：現代編輯器、大型程式碼託管平台、以及當紅 AI 程式助手，對海量源碼做「語義級精準控制、全域重構、極速高亮」時的剛性地基需求。
 
@@ -252,7 +252,7 @@
 
 **解決的痛點**：跨國電商、核心帳務系統、時序資料庫在全球流量衝擊下，對「時間計算零誤差、時區切換即時、免除記憶體技術債」的剛性需求。
 
-**理論基礎**：時間工程學（Temporal Engineering）與 ISO-8601 標準的工業實踐；概念上與 TC39 正在推進的 **Temporal** 提案同源。
+**理論基礎**：時間工程學（Temporal Engineering）與 ISO-8601 標準的工業實踐；JS 陣營的終極解法 **TC39 Temporal** 已於 2026 年 3 月正式通過 Stage 4、寫入 ECMAScript 規格，Firefox、Chrome 144、Node.js 26 均已原生內建（Safari 與多數行動瀏覽器仍是技術預覽）——這讓 date-fns 的角色正從「補救 `Date` 缺陷」轉向「與原生標準並存、逐步交棒」（此變化限於 JS 生態，Rust 的 Chrono 不受影響）。
 
 **在 AI Agent 時代的角色**：可做「時序資料風控 Agent」的底層。當內網 Agent 收到「核對過去五年紐約、倫敦、台北三地資料中心在夏令時切換當天的所有時序特徵關聯」這種高難度指令，它會自主調用 Chrono／date-fns，一秒精確算出帶完美時區補償的時間戳範疇、現場清洗大數據——把大模型因時間邏輯混亂而「瞎掰」的機率降到最低。
 
@@ -274,7 +274,7 @@
 > **時間是最不起眼、也最會咬人的資料型別。它們紅不是因為炫技，而是因為每一個沒認真處理時區的系統，遲早都會在某個夏令時的凌晨出事。**
 
 > 🔍 老手視角──真正的門道
-> 這兩塊基石的價值在於「隱形」——沒人會為時間庫開慶功宴，但一次 DST 事故就能讓對帳系統當機、上新聞。真正的門道是把「時間紀律」制度化：**全系統一律 UTC 儲存、時區只在邊界轉換、禁用可變時間物件**，並在 CI 裡掃出對 Moment.js 的殘留依賴。順帶一提，TC39 的 Temporal 標準化後，這類庫的角色會從「補救原生缺陷」轉為「填標準空窗」——選型時心裡要有這條演進線，別把技術債押在一個注定被標準吸收的 API 上。
+> 這兩塊基石的價值在於「隱形」——沒人會為時間庫開慶功宴，但一次 DST 事故就能讓對帳系統當機、上新聞。真正的門道是把「時間紀律」制度化：**全系統一律 UTC 儲存、時區只在邊界轉換、禁用可變時間物件**，並在 CI 裡掃出對 Moment.js 的殘留依賴。順帶一提，TC39 的 **Temporal** 已在 2026 年 3 月定案、主流引擎陸續原生支援，date-fns 的角色正從「補救原生缺陷」轉為「相容舊 runtime 的填補層」——新專案若目標環境夠新（Node 26+、現代瀏覽器），該優先評估原生 Temporal，把 date-fns／Moment 留給還卡在舊 runtime 的專案，這條演進線已經不是預測，是現在進行式。
 
 ---
 
@@ -283,11 +283,11 @@
 **標籤**：`#程式語言` `#MLIR` `#AI基礎設施` `#Python超集` `#Autotuning` `#SIMD` `#系統程式設計`
 **Repo**：`https://github.com/modular/modular`（Mojo 已併入 modular 主庫；早期位置為 `modularml/mojo`）
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 24k｜核心維護者 Modular 公司團隊｜貢獻者 資料不詳（新興專案）｜授權 Apache-2.0（標準庫開源，編譯器暫閉源）｜主語言 Mojo／MLIR
+**GitHub 體檢**：⭐ 約 26k｜核心維護者 Modular 公司團隊｜貢獻者 資料不詳（新興專案）｜授權 Apache-2.0（標準庫開源，編譯器閉源，官方已承諾 2026 秋開源）｜主語言 Mojo／MLIR
 
 **起源**：由 **Modular** 公司（創辦人是 LLVM 與 Swift 之父 **Chris Lattner**）於 2023 年發布，並在 2025–2026 席捲 AI 學術界與晶片基礎設施圈。AI 開發長期被**「兩層語言問題（Two-Language Problem）」**折磨：科學家愛用靈活的 Python 寫原型，但 Python 有全域解釋器鎖（GIL）、速度太慢，上線 Serving 時被迫用 C++ 重寫一遍矩陣運算。Mojo 就是來轟塌這堵牆的。
 
-**技術核心**：它是一門**深度相容 Python 語法、底層完全建在 MLIR 之上**的系統級語言。**MLIR（Multi-Level IR，多層中間表示）**也出自 Lattner 之手，能做「漸進式降階」——把高階張量運算一層層下譯到最貼近晶片的表示，這是它壓榨硬體的根基。核心奇蹟是把**編譯期自動硬體調優（Autotuning）**、**強型別 Struct 契約**、以及**類似 Rust 的借用檢查器（Borrow Checker）**原生內建。編譯時 Mojo 會感知當前硬體指令集（CUDA、Intel AMX、Apple AMX），**自動把矩陣乘法拼裝成晶片級最優 SIMD 指令**——官方宣稱相對原生 Python 可達數萬倍加速（那個「68,000 倍」是特定 benchmark 的極端值，請保守看待），且能**無痛互操作既有 Python 資產（PyTorch／NumPy）**。語法上它以 `fn`（嚴格、可預測效能）與 `def`（Python 相容）雙軌並存。誠實地說：截至 2026 年初，它的**標準庫已開源、編譯器核心仍閉源**，生態仍在早期。
+**技術核心**：它是一門**深度相容 Python 語法、底層完全建在 MLIR 之上**的系統級語言。**MLIR（Multi-Level IR，多層中間表示）**也出自 Lattner 之手，能做「漸進式降階」——把高階張量運算一層層下譯到最貼近晶片的表示，這是它壓榨硬體的根基。核心奇蹟是把**編譯期自動硬體調優（Autotuning）**、**強型別 Struct 契約**、以及**類似 Rust 的借用檢查器（Borrow Checker）**原生內建。編譯時 Mojo 會感知當前硬體指令集（CUDA、Intel AMX、Apple AMX），**自動把矩陣乘法拼裝成晶片級最優 SIMD 指令**——官方宣稱相對原生 Python 可達數萬倍加速（那個「68,000 倍」是特定 benchmark 的極端值，請保守看待），且能**無痛互操作既有 Python 資產（PyTorch／NumPy）**。語法上它以 `fn`（嚴格、可預測效能）與 `def`（Python 相容）雙軌並存。誠實地說：Mojo 已依 2025 年底公布的路線圖，於 2026 年 5 月釋出 **1.0.0 beta**；但**編譯器核心截至目前仍閉源**——Modular 已公開承諾 2026 年秋天開源編譯器，標準庫則早已開源，生態仍在早期爬坡階段。
 
 **解決的痛點**：頂級 AI 晶片廠、自建超算叢集的核心團隊、邊緣 AI PC 開發者，想「單一語言通吃從上層應用到晶片暫存器、徹底解耦 Python 解釋器、把推理速度逼到物理極限」的極致痛點。
 
@@ -319,4 +319,4 @@
 ---
 
 > 🧭 本篇小結
-> 這八個專案，是你每天寫程式時「看不見、卻一直在替你幹活」的那層地基——Vite 幫你把等編譯的時間還回來，Bun 想把整條工具鏈重寫一遍，Tauri／Electron 決定你的桌面 App 有多重，Tree-sitter 讓編輯器與 AI 一微秒讀懂你的程式碼，Chrono／date-fns 在你沒察覺時守住每一次時間計算，而 Mojo 賭的是「Python 的慢不是天命」。它們的共同啟示是：**真正的生產力革命，往往發生在你不會寫進履歷的基礎層**——誰把開發者的等待與摩擦消滅得最徹底，誰就悄悄贏得了整個生態。打好這層地基，下一篇我們走進使用者真正看得見的戰場：前端框架與 UI 生態。
+> 這八個專案，是你每天寫程式時「看不見、卻一直在替你幹活」的那層地基——Vite 幫你把等編譯的時間還回來，Bun 想把整條工具鏈重寫一遍，Tauri／Electron 決定你的桌面 App 有多重，Tree-sitter 讓編輯器與 AI 幾乎瞬間讀懂你的程式碼，Chrono／date-fns 在你沒察覺時守住每一次時間計算，而 Mojo 賭的是「Python 的慢不是天命」。它們的共同啟示是：**真正的生產力革命，往往發生在你不會寫進履歷的基礎層**——誰把開發者的等待與摩擦消滅得最徹底，誰就悄悄贏得了整個生態。打好這層地基，下一篇我們走進使用者真正看得見的戰場：前端框架與 UI 生態。
