@@ -11,11 +11,11 @@
 **標籤**：`#事件串流` `#訊息佇列` `#分散式日誌` `#append-only` `#消費者組` `#exactly-once` `#KRaft` `#Scala`
 **Repo**：`https://github.com/apache/kafka`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 29k｜核心維護者 Confluent ＋ Apache PMC｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Java／Scala
+**GitHub 體檢**：⭐ 約 33k｜核心維護者 Confluent ＋ Apache PMC｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Java／Scala
 
 **起源**：2010 年前後誕生於 LinkedIn，由 Jay Kreps、Neha Narkhede、Jun Rao 三人主導，2011 年開源、2012 年成為 Apache 頂級專案。當年 LinkedIn 被一個經典難題折磨：幾十套系統要互相交換資料（用戶行為、指標、日誌…），若兩兩對接就是 N² 條脆弱的點對點管線。他們的解法是造一根「所有資料都先丟進來、誰想要誰自己來拿」的中央幹道。Jay Kreps 是文學愛好者，替它取名 **Kafka**——一個「為寫入而優化的系統」，配上作家的名字剛好。
 
-**技術核心**：Kafka 的靈魂是一個反直覺的決定——**它不是佇列，而是一份分散式的、只能往後追加的提交日誌（append-only commit log）**。訊息寫進某個 topic 的某個 **partition（分區）**，就永遠不改、只往檔案尾端 append，並被賦予一個單調遞增的 **offset**。這帶來三個工業級後果：其一，寫入是**純順序磁碟 I/O**，配合作業系統的 page cache 與 **zero-copy（sendfile）**，機械硬碟也能跑出百萬級 TPS——它故意不用隨機寫的資料結構，就是要順著磁碟的脾氣跑。其二，**消費與儲存徹底解耦**：訊息不因被讀取而刪除，靠時間或大小做 retention，所以同一份資料能被即時分析、離線倉儲、稽核回放**同時**消費，各自維護自己的 offset。其三，**消費者組（consumer group）** 是水平擴展的祕密：一個 group 內的多個 consumer 各認領一批 partition，partition 數就是並行度上限，group 之間互不干擾。可靠性靠 **replication**——每個 partition 有一個 leader 與若干 follower，只有進入 **ISR（in-sync replicas）** 的副本才算數；消費者只能讀到 **HW（high watermark，所有 ISR 都已同步到的位置）**，讀不到尚未安全複製的訊息（各副本的 **LEO（log end offset）** 與 HW 的落差，就是複製滯後量），leader 掛了便從 ISR 選出新 leader。語意上預設 **至少一次（at-least-once）**，靠 **冪等 producer（PID＋序號去重）＋ 事務**（跨 partition 的原子寫）可升級到 **精確一次（exactly-once）**。新版更用 **KRaft**（Kafka Raft）自管元資料、徹底幹掉了外部 ZooKeeper 依賴。
+**技術核心**：Kafka 的靈魂是一個反直覺的決定——**它不是佇列，而是一份分散式的、只能往後追加的提交日誌（append-only commit log）**。訊息寫進某個 topic 的某個 **partition（分區）**，就永遠不改、只往檔案尾端 append，並被賦予一個單調遞增的 **offset**。這帶來三個工業級後果：其一，寫入是**純順序磁碟 I/O**，配合作業系統的 page cache 與 **zero-copy（sendfile）**，機械硬碟也能跑出百萬級 TPS——它故意不用隨機寫的資料結構，就是要順著磁碟的脾氣跑。其二，**消費與儲存徹底解耦**：訊息不因被讀取而刪除，靠時間或大小做 retention，所以同一份資料能被即時分析、離線倉儲、稽核回放**同時**消費，各自維護自己的 offset。其三，**消費者組（consumer group）** 是水平擴展的祕密：一個 group 內的多個 consumer 各認領一批 partition，partition 數就是並行度上限，group 之間互不干擾。可靠性靠 **replication**——每個 partition 有一個 leader 與若干 follower，只有進入 **ISR（in-sync replicas）** 的副本才算數；消費者只能讀到 **HW（high watermark，所有 ISR 都已同步到的位置）**，讀不到尚未安全複製的訊息（各副本的 **LEO（log end offset）** 與 HW 的落差，就是複製滯後量），leader 掛了便從 ISR 選出新 leader。語意上預設 **至少一次（at-least-once）**，靠 **冪等 producer（PID＋序號去重）＋ 事務**（跨 partition 的原子寫）可升級到 **精確一次（exactly-once）**。2025 年 3 月發布的 **Kafka 4.0** 已徹底移除 ZooKeeper 模式，**KRaft**（用 Kafka 自己的 Raft 實作自管元資料）從此是唯一選項；同一版本還帶著 **KIP-932（Queues for Kafka／share group）** 的搶先版——讓多個 consumer 能像傳統佇列一樣「搶著處理」同一個 partition 內的訊息、做到訊息級別的個別 ack，等於是這套日誌第一次在協定層面正面回應「我能不能也做細粒度佇列」的老問題（目前仍是預覽特性、語意仍是至少一次，還沒到 exactly-once）。
 
 **解決的痛點**：企業內幾十套系統資料交換的 N² 管線地獄，以及「即時流」與「離線批」被迫維護兩套資料副本的撕裂。
 
@@ -50,11 +50,11 @@
 **標籤**：`#批處理` `#記憶體計算` `#RDD` `#DAG` `#Catalyst` `#DataFrame` `#MLlib` `#Scala`
 **Repo**：`https://github.com/apache/spark`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 40k｜核心維護者 Databricks ＋ Apache PMC｜貢獻者 2,000+｜授權 Apache-2.0｜主語言 Scala
+**GitHub 體檢**：⭐ 約 44k｜核心維護者 Databricks ＋ Apache PMC｜貢獻者 2,000+｜授權 Apache-2.0｜主語言 Scala
 
 **起源**：2009 年誕生於加州大學柏克萊的 AMPLab，由 Matei Zaharia 主導，2010 年開源、2013 年進 Apache、2014 年畢業為頂級專案，其商業公司 Databricks 如今是資料湖倉的巨頭。它要解決的是 Hadoop MapReduce 的原罪：**每一步運算都把中間結果寫回磁碟再讀出**，一個多步驟的迭代演算法（機器學習最常見）要反覆讀寫 HDFS，慢到令人絕望。Spark 的賭注是——把資料留在記憶體裡。
 
-**技術核心**：Spark 的地基是 **RDD（Resilient Distributed Dataset，彈性分散式資料集）**——一個不可變、可分區、分佈在叢集記憶體裡的資料集合。關鍵在「彈性」二字：RDD 不靠複製資料來容錯，而是記住自己是**怎麼從上一個 RDD 算出來的**，也就是 **lineage（血緣）**；某個分區的機器掛了，Spark 照著血緣**重算那一塊**即可，不必全量備份。你對 RDD 的操作分兩類：**transformation（map、filter、join…）是惰性的**，只在腦中畫出一張 **DAG（有向無環圖）**；直到你呼叫 **action（count、collect、save…）**，DAG 才被交給 **DAGScheduler** 切成 stage——**窄依賴（map、filter，父分區一對一）** 能在同一 stage 內管線化，**寬依賴（groupBy、join，父分區被多個子分區依賴）** 則劃出 stage 邊界、必須做 **shuffle**（跨節點重分佈；自 1.2 起預設 **sort-based shuffle**：map 端排序落檔、reduce 端拉取合併，是全流程最昂貴的一步），再排成 task 送到 executor。因為中間結果能 `cache()` 在記憶體，迭代式運算比 MapReduce 快到一個數量級（官方常引「約 100 倍」為記憶體內極值，落地要保守看）。上層的 **DataFrame／Spark SQL** 更走 **Catalyst 優化器**（做謂詞下推、常數摺疊、join 重排）與 **Tungsten 引擎**（off-heap 記憶體管理、whole-stage code generation，把一串運算子編成一段緊湊的 JVM 位元組碼），把宣告式 SQL 榨到接近手寫的效能。一套引擎四種負載：批（Spark SQL）、流（Structured Streaming，微批模型）、機器學習（MLlib）、圖（GraphX）。
+**技術核心**：Spark 的地基是 **RDD（Resilient Distributed Dataset，彈性分散式資料集）**——一個不可變、可分區、分佈在叢集記憶體裡的資料集合。關鍵在「彈性」二字：RDD 不靠複製資料來容錯，而是記住自己是**怎麼從上一個 RDD 算出來的**，也就是 **lineage（血緣）**；某個分區的機器掛了，Spark 照著血緣**重算那一塊**即可，不必全量備份。你對 RDD 的操作分兩類：**transformation（map、filter、join…）是惰性的**，只在腦中畫出一張 **DAG（有向無環圖）**；直到你呼叫 **action（count、collect、save…）**，DAG 才被交給 **DAGScheduler** 切成 stage——**窄依賴（map、filter，父分區一對一）** 能在同一 stage 內管線化，**寬依賴（groupBy、join，父分區被多個子分區依賴）** 則劃出 stage 邊界、必須做 **shuffle**（跨節點重分佈；自 1.2 起預設 **sort-based shuffle**：map 端排序落檔、reduce 端拉取合併，是全流程最昂貴的一步），再排成 task 送到 executor。因為中間結果能 `cache()` 在記憶體，迭代式運算比 MapReduce 快到一個數量級（官方常引「約 100 倍」為記憶體內極值，落地要保守看）。上層的 **DataFrame／Spark SQL** 更走 **Catalyst 優化器**（做謂詞下推、常數摺疊、join 重排）與 **Tungsten 引擎**（off-heap 記憶體管理、whole-stage code generation，把一串運算子編成一段緊湊的 JVM 位元組碼），把宣告式 SQL 榨到接近手寫的效能。一套引擎四種負載：批（Spark SQL）、流（Structured Streaming，微批模型）、機器學習（MLlib）、圖（GraphX）。2025 年發布的 **Spark 4.0** 更把 **ANSI SQL 模式設為預設**（過去悄悄把型別錯誤轉成 null 或截斷的行為，現在會明確報錯），並讓 **Spark Connect**（拆分 client／server 的瘦客戶端架構，前端可以是任何語言、不必和叢集共享 JVM）在功能上追平傳統模式——這兩件事合起來，代表 Spark 正把「像一般資料庫一樣嚴謹」與「像雲服務一樣可以輕客戶端連線」補齊。
 
 **解決的痛點**：資料工程師面對 TB／PB 級資料要做清洗、關聯、聚合與訓練特徵時，MapReduce 太慢、太難寫、迭代任務磁碟 I/O 爆炸的剛性痛。
 
@@ -89,7 +89,7 @@
 **標籤**：`#分散式儲存` `#HDFS` `#NameNode` `#三副本` `#數據湖` `#GFS` `#write-once` `#Java`
 **Repo**：`https://github.com/apache/hadoop`（HDFS 為 Hadoop 子模組）
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 15k｜核心維護者 Apache Hadoop PMC｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 16k｜核心維護者 Apache Hadoop PMC｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：源自 Doug Cutting 與 Mike Cafarella 的搜尋引擎專案 Nutch，靈感直接來自 Google 2003 年的 **GFS（Google File System）論文** 與 2004 年的 MapReduce 論文。2006 年，儲存部分獨立成 Hadoop（名字來自 Doug 兒子的黃色玩具象），Yahoo 大力投入、把它推上數千台機器的規模。**HDFS（Hadoop Distributed File System）** 就是這頭大象的骨架——第一個真正讓「用一堆廉價 PC 存 PB 級資料」在工程上成立的開源檔案系統。
 
@@ -128,11 +128,11 @@
 **標籤**：`#數據倉庫` `#HiveQL` `#Metastore` `#離線分析` `#schema-on-read` `#ORC` `#Tez` `#SQL-on-Hadoop`
 **Repo**：`https://github.com/apache/hive`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 5.6k｜核心維護者 Apache Hive PMC｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 6k｜核心維護者 Apache Hive PMC｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：2008 年前後誕生於 Facebook，由 Joydeep Sen Sarma、Ashish Thusoo 等人打造。當時 Facebook 的資料量爆炸式成長、全塞進 Hadoop，但**會寫 MapReduce Java 的人太少、會寫 SQL 的分析師太多**。Hive 的使命就是造一座橋：讓分析師用他們熟悉的類 SQL，去查詢躺在 HDFS 上的海量資料，底層自動翻譯成 MapReduce 任務。它讓「大數據」第一次對非工程師敞開了大門。
 
-**技術核心**：這一節聚焦**資料倉庫層**（與 077 的儲存層互補）。Hive 的核心是一套**「SQL 到分散式運算」的翻譯器 ＋ 一份把檔案偽裝成資料表的元資料服務**。你寫的 **HiveQL（HQL）** 經過 parser、語意分析、邏輯／物理優化後，被編譯成一連串 **MapReduce**（或更快的 **Tez** DAG 引擎、乃至 Spark）任務去掃 HDFS。它最關鍵的設計是 **schema-on-read（讀時定義結構）**：資料以原始檔案（CSV／JSON／ORC／Parquet）躺在 HDFS 上、寫入時不驗證結構，只有你查詢的當下，Hive 才拿 **Metastore** 裡登記的表結構去「套」到位元組上——這與傳統資料庫的 schema-on-write 恰好相反，換來的是「先囤資料、之後再決定怎麼解讀」的彈性。那份 **Metastore** 是全生態的靈魂：它把「哪張表、有哪些欄位與型別、分區在哪個 HDFS 路徑」存進一個關聯式資料庫（MySQL／PostgreSQL），並且**被 Spark、Presto、Flink 等整個生態共用**——這正是 Hive 屹立不搖的真正原因。效能上靠三招：**partition（分區）** 讓查詢只掃相關目錄、**bucketing（分桶）** 助 join、以及 **ORC／Parquet 列式儲存 ＋ 謂詞下推 ＋ 統計資訊**大幅減少 I/O。新版更有 **LLAP（Live Long And Process）** 常駐執行器，把互動式查詢延遲從分鐘壓到秒級。
+**技術核心**：這一節聚焦**資料倉庫層**（與 077 的儲存層互補）。Hive 的核心是一套**「SQL 到分散式運算」的翻譯器 ＋ 一份把檔案偽裝成資料表的元資料服務**。你寫的 **HiveQL（HQL）** 經過 parser、語意分析、邏輯／物理優化後，被編譯成一連串 **MapReduce**（或更快的 **Tez** DAG 引擎、乃至 Spark）任務去掃 HDFS。它最關鍵的設計是 **schema-on-read（讀時定義結構）**：資料以原始檔案（CSV／JSON／ORC／Parquet）躺在 HDFS 上、寫入時不驗證結構，只有你查詢的當下，Hive 才拿 **Metastore** 裡登記的表結構去「套」到位元組上——這與傳統資料庫的 schema-on-write 恰好相反，換來的是「先囤資料、之後再決定怎麼解讀」的彈性。那份 **Metastore** 是全生態的靈魂：它把「哪張表、有哪些欄位與型別、分區在哪個 HDFS 路徑」存進一個關聯式資料庫（MySQL／PostgreSQL），並且**被 Spark、Presto、Flink 等整個生態共用**——這正是 Hive 屹立不搖的真正原因。效能上靠三招：**partition（分區）** 讓查詢只掃相關目錄、**bucketing（分桶）** 助 join、以及 **ORC／Parquet 列式儲存 ＋ 謂詞下推 ＋ 統計資訊**大幅減少 I/O。新版更有 **LLAP（Live Long And Process）** 常駐執行器，把互動式查詢延遲從分鐘壓到秒級。而 **Hive 4.0** 這次改版真正的重點，是原生整合 **Apache Iceberg** 表格式——讓這座老倉庫也能直接讀寫新一代開放表格式的表，這正是它在「表格式三國殺」逐漸有勝負之後，替自己續命的關鍵一步。
 
 **解決的痛點**：分析師與資料科學家不會、也不該去寫底層 MapReduce，卻要對 PB 級離線資料做報表、聚合、關聯分析的剛性痛。
 
@@ -167,11 +167,11 @@
 **標籤**：`#訊息佇列` `#AMQP` `#Erlang` `#exchange` `#路由` `#微服務` `#quorum-queue` `#解耦`
 **Repo**：`https://github.com/rabbitmq/rabbitmq-server`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 12k｜核心維護者 Broadcom（原 VMware/Pivotal）團隊｜貢獻者 300+｜授權 MPL-2.0｜主語言 Erlang
+**GitHub 體檢**：⭐ 約 14k｜核心維護者 Broadcom（原 VMware/Pivotal）團隊｜貢獻者 300+｜授權 MPL-2.0｜主語言 Erlang
 
 **起源**：2007 年由 Rabbit Technologies 發布，後被 SpringSource／VMware／Pivotal 收購，如今歸屬 Broadcom。它是 **AMQP（Advanced Message Queuing Protocol，一個為金融業互通而生的開放協定）** 最經典的開源實作。之所以用 **Erlang** 寫，是因為 Erlang 天生為電信級高併發、高可用、熱更新而生——一個訊息代理要在成千上萬條連線上永不宕機，Erlang 的行程模型與監督樹（supervision tree）簡直量身訂做。
 
-**技術核心**：RabbitMQ 與 Kafka 是兩種世界觀。Kafka 是「一份可重放的日誌」，RabbitMQ 則是**「一個聰明的郵局」——它的靈魂在於 exchange 與 queue 的路由模型**。生產者不直接把訊息丟進佇列，而是丟給一個 **exchange（交換機）**，由 exchange 依 **binding（綁定規則）** 與訊息的 **routing key** 決定投遞到哪些 **queue**。exchange 有四型：**direct**（routing key 精確匹配）、**topic**（用 `*`／`#` 做模式匹配，如 `order.*.paid`）、**fanout**（廣播給所有綁定佇列）、**headers**（依訊息標頭匹配）——這套組合能表達極其細膩的路由邏輯，是它對比 Kafka 最大的差異化優勢。可靠性靠**發布者確認（publisher confirms）** 與**消費者手動 ack**：消費者處理完才 ack，處理失敗可 **nack ＋ requeue**，或送進 **dead-letter exchange（死信佇列）** 另行處理——這種「每一則訊息個別追蹤生死」的精細度，正是金融交易、訂單流程的命脈。高可用上，傳統的 mirrored queue 已被 **quorum queue（基於 Raft 共識）** 取代，用多數派複製保證主佇列掛掉也不丟訊息。它天生擅長**低延遲、複雜路由、任務分發**，但單機吞吐與長期儲存能力遠不如 Kafka。
+**技術核心**：RabbitMQ 與 Kafka 是兩種世界觀。Kafka 是「一份可重放的日誌」，RabbitMQ 則是**「一個聰明的郵局」——它的靈魂在於 exchange 與 queue 的路由模型**。生產者不直接把訊息丟進佇列，而是丟給一個 **exchange（交換機）**，由 exchange 依 **binding（綁定規則）** 與訊息的 **routing key** 決定投遞到哪些 **queue**。exchange 有四型：**direct**（routing key 精確匹配）、**topic**（用 `*`／`#` 做模式匹配，如 `order.*.paid`）、**fanout**（廣播給所有綁定佇列）、**headers**（依訊息標頭匹配）——這套組合能表達極其細膩的路由邏輯，是它對比 Kafka 最大的差異化優勢。可靠性靠**發布者確認（publisher confirms）** 與**消費者手動 ack**：消費者處理完才 ack，處理失敗可 **nack ＋ requeue**，或送進 **dead-letter exchange（死信佇列）** 另行處理——這種「每一則訊息個別追蹤生死」的精細度，正是金融交易、訂單流程的命脈。高可用上，傳統的 mirrored queue（早在 2021 年就被標記淘汰）已於 **RabbitMQ 4.0（2024 年發布）徹底移除**，全面改用 **quorum queue（基於 Raft 共識）**，用多數派複製保證主佇列掛掉也不丟訊息。它天生擅長**低延遲、複雜路由、任務分發**，但單機吞吐與長期儲存能力遠不如 Kafka。
 
 **解決的痛點**：微服務之間需要**非同步解耦**——下單服務不該卡在等庫存、通知、風控全部回應；把任務丟進佇列、各自消費，是削峰填谷與服務自治的基本功。
 
@@ -181,7 +181,7 @@
 
 **新人須知（大廠第一週）**：①做微服務時，只要看到「非同步」「解耦」「削峰」的需求，選型會議上 RabbitMQ（或 Kafka）必然被拿來比。②最少要會：分清 exchange／queue／binding／routing key 的關係，知道 direct 與 topic exchange 的差別，會在管理台（15672 埠）建佇列看堆積。③新人最常踩的雷——**忘了處理 ack 與死信，造成訊息「毒藥迴圈」**。一則永遠處理失敗又被 requeue 的訊息會無限重投、卡死消費者；一定要配 dead-letter exchange ＋ 重試上限，把毒訊息隔離出去。
 
-**優點 / 罩門**：路由靈活無雙、低延遲、每訊息精細 ack、協定標準（多語言客戶端齊全）、運維相對友善。罩門是**吞吐與堆積能力有天花板**——它的訊息預設處理完即刪，不是為「存幾天、隨時重放」設計；佇列嚴重堆積時記憶體與效能會明顯劣化，超大規模串流場景它讓位給 Kafka。
+**優點 / 罩門**：路由靈活無雙、低延遲、每訊息精細 ack、協定標準（多語言客戶端齊全）、運維相對友善。罩門是**吞吐與堆積能力有天花板**——它的訊息預設處理完即刪，不是為「存幾天、隨時重放」設計；佇列嚴重堆積時記憶體與效能會明顯劣化，超大規模串流場景它讓位給 Kafka。另一個容易被忽略的罩門是**授權與支援政策的現實**——Broadcom 併購 VMware 後，自 2024 年 6 月起改變了社群支援政策：舊版本系列不再無條件提供社群修補，只有持續貢獻的活躍社群成員或付費 Tanzu 商業授權客戶才拿得到，這意味著單純「抓開源版本、指望社群幫你修 bug」的老玩法，風險比以前高。
 
 **競品對照**：
 
@@ -206,9 +206,9 @@
 **標籤**：`#Python` `#async` `#訊息驅動` `#Pydantic` `#AsyncAPI` `#Kafka` `#NATS` `#Redis` `#微服務`
 **Repo**：`https://github.com/ag2ai/faststream`（原 `airtai/faststream`，已遷至 ag2ai；以官方為準）
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 4k｜核心維護者 ag2ai／airt 團隊｜貢獻者 100+｜授權 Apache-2.0｜主語言 Python
+**GitHub 體檢**：⭐ 約 5.3k｜核心維護者 ag2ai／airt 團隊（主力維護者 Lancetnik）｜貢獻者 100+｜授權 Apache-2.0｜主語言 Python
 
-**起源**：FastStream 由 FastKafka 與 Propan 兩個前身專案於 2023 年合併而來，靈魂人物來自 airt 團隊。動機很直白：寫 FastAPI 做 HTTP 微服務已經爽到不行（型別提示、自動文件、依賴注入一應俱全），但**一換到「訊息驅動」的世界，Python 工程師就得跌回手寫 Kafka／NATS 客戶端、自己管連線、自己序列化、自己驗資料**的石器時代。FastStream 要把 FastAPI 那套優雅的開發體驗，原封不動搬到訊息佇列上。
+**起源**：FastStream 由 FastKafka 與 Propan 兩個前身專案於 2023 年合併而來，靈魂人物來自 airt 團隊。動機很直白：寫 FastAPI 做 HTTP 微服務已經爽到不行（型別提示、自動文件、依賴注入一應俱全），但**一換到「訊息驅動」的世界，Python 工程師就得跌回手寫 Kafka／NATS 客戶端、自己管連線、自己序列化、自己驗資料**的石器時代。FastStream 要把 FastAPI 那套優雅的開發體驗，原封不動搬到訊息佇列上。專案後來從 `airtai` 遷到 **`ag2ai`**——也就是 AutoGen 原班人馬 Chi Wang、Qingyun Wu 於 2024 年底離開微軟後另立的 AG2（AI Agent 開源社群）旗下，這個落腳處本身就說明了它今天的主要戰場：多 Agent 系統之間的事件通訊。
 
 **技術核心**：FastStream 的核心是**「用裝飾器把訊息處理器變成一個帶型別的純函式」**。你寫 `@broker.subscriber("topic")` 裝飾一個函式，函式的參數用 **Pydantic model** 標註型別——框架就自動幫你**反序列化、驗證 schema、把不合法的訊息擋在門外**；回傳值用 `@broker.publisher(...)` 又自動序列化發到下一個 topic。這套機制讓「消費—處理—再發布」的資料流水線，寫起來像串接幾個普通 Python 函式一樣乾淨。它最大的賣點是**broker 抽象層統一**：同一份業務程式碼，底層可切換 **Kafka、RabbitMQ、NATS、Redis Streams** 四種 broker，只改 broker 型別、業務邏輯不動——這在多雲、多中介軟體的異質環境裡價值極高。它繼承了 FastAPI 的**依賴注入（`Depends`）**、生命週期鉤子，還能**自動生成 AsyncAPI 文件**（等於 OpenAPI 之於 REST，把你的事件契約可視化）；並可作為 router 直接掛進 FastAPI app，HTTP 與訊息共用一套進程與依賴。全程 `async`，吃 Python 的 asyncio 事件迴圈。
 
@@ -245,11 +245,11 @@
 **標籤**：`#工作流調度` `#DAG` `#任務編排` `#Workflow-as-Code` `#Scheduler` `#ETL` `#Python`
 **Repo**：`https://github.com/apache/airflow`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 37k｜核心維護者 Apache Airflow PMC ＋ Astronomer｜貢獻者 3,000+｜授權 Apache-2.0｜主語言 Python
+**GitHub 體檢**：⭐ 約 46k｜核心維護者 Apache Airflow PMC ＋ Astronomer｜貢獻者 3,000+｜授權 Apache-2.0｜主語言 Python
 
 **起源**：2014 年由 Maxime Beauchemin 在 Airbnb 打造，2016 年進 Apache 孵化器、2019 年畢業為頂級專案。當年資料團隊的每日跑批靠一堆 cron ＋ shell 腳本串起來，某一步失敗了沒人知道、依賴關係全靠人腦記憶、重跑要手動——一團無法觀測、無法維護的義大利麵。Airflow 的核心主張是革命性的：**「把工作流當程式碼寫（workflow as code）」**。
 
-**技術核心**：Airflow 的靈魂是用 **Python 程式碼定義一張 DAG（有向無環圖）**——每個節點是一個 **task**，邊是**依賴關係**（`task_a >> task_b` 表示 b 要等 a 成功）。DAG 是無環的，這保證了任務有明確的拓撲執行順序、不會死鎖。它的架構分工清楚：**Scheduler**（心臟，持續解析 DAG、判斷哪些 task 的依賴已滿足、到了排程時間就把它們塞進佇列）、**Executor**（決定 task 在哪跑——`LocalExecutor` 本機、`CeleryExecutor` 分散到 worker 池、`KubernetesExecutor` 每個 task 起一個 Pod）、**Metadata DB**（記錄每個 task 每一次執行的狀態，是整個系統的真相之源）、以及 **Web UI**（那張經典的 DAG 甘特圖／網格圖，讓你一眼看出哪一步紅了）。它靠 **Operator** 封裝各種動作（`BashOperator`、`PythonOperator`、`KubernetesPodOperator`…）、**Sensor** 等待外部條件（如檔案到齊）、**Hook** 連外部系統、**XCom** 在 task 間傳小量資料。關鍵特性是**冪等 ＋ 可重跑**：每次執行綁定一個 **logical date**，失敗可精準重跑某一天某一步，或 **backfill** 補跑歷史區間。要強調的是——**它是編排器，不是運算引擎**：它負責「叫誰在什麼時候、什麼條件下做事」，真正的重活（跑 Spark、跑 SQL）是被它觸發的外部系統做的。
+**技術核心**：Airflow 的靈魂是用 **Python 程式碼定義一張 DAG（有向無環圖）**——每個節點是一個 **task**，邊是**依賴關係**（`task_a >> task_b` 表示 b 要等 a 成功）。DAG 是無環的，這保證了任務有明確的拓撲執行順序、不會死鎖。它的架構分工清楚：**Scheduler**（心臟，持續解析 DAG、判斷哪些 task 的依賴已滿足、到了排程時間就把它們塞進佇列）、**Executor**（決定 task 在哪跑——`LocalExecutor` 本機、`CeleryExecutor` 分散到 worker 池、`KubernetesExecutor` 每個 task 起一個 Pod）、**Metadata DB**（記錄每個 task 每一次執行的狀態，是整個系統的真相之源）、以及 **Web UI**（那張經典的 DAG 甘特圖／網格圖，讓你一眼看出哪一步紅了）。2025 年 4 月的 **Airflow 3.0** 是它十年來最大一次架構重寫：新增一層 **API Server** 居中調度，task 從此不再直接碰 Metadata DB、一律改走 REST API，換來的是**多語言 Task SDK**（task 可以用 Python 或 Go 寫、可以在遠端任意環境跑，不必和 Scheduler 共處一室）、原生 **DAG 版本控制**（同一支 DAG 的歷史改動可在 UI 上直接追溯），以及**事件驅動排程**（資料資產一更新就能直接觸發下游 DAG，不必死等 cron 時間到）。它靠 **Operator** 封裝各種動作（`BashOperator`、`PythonOperator`、`KubernetesPodOperator`…）、**Sensor** 等待外部條件（如檔案到齊）、**Hook** 連外部系統、**XCom** 在 task 間傳小量資料。關鍵特性是**冪等 ＋ 可重跑**：每次執行綁定一個 **logical date**，失敗可精準重跑某一天某一步，或 **backfill** 補跑歷史區間。要強調的是——**它是編排器，不是運算引擎**：它負責「叫誰在什麼時候、什麼條件下做事」，真正的重活（跑 Spark、跑 SQL）是被它觸發的外部系統做的。
 
 **解決的痛點**：資料管線由幾十上百個有複雜先後依賴的步驟組成，用 cron 串接無法表達依賴、無法觀測、失敗無法優雅重跑的維運地獄。
 
@@ -284,7 +284,7 @@
 **標籤**：`#數據湖` `#Lakehouse` `#ACID` `#upsert` `#copy-on-write` `#merge-on-read` `#增量處理` `#時間旅行`
 **Repo**：`https://github.com/apache/hudi`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 5.6k｜核心維護者 Apache Hudi PMC ＋ Onehouse｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 6.2k｜核心維護者 Apache Hudi PMC ＋ Onehouse｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：**Hudi = Hadoop Upserts Deletes and Incrementals**，2016 年誕生於 Uber，2017 年開源、2019 年進 Apache、2020 年畢業為頂級專案。Uber 的痛點很具體：資料湖（HDFS ＋ Parquet）是「一次寫入不可變」的，但真實業務**天天要更新既有紀錄**（一筆行程的狀態從「進行中」變「已完成」）——傳統做法是每次重寫整個分區，慢到無法接受，且分析時還可能讀到寫一半的髒資料。Hudi 就是來給資料湖裝上「能改、能刪、有交易」的能力。
 
@@ -298,14 +298,14 @@
 
 **新人須知（大廠第一週）**：①做 CDC（把資料庫變更同步進資料湖）或需要「資料湖能更新」的專案，Hudi／Iceberg／Delta 三選一的會議你會參與到。②最少要會：搞懂 COW 與 MOR 的取捨（讀快 vs 寫快）、知道主鍵與分區欄位怎麼定、會下增量查詢。③新人最常踩的雷——**MOR 表忘了配 compaction 排程**，delta log 越積越多、讀取合併越來越慢，最後查詢慢如龜爬；MOR 的低寫入延遲是用「必須持續 compaction」換來的，這筆維運帳不能忘記算。
 
-**優點 / 罩門**：給資料湖帶來 ACID、upsert、增量處理與時間旅行、與 Spark／Flink／Presto 生態整合深。罩門是**運維與調優複雜**——COW／MOR 選型、compaction、clustering、清理（cleaning）策略都要人管；且它與 Iceberg、Delta Lake 三家標準之爭尚未塵埃落定，押注哪一個是實打實的選型風險。
+**優點 / 罩門**：給資料湖帶來 ACID、upsert、增量處理與時間旅行、與 Spark／Flink／Presto 生態整合深。罩門是**運維與調優複雜**——COW／MOR 選型、compaction、clustering、清理（cleaning）策略都要人管；且隨著 Iceberg 靠雲廠商與查詢引擎的集體背書逐漸成為開放表格式的預設答案，今天選 Hudi 更像是「為高頻寫入／CDC 場景挑一個專才」，而不是賭一場勝負未定的仗——這個定位要先想清楚，別只憑慣性選它。
 
 **競品對照**：
 
 | 對手 | 定位 | 相對優勢 | 相對劣勢 |
 |------|------|---------|---------|
-| Apache Iceberg | 開放表格式，強於大規模與多引擎中立 | schema/partition 演進優雅、引擎中立、大廠押注多 | 原生 upsert／近即時能力起步不如 Hudi |
-| Delta Lake | Databricks 主導的湖倉表格式 | 與 Spark／Databricks 深度整合、生態強 | 早期偏綁 Databricks 生態、開放性受質疑 |
+| Apache Iceberg | 開放表格式，已成雲端與查詢引擎事實標準 | schema/partition 演進優雅、多引擎原生支援最廣、生態集體背書 | 原生 upsert／近即時能力起步不如 Hudi |
+| Delta Lake | Databricks 主導的湖倉表格式 | 與 Spark／Databricks 深度整合、生態強 | 早期偏綁 Databricks 生態；連 Databricks 自己都已加開 Managed Iceberg Tables |
 | Hive ACID | Hive 原生的交易表 | 沿用既有 Hive 生態、無需新框架 | 效能與增量能力弱，非為串流資料湖設計 |
 
 **效益**：對企業，它讓資料湖同時具備「便宜的物件儲存」與「資料庫般的更新與交易」，是湖倉一體降本的關鍵；對個人，掌握開放表格式是資料工程師從「批處理」邁向「近即時湖倉」的分水嶺技能。
@@ -314,7 +314,7 @@
 > **Hudi 幹的是一件矛盾的事：在「只能往後寫、永不修改」的資料湖上，硬生生長出「能改、能刪、能反悔」的交易能力——它讓資料湖第一次擁有了資料庫的良心。**
 
 > 🔍 老手視角──真正的門道
-> Hudi、Iceberg、Delta 的「表格式三國殺」，是 2020 年代資料基礎設施最關鍵的戰場——它們爭的不是誰跑得快，而是**誰能成為資料湖的事實標準格式**，因為格式一旦鎖定，上面所有的引擎、治理、血緣都得跟著它。內行人選型看的是「引擎中立性」與「你的寫入模式」：寫多要近即時，Hudi 的 MOR 很對味；重演進、多引擎中立，Iceberg 聲勢正猛。反直覺提醒：這三家還在激烈演化，別把身家全押死一家，抽象層與遷移路徑要先想好。
+> 「表格式三國殺」到了 2026 年其實已經有了初步定論——**Iceberg 靠著引擎中立的治理模式加上一場關鍵收購，事實上打贏了這場仗**：Databricks 於 2024 年以逾十億美元併購 Iceberg 創始團隊的公司 Tabular，AWS S3 Tables、Snowflake、BigQuery 陸續原生支援 Iceberg 表、連 Databricks 自己都在 Delta 之外加開 Managed Iceberg Tables——雲端與查詢引擎生態已經用真金白銀替 Iceberg 投票。但這不代表 Hudi 沒有位置：在**高頻 upsert、CDC 即時同步**這類「資料本身就是持續變動的串流」的場景，它的 MOR 設計仍是公認最成熟的答案。內行人今天的判斷法則很直接——**要對接多雲、多引擎、長期治理，優先看 Iceberg；資料天生就是訂單狀態機、CDC 這種寫多場景，Hudi 依然對味**。真正的門道也悄悄往上移了一層：表格式本身的差異正在變得次要，**誰掌控 catalog（目錄／元資料管理）** 才是下一場戰事的主戰場。
 
 ---
 
@@ -323,7 +323,7 @@
 **標籤**：`#訊息串流` `#存算分離` `#BookKeeper` `#多租戶` `#geo-replication` `#分層儲存` `#佇列與串流` `#Java`
 **Repo**：`https://github.com/apache/pulsar`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 14k｜核心維護者 Apache Pulsar PMC ＋ StreamNative｜貢獻者 600+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 15k｜核心維護者 Apache Pulsar PMC ＋ StreamNative｜貢獻者 600+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：2016 年由 Yahoo 開源、2018 年畢業為 Apache 頂級專案。Yahoo 內部要一套能扛住郵件、金融、廣告等多條業務線、跨資料中心、又要嚴格租戶隔離的統一訊息平台，於是打造了 Pulsar。它的定位很明確——**針對 Kafka 早期「儲存與運算綁死同一台機器」的痛點，從架構層面給出另一種答案：存算分離**。
 
@@ -362,11 +362,11 @@
 **標籤**：`#批流統一` `#Dataflow模型` `#PCollection` `#watermark` `#windowing` `#Runner` `#可移植` `#Portability`
 **Repo**：`https://github.com/apache/beam`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 8k｜核心維護者 Apache Beam PMC（多方共建）｜貢獻者 1,500+｜授權 Apache-2.0｜主語言 Java／Python／Go
+**GitHub 體檢**：⭐ 約 8.6k｜核心維護者 Apache Beam PMC（多方共建）｜貢獻者 1,500+｜授權 Apache-2.0｜主語言 Java／Python／Go
 
 **起源**：Beam 的血脈源自 Google 內部的大規模資料處理實踐——2015 年那篇奠基性的〈The Dataflow Model〉論文，把「批」與「流」統一在同一個理論框架下。Google 於 2016 年把這套 SDK 與模型捐給 Apache（**Beam = Batch ＋ strEAM**）。要澄清史實而不綁僱主：Beam 是 Google Dataflow 程式設計模型的開源化身，但它從第一天就設計成**引擎中立**——你的邏輯不該綁死任何一家運算引擎。
 
-**技術核心**：Beam 的核心貢獻是**一套「一次編寫、到處執行」的統一資料處理抽象**。它把資料建模為 **PCollection**（一個可能無界的分散式資料集），把運算建模為 **PTransform**（作用其上的轉換，如 `ParDo`、`GroupByKey`），串成一條 **Pipeline**。關鍵在於——**這條 Pipeline 只是「意圖的描述」，本身不含執行引擎**；你在提交時指定一個 **Runner**，它就被翻譯成 Flink job、Spark job、或 Google Cloud Dataflow job 去跑。這就是 Beam 的靈魂：**業務邏輯與執行引擎解耦**，換引擎不改程式碼。而它能統一批流的理論支柱，是那套精緻的**時間與窗口模型**：它嚴格區分**事件時間（event time，事件真正發生的時刻）** 與**處理時間（processing time，被系統看到的時刻）**；用 **windowing（窗口）** 把無界流切成有限塊（固定窗、滑動窗、session 窗）來聚合；用 **watermark（水位線）** 這個「事件時間的進度估計」來判斷「某個窗口的資料是不是收齊了、可以出結果了」；再用 **trigger（觸發器）** 決定「何時吐出窗口結果」、用**累積模式**處理遲到資料。這四件套（window／watermark／trigger／accumulation）正是〈Dataflow Model〉論文回答「無界亂序資料如何正確聚合」的答案，也是所有現代流處理引擎的共同語言。SDK 跨 Java／Python／Go，靠 **portability framework** 讓不同語言與不同 runner 互通。
+**技術核心**：Beam 的核心貢獻是**一套「一次編寫、到處執行」的統一資料處理抽象**。它把資料建模為 **PCollection**（一個可能無界的分散式資料集），把運算建模為 **PTransform**（作用其上的轉換，如 `ParDo`、`GroupByKey`），串成一條 **Pipeline**。關鍵在於——**這條 Pipeline 只是「意圖的描述」，本身不含執行引擎**；你在提交時指定一個 **Runner**，它就被翻譯成 Flink job、Spark job、或 Google Cloud Dataflow job 去跑。這就是 Beam 的靈魂：**業務邏輯與執行引擎解耦**，換引擎不改程式碼。而它能統一批流的理論支柱，是那套精緻的**時間與窗口模型**：它嚴格區分**事件時間（event time，事件真正發生的時刻）** 與**處理時間（processing time，被系統看到的時刻）**；用 **windowing（窗口）** 把無界流切成有限塊（固定窗、滑動窗、session 窗）來聚合；用 **watermark（水位線）** 這個「事件時間的進度估計」來判斷「某個窗口的資料是不是收齊了、可以出結果了」；再用 **trigger（觸發器）** 決定「何時吐出窗口結果」、用**累積模式**處理遲到資料。這四件套（window／watermark／trigger／accumulation）正是〈Dataflow Model〉論文回答「無界亂序資料如何正確聚合」的答案，也是所有現代流處理引擎的共同語言。SDK 跨 Java／Python／Go，靠 **portability framework** 讓不同語言與不同 runner 互通。2024 年起新增的 **Beam YAML**，則是它第一套「免寫程式」的 SDK——用一份宣告式 YAML 描述來源、轉換、去向就能跑出一條 pipeline，把 Beam 的抽象進一步降低到分析師也能碰的門檻。
 
 **解決的痛點**：企業被迫為「離線批」和「即時流」維護兩套程式碼、兩套邏輯（Lambda 架構之苦），以及一旦選定 Spark／Flink 就被引擎鎖死、難以遷移的綁定風險。
 
@@ -401,7 +401,7 @@
 **標籤**：`#流計算` `#有狀態流` `#checkpoint` `#exactly-once` `#event-time` `#watermark` `#背壓` `#低延遲`
 **Repo**：`https://github.com/apache/flink`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 24k｜核心維護者 Apache Flink PMC ＋ Ververica（阿里）｜貢獻者 1,500+｜授權 Apache-2.0｜主語言 Java／Scala
+**GitHub 體檢**：⭐ 約 26k｜核心維護者 Apache Flink PMC ＋ Ververica（阿里）｜貢獻者 1,500+｜授權 Apache-2.0｜主語言 Java／Scala
 
 **起源**：Flink 源自 2010 年前後柏林工業大學等機構的研究專案 **Stratosphere**，2014 年進 Apache、隔年畢業為頂級專案，2016 年發布 1.0。其商業公司 data Artisans 後更名 Ververica、被阿里巴巴收購，阿里更以自研分支 Blink 大幅強化了它的 SQL 與生產能力。它與 Spark 的世界觀根本對立：Spark 是「把批做快、順便支援流（微批）」，Flink 則從第一天就主張——**流才是世界的本質，批只是流的一個有界特例**，一切為真正的逐事件即時處理而生。
 
@@ -411,7 +411,7 @@
 
 **理論基礎**：Chandy-Lamport 分散式快照演算法（checkpoint 的數學基礎）、Google Dataflow 的事件時間／水位線模型，以及有狀態流處理的 exactly-once 一致性理論。
 
-**在 AI Agent 時代的角色**：它是**即時特徵與線上決策的流式大腦**。推薦系統與風控 Agent 需要「當下這一秒」的特徵（用戶最近點了什麼、這張卡剛在異地刷過），Flink 的有狀態流計算能對事件流即時維護這些特徵並毫秒級供給模型；它也是**即時 RAG／即時特徵倉**的引擎——把源源不絕的事件流即時聚合成 Agent 決策所需的最新上下文，讓 AI 的判斷建立在「此刻」而非「昨天的批次快照」上。
+**在 AI Agent 時代的角色**：它是**即時特徵與線上決策的流式大腦**。推薦系統與風控 Agent 需要「當下這一秒」的特徵（用戶最近點了什麼、這張卡剛在異地刷過），Flink 的有狀態流計算能對事件流即時維護這些特徵並毫秒級供給模型；它也是**即時 RAG／即時特徵倉**的引擎——把源源不絕的事件流即時聚合成 Agent 決策所需的最新上下文，讓 AI 的判斷建立在「此刻」而非「昨天的批次快照」上。這不只是想像：2025 年由 Alibaba Cloud、Ververica、Confluent、LinkedIn 聯手發起的新子專案 **Flink Agents**，就是直接把 LLM、工具呼叫、記憶體接到 Flink 的 DataStream 上，並靠 checkpoint 機制把「Agent 動作 ＋ 其外部副作用」也納入 exactly-once 的保障範圍——等於把 Flink 十幾年磨出來的容錯能力，原封不動借給了會出錯、會重試的 Agent。
 
 **新人須知（大廠第一週）**：①做即時數倉、即時風控、即時大盤、CDC 即時同步的團隊，第一個技術選型就是 Flink。②最少要懂：有狀態 vs 無狀態算子、checkpoint 為何是容錯與 exactly-once 的核心、event time ＋ watermark 怎麼處理亂序。③新人最常踩的雷——**狀態無限膨脹（state 沒設 TTL）與 checkpoint 調不好**。有狀態算子若不給狀態設過期時間，state 會無止境長大直到撐爆 RocksDB／記憶體；而 checkpoint 間隔、對齊、超時沒調好，作業會頻繁失敗或延遲飆高——狀態管理與 checkpoint 調優是 Flink 工程師的看家本領。
 
