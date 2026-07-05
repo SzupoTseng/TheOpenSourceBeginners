@@ -10,7 +10,7 @@
 **標籤**：`#容器編排` `#雲原生` `#Go` `#宣告式API` `#控制迴圈` `#CRD` `#Operator` `#CNCF`
 **Repo**：`https://github.com/kubernetes/kubernetes`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 110k｜核心維護者 CNCF SIG 群｜貢獻者 3,000+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 123k｜核心維護者 CNCF SIG 群｜貢獻者 3,000+｜授權 Apache-2.0｜主語言 Go
 
 **起源**：由 Google 三位工程師 Joe Beda、Brendan Burns、Craig McLuckie 於 2014 年發起，是 Google 內部運行了十餘年的叢集管理系統 **Borg** 與 Omega 的思想結晶。2015 年 Google 把它捐給新成立的 **CNCF（雲原生運算基金會）**，作為對抗 Docker 生態壟斷的一步棋。名字 Kubernetes 是希臘文「舵手」，常縮寫為 **K8s**（K 與 s 之間 8 個字母）。它後來吞下了整個容器編排戰爭。
 
@@ -20,7 +20,7 @@
 
 **理論基礎**：**控制理論**的閉環回饋；Google 的 **Borg 論文**（Large-scale cluster management at Google with Borg）；宣告式配置與 level-triggered reconciliation 範式；狀態一致性由底層 etcd 的 **Raft** 保證。
 
-**在 AI Agent 時代的角色**：它是**大規模 AI 訓練與推理的排程底座**。Kubeflow、KServe、Ray on K8s 把 GPU 當作可調度資源；Operator 模式讓「自主運維 Agent」有了落腳點——你可以寫一個 Agent，讓它像人類 SRE 一樣觀察指標、生成 YAML、apply 修復。K8s 的宣告式模型天生適合 LLM 輸出：模型吐 YAML，reconcile loop 負責讓它成真。
+**在 AI Agent 時代的角色**：它是**大規模 AI 訓練與推理的排程底座**。隨 K8s 1.34 版轉正（GA）的 **DRA（Dynamic Resource Allocation）** 是這條線最新的一步：用 `ResourceClaim`／`ResourceSlice` 取代舊的 device-plugin「不透明資源」模型，排程器能以 CEL 運算式對 GPU 做屬性篩選與細粒度共享，這才是「把昂貴 GPU 當一等公民調度」而非只當計數器。在此之上，Kubeflow、KServe、Ray on K8s 把整叢集 GPU 變成可調度資源；Operator 模式讓「自主運維 Agent」有了落腳點——你可以寫一個 Agent，讓它像人類 SRE 一樣觀察指標、生成 YAML、apply 修復。K8s 的宣告式模型天生適合 LLM 輸出：模型吐 YAML，reconcile loop 負責讓它成真。
 
 **新人須知（大廠第一週）**：①幾乎任何後端／SRE 職位，到職第一週就會拿到一份 `kubeconfig`，`kubectl get pods` 是你的新「ls」。②最少要會：讀懂 Deployment／Service／ConfigMap 三種 YAML，分清 `kubectl apply`（宣告式）與 `kubectl edit`（會造成配置漂移）的差別，會看 `kubectl describe` 與 `kubectl logs` 抓錯。③新人最常踩的雷——**不設 resource requests/limits**，結果 Pod 被 **OOMKilled** 或把整個節點吃垮；還有**把 kubectl 當 SSH 用**，手動改線上資源，下一次 CI 部署又把你的改動覆蓋回去，配置漂移查半天。
 
@@ -49,7 +49,7 @@
 **標籤**：`#反向代理` `#API網關` `#雲原生` `#Go` `#服務發現` `#動態配置` `#Ingress`
 **Repo**：`https://github.com/traefik/traefik`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 50k｜核心維護者 Traefik Labs 團隊｜貢獻者 700+｜授權 MIT｜主語言 Go
+**GitHub 體檢**：⭐ 約 64k｜核心維護者 Traefik Labs 團隊｜貢獻者 700+｜授權 MIT｜主語言 Go
 
 **起源**：由法國工程師 Emile Vauge 於 2015 年發起（公司先叫 Containous，後改名 Traefik Labs）。他當時面對的痛點很具體：微服務容器**時時刻刻在生滅**，而傳統反向代理（Nginx／HAProxy）的設定檔是**靜態**的——每次容器擴縮都要手動改 conf、reload。Traefik 就是為「容器隨時在動、路由必須自己跟上」而生。
 
@@ -88,11 +88,11 @@
 **標籤**：`#服務網格` `#ServiceMesh` `#Envoy` `#Sidecar` `#xDS` `#mTLS` `#Go` `#CNCF`
 **Repo**：`https://github.com/istio/istio`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 36k｜核心維護者 Google／IBM／Solo.io 等｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 38k｜核心維護者 Google／IBM／Solo.io 等｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Go
 
 **起源**：由 Google、IBM 與 Lyft 於 2017 年聯手發起。當微服務數量從十個膨脹到上千個，「服務之間怎麼安全通訊、怎麼灰度發布、怎麼追一條跨十個服務的請求」變成天大的難題——而這些邏輯若全塞進每個服務的業務碼裡，就是災難。Istio 建立在 Lyft 開源的高性能代理 **Envoy** 之上，主張把這些「服務間治理」的職責，從應用程式碼裡**徹底剝離**出來。2023 年它正式進入 CNCF 畢業行列。
 
-**技術核心**：它的核心範式是**「Sidecar 服務網格（Service Mesh）」**。在每個應用 Pod 旁邊注入一個 **Envoy 代理**當 **sidecar**，攔截該服務所有進出流量——你的業務碼對此**毫無感知**，卻自動獲得了 mTLS 加密、重試、熔斷、限流、灰度路由與全鏈路追蹤。架構分兩層：**資料平面（Data Plane）**是那一大群 Envoy sidecar，真正搬運封包；**控制平面（Control Plane）**是 **istiod**（早期 Pilot／Citadel／Galley 三合一），負責把你的策略下發給所有 Envoy。下發用的正是 Envoy 的**動態配置協定 xDS**——**LDS**（監聽器）、**RDS**（路由）、**CDS**（叢集）、**EDS**（端點）——istiod 透過 gRPC streaming 把最新拓撲與規則**即時推**給每個 sidecar，不需重啟。你用 **VirtualService**（路由規則）與 **DestinationRule**（負載平衡、熔斷）這兩個 CRD 宣告意圖，剩下的翻譯成 Envoy config 的髒活全交給控制平面。安全上它預設**自動 mTLS**：Citadel 簽發並輪替憑證，服務間通訊零信任加密，開發者一行憑證管理碼都不用寫。近年為了砍掉「每 Pod 一個 sidecar」的資源與延遲開銷，Istio 推出 **Ambient Mesh**（無 sidecar 架構：節點級 ztunnel＋按需 waypoint 代理）。
+**技術核心**：它的核心範式是**「Sidecar 服務網格（Service Mesh）」**。在每個應用 Pod 旁邊注入一個 **Envoy 代理**當 **sidecar**，攔截該服務所有進出流量——你的業務碼對此**毫無感知**，卻自動獲得了 mTLS 加密、重試、熔斷、限流、灰度路由與全鏈路追蹤。架構分兩層：**資料平面（Data Plane）**是那一大群 Envoy sidecar，真正搬運封包；**控制平面（Control Plane）**是 **istiod**（早期 Pilot／Citadel／Galley 三合一），負責把你的策略下發給所有 Envoy。下發用的正是 Envoy 的**動態配置協定 xDS**——**LDS**（監聽器）、**RDS**（路由）、**CDS**（叢集）、**EDS**（端點）——istiod 透過 gRPC streaming 把最新拓撲與規則**即時推**給每個 sidecar，不需重啟。你用 **VirtualService**（路由規則）與 **DestinationRule**（負載平衡、熔斷）這兩個 CRD 宣告意圖，剩下的翻譯成 Envoy config 的髒活全交給控制平面。安全上它預設**自動 mTLS**：Citadel 簽發並輪替憑證，服務間通訊零信任加密，開發者一行憑證管理碼都不用寫。為了砍掉「每 Pod 一個 sidecar」的資源與延遲開銷，Istio 的 **Ambient Mesh**（無 sidecar 架構：節點級 ztunnel 常駐做 L4 安全與遙測、按需 waypoint 代理做 L7 治理）已於 1.22 版轉為正式（GA），實測記憶體開銷可比傳統 sidecar 省約七成；2026 年更進一步在 KubeCon 上推出跨叢集（multicluster）能力的 Beta，顯示無 sidecar 已從實驗性選項走向主流生產路線，不再只是「新玩具」。
 
 **解決的痛點**：大規模微服務下，把「安全、可觀測、流量治理」這些橫切關注點從每個服務的業務碼裡抽出來，統一由基礎設施層托管——讓幾百個開發團隊不必各自重造一遍熔斷與追蹤。
 
@@ -127,7 +127,7 @@
 **標籤**：`#容器管理` `#GUI` `#Docker` `#Kubernetes` `#Go` `#RBAC` `#DevOps`
 **Repo**：`https://github.com/portainer/portainer`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 32k｜核心維護者 Portainer.io 團隊｜貢獻者 300+｜授權 zlib｜主語言 Go／TypeScript
+**GitHub 體檢**：⭐ 約 38k｜核心維護者 Portainer.io 團隊｜貢獻者 300+｜授權 zlib｜主語言 Go／TypeScript
 
 **起源**：於 2016 年發起，目標樸素而剛需：**給 Docker 一個好用的圖形化管理介面**。當時管容器全靠 `docker` 與後來的 `kubectl` 命令列，對非專職運維的開發者、中小企業 IT、以及自架家用伺服器（homelab）的玩家而言門檻不低。Portainer 把「起容器、看日誌、掛磁碟、配網路」全變成點滑鼠的事，迅速成為容器世界最普及的圖形駕駛艙。
 
@@ -166,7 +166,7 @@
 **標籤**：`#容器` `#Linux` `#namespace` `#cgroup` `#UnionFS` `#Go` `#OCI` `#不可變基礎設施`
 **Repo**：`https://github.com/moby/moby`（Docker 引擎上游即 Moby）
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 69k（moby/moby）｜核心維護者 Docker Inc.＋Moby 社群｜貢獻者 2,000+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 72k（moby/moby）｜核心維護者 Docker Inc.＋Moby 社群｜貢獻者 2,000+｜授權 Apache-2.0｜主語言 Go
 
 **起源**：由 Solomon Hykes 於 2013 年在 PyCon 上以一場經典 demo 發表，源自其創業公司 dotCloud 的內部技術。它並沒有發明「容器」——Linux 的隔離原語早已存在、Google 內部也用了多年——但 Docker 做了一件石破天驚的事：**把這些晦澀的核心功能，包裝成人人五分鐘就會用的 `docker run`，並發明了「映像檔（image）」這個可分享、可版控的打包格式**。它一舉終結了工程界流傳幾十年的魔咒——「在我機器上明明能跑」。
 
@@ -205,7 +205,7 @@
 **標籤**：`#HTTP伺服器` `#反向代理` `#負載平衡` `#事件驅動` `#master-worker` `#epoll` `#C語言` `#C10K`
 **Repo**：官方主庫 `https://nginx.org/en/download.html`（Mercurial：`http://hg.nginx.org/nginx`）；GitHub 官方鏡像 `https://github.com/nginx/nginx`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 25k（GitHub 鏡像）｜核心維護者 Igor Sysoev ＋ F5/NGINX 團隊｜貢獻者 數百｜授權 BSD-2-Clause｜主語言 C
+**GitHub 體檢**：⭐ 約 31k（GitHub 鏡像）｜核心維護者 Igor Sysoev ＋ F5/NGINX 團隊｜貢獻者 數百｜授權 BSD-2-Clause｜主語言 C
 
 **起源**：由俄羅斯工程師 **Igor Sysoev** 於 2004 年發布，目標直指當時網際網路最著名的難題——**C10K 問題**（如何讓單台伺服器同時處理一萬條併發連線）。當年主流的 Apache 採「每連線一個程序／執行緒」模型，連線一多，光是程序切換與記憶體開銷就把機器壓垮。Nginx 用一套截然不同的架構回答了這個問題，二十年後，它撐起了全球最大一批網站的門面。
 
@@ -235,7 +235,7 @@
 > **Nginx 解 C10K 的思路，是所有高性能系統的共同信條：不要為每個等待的人配一個專屬僕人，而是派一個永不停手的調度員，只在真正有事發生的那一刻出手——併發的祕密，從來是「不阻塞」，而非「更多執行緒」。**
 
 > 🔍 老手視角──真正的門道
-> Nginx 是「一個對的架構能吃二十年紅利」的最佳範本：事件驅動模型讓它在硬體不斷升級的年代始終貼著效能天花板跑。它被商業化的路徑（NGINX Plus，後被 F5 收購）也是教科書——**開源版占領事實標準，企業版在可觀測性、動態配置、支援服務上收割大客戶**。老手選型時的清醒判斷是：Nginx 是「裸機與傳統負載」的王者，但雲原生的動態世界正把入口層的重心推向 **Envoy／xDS** 那套「配置可即時下發」的範式。真正的門道是分清場景——要**極致穩定的靜態邊緣**選 Nginx，要**動態服務網格資料平面**認 Envoy——把這條線畫清，遠比爭論誰的 QPS 高幾個百分點有價值。
+> Nginx 是「一個對的架構能吃二十年紅利」的最佳範本：事件驅動模型讓它在硬體不斷升級的年代始終貼著效能天花板跑。它被商業化的路徑（NGINX Plus，後被 F5 收購）也是教科書——**開源版占領事實標準，企業版在可觀測性、動態配置、支援服務上收割大客戶**。但這條路徑也留下裂痕：2024 年原始核心開發者 Maxim Dounin 不滿 F5 管理層插手安全政策的判定（爭議點是 QUIC 相關漏洞該不該掛 CVE），憤而出走、自立 **freenginx** 分支——這與本篇稍後 Consul 的 BUSL 授權爭議遙相呼應，都是「技術治理權一旦旁落給收購方，社群隨時可能用腳投票分岔」的活教材。老手選型時的清醒判斷是：Nginx 是「裸機與傳統負載」的王者，但雲原生的動態世界正把入口層的重心推向 **Envoy／xDS** 那套「配置可即時下發」的範式。真正的門道是分清場景——要**極致穩定的靜態邊緣**選 Nginx，要**動態服務網格資料平面**認 Envoy——把這條線畫清，遠比爭論誰的 QPS 高幾個百分點有價值。
 
 ---
 
@@ -244,11 +244,11 @@
 **標籤**：`#Kubernetes` `#套件管理` `#Chart` `#模板引擎` `#Go` `#GitOps` `#DevOps` `#CNCF`
 **Repo**：`https://github.com/helm/helm`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 27k｜核心維護者 Helm 社群（CNCF）｜貢獻者 900+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 30k｜核心維護者 Helm 社群（CNCF）｜貢獻者 900+｜授權 Apache-2.0｜主語言 Go
 
 **起源**：由 Deis 團隊於 2015 年發起（後隨 Deis 被微軟收購進入 CNCF）。當 Kubernetes 應用一複雜起來，部署一個像樣的服務往往要手寫並管理**十幾份 YAML**（Deployment、Service、ConfigMap、Ingress、Secret……），環境之間又要改一堆重複值。Helm 的定位很直接：**做 Kubernetes 的套件管理器，就像 apt 之於 Ubuntu、npm 之於 Node**——把一整套應用打包成一個可版控、可分享、可一鍵安裝與回滾的單位。
 
-**技術核心**：它的核心單位是 **Chart**——一個把 K8s 資源清單**模板化**的目錄。你把會變動的值（映像 tag、副本數、域名、資源限額）抽到 `values.yaml`，資源清單裡用 **Go template** 語法（`{{ .Values.replicaCount }}`）留下佔位；`helm install` 時 Helm 把 values 渲染進模板、生成最終 YAML、再一次性 apply 到叢集。每次安裝或升級都記錄成一個帶版本號的 **Release**，於是你能 `helm rollback` **一鍵回滾到上一個可用版本**——這在裸 kubectl 世界裡是要靠人肉還原的噩夢。Chart 之間可以有**相依（dependencies）**，一個「應用」的 chart 能自動拉進它需要的資料庫、快取子 chart。Chart 發布在 **Chart Repository**（如 Artifact Hub），這就是所謂的 K8s「App Store」：`helm install my-redis bitnami/redis` 一行裝好一套生產級 Redis。**Helm 3** 是關鍵一躍——它砍掉了 v2 那個需要叢集內高權限的伺服端組件 **Tiller**，改成純客戶端架構，安全性與心智負擔大幅下降。
+**技術核心**：它的核心單位是 **Chart**——一個把 K8s 資源清單**模板化**的目錄。你把會變動的值（映像 tag、副本數、域名、資源限額）抽到 `values.yaml`，資源清單裡用 **Go template** 語法（`{{ .Values.replicaCount }}`）留下佔位；`helm install` 時 Helm 把 values 渲染進模板、生成最終 YAML、再一次性 apply 到叢集。每次安裝或升級都記錄成一個帶版本號的 **Release**，於是你能 `helm rollback` **一鍵回滾到上一個可用版本**——這在裸 kubectl 世界裡是要靠人肉還原的噩夢。Chart 之間可以有**相依（dependencies）**，一個「應用」的 chart 能自動拉進它需要的資料庫、快取子 chart。Chart 發布在 **Chart Repository**（如 Artifact Hub），這就是所謂的 K8s「App Store」：`helm install my-redis bitnami/redis` 一行裝好一套生產級 Redis。**Helm 3** 是關鍵一躍——它砍掉了 v2 那個需要叢集內高權限的伺服端組件 **Tiller**，改成純客戶端架構，安全性與心智負擔大幅下降。2025 年底發布的 **Helm 4**（六年來首個大版本）再進一步：新安裝預設改用 **Server-Side Apply**（借 K8s API 原生的欄位級合併取代 Helm 自行維護的三方 diff，減少多方修改同一資源時的衝突）、整合 **kstatus** 精準判斷資源是否真正就緒、並開放 **WebAssembly（WASM）外掛**，讓外掛生態不再綁死單一語言的二進位檔。
 
 **解決的痛點**：K8s 應用「YAML 泛濫、環境差異靠手改、部署難以版控與回滾」的複雜度。Helm 把「一套應用」封裝成參數化、可版控、可一鍵裝卸與回滾的原子單位。
 
@@ -283,7 +283,7 @@
 **標籤**：`#eBPF` `#CNI` `#雲原生網路` `#網路安全` `#可觀測性` `#Go` `#Kubernetes` `#CNCF`
 **Repo**：Cilium `https://github.com/cilium/cilium`；Open vSwitch `https://github.com/openvswitch/ovs`
 **面向**：👥 最多人用｜🔥 最新熱度
-**GitHub 體檢**：⭐ 約 20k｜核心維護者 Isovalent（現屬 Cisco）＋社群｜貢獻者 800+｜授權 Apache-2.0｜主語言 Go／C
+**GitHub 體檢**：⭐ 約 25k｜核心維護者 Isovalent（現屬 Cisco）＋社群｜貢獻者 800+｜授權 Apache-2.0｜主語言 Go／C
 
 **起源**：由 Thomas Graf 等人在 2016 年於 Isovalent 發起，是把新興的 Linux 核心技術 **eBPF** 帶進雲原生網路的旗手（2023 年成為 CNCF 畢業專案，Isovalent 後被 Cisco 收購）。它要解決的痛點很具體：K8s 服務數一多，傳統靠 **iptables** 實作的服務轉發與網路策略，其規則數呈 **O(n) 線性膨脹**，kube-proxy 在幾千個服務下更新一次規則要花數秒、封包匹配也慢——這在大叢集裡是效能與延遲的噩夢。Cilium 用 eBPF 從根上換掉這套老骨架。（同屬「雲原生軟路由」譜系的還有老牌的 **Open vSwitch**，以 **OpenFlow 流表（flow table）** 逐條比對封包來主導 SDN 與 OpenStack 的虛擬交換，是 Cilium 之前那個時代的網路中樞。）
 
@@ -322,7 +322,7 @@
 **標籤**：`#分散式協調` `#共識` `#ZAB` `#分散式鎖` `#Leader選舉` `#Java` `#Apache`
 **Repo**：`https://github.com/apache/zookeeper`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 12k｜核心維護者 Apache ZooKeeper PMC｜貢獻者 600+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 13k｜核心維護者 Apache ZooKeeper PMC｜貢獻者 600+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：源自 Yahoo! 研究院，於 2008 年前後開源、後成為 Apache 頂級專案。當時 Hadoop 生態的分散式系統各自重造「協調」的輪子（誰是 master、鎖怎麼搶、配置怎麼同步），bug 頻出。ZooKeeper 的哲學是「**把最難、最容易出錯的分散式協調問題,抽成一個可靠的公共服務**」——名字取自「動物園管理員」，因為 Hadoop 生態的專案多以動物命名，它負責管住這一整個動物園。它是 Kafka（早期）、HBase、Hadoop、Solr 等一票重量級系統背後的協調中樞。
 
@@ -336,7 +336,7 @@
 
 **新人須知（大廠第一週）**：①你多半是在維運 **Kafka（舊版）、HBase、Hadoop** 這類系統時,在它們的依賴清單裡撞見 ZooKeeper。②最少要懂：znode／臨時節點／Watch 三個概念、為何「臨時節點＋Watch」能實作服務發現與鎖、ensemble 為何要奇數台。③新人最常踩的雷——**把 ZooKeeper 當通用資料庫猛塞資料**（它是協調服務，不是 KV 儲存，znode 太大或太多會拖垮它）；還有**忽略 session timeout 與 Watch 只觸發一次**的語意，導致「以為在監聽卻漏掉後續變化」的幽靈 bug。
 
-**優點 / 罩門**：極度成熟穩定、被無數頂級系統驗證二十年、協調原語語意嚴謹、CP 一致性可靠。罩門是**運維偏重且偏老**——Java 實作、部署與調優門檻不低；寫入吞吐受 leader 單點定序限制、不適合高頻寫；API 偏底層（要自己用原語拼出鎖與選舉，Curator 客戶端庫才把它變好用）。也正因如此，**Kafka 已用自研的 KRaft（內建 Raft）逐步移除對 ZooKeeper 的依賴**，這是它時代地位鬆動的標誌性事件。
+**優點 / 罩門**：極度成熟穩定、被無數頂級系統驗證二十年、協調原語語意嚴謹、CP 一致性可靠。罩門是**運維偏重且偏老**——Java 實作、部署與調優門檻不低；寫入吞吐受 leader 單點定序限制、不適合高頻寫；API 偏底層（要自己用原語拼出鎖與選舉，Curator 客戶端庫才把它變好用）。也正因如此，**Kafka 4.0（2025 年 3 月發布）已徹底移除 ZooKeeper 模式、強制全面轉向自研的 KRaft（內建 Raft 共識）**——這不再是「逐步淡出」，而是撐了 Kafka 十四年的協調層被自己的宿主親手拔除，是它時代地位鬆動最具體的墓誌銘。
 
 **競品對照**：
 
@@ -352,7 +352,7 @@
 > **ZooKeeper 把分散式系統裡最容易讓人半夜被 call 起來的幾件事——選主、搶鎖、感知生死——收斂成幾個嚴謹的原語。它不炫，但它是無數大數據帝國底下那根沒人看見、卻絕不能斷的樑。**
 
 > 🔍 老手視角──真正的門道
-> ZooKeeper 的故事是一堂關於「時代交替」的選型課：它定義了「分散式協調服務」這個品類，卻在雲原生時代把王座讓給了更輕、API 更現代、與 K8s 綁定的 etcd——連它最鐵桿的用戶 Kafka 都用 KRaft 把它請走了。老手從中讀出的門道是：**基礎設施的護城河會隨「主流上層生態」遷移**，ZK 綁的是 Hadoop 時代，etcd 綁的是 K8s 時代。實務判斷很清楚：**維護既有 Hadoop/舊版 Kafka 生態，ZooKeeper 仍是穩如老狗的正解；起全新雲原生系統，幾乎沒有理由不直接選 etcd。** 別把新系統押在一個正在被其生態逐步淘汰的協調層上。
+> ZooKeeper 的故事是一堂關於「時代交替」的選型課：它定義了「分散式協調服務」這個品類，卻在雲原生時代把王座讓給了更輕、API 更現代、與 K8s 綁定的 etcd——連它最鐵桿的用戶 Kafka 都已在 4.0 版把它徹底請走（ZooKeeper 模式已被移除，僅支援 KRaft）。老手從中讀出的門道是：**基礎設施的護城河會隨「主流上層生態」遷移**，ZK 綁的是 Hadoop 時代，etcd 綁的是 K8s 時代。實務判斷很清楚：**維護既有 Hadoop/舊版 Kafka 生態，ZooKeeper 仍是穩如老狗的正解；起全新雲原生系統，幾乎沒有理由不直接選 etcd。** 別把新系統押在一個正在被其生態逐步淘汰的協調層上。
 
 ---
 
@@ -361,11 +361,11 @@
 **標籤**：`#服務發現` `#健康檢查` `#動態配置` `#Raft` `#Gossip` `#服務網格` `#Go` `#HashiCorp`
 **Repo**：`https://github.com/hashicorp/consul`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 28k｜核心維護者 HashiCorp（現屬 IBM）｜貢獻者 800+｜授權 BUSL-1.1（2023 年由 MPL 改授權）｜主語言 Go
+**GitHub 體檢**：⭐ 約 30k｜核心維護者 HashiCorp（現屬 IBM，2025 年 2 月完成約 64 億美元收購）｜貢獻者 800+｜授權 BUSL-1.1（2023 年由 MPL 改授權，至今未撤回）｜主語言 Go
 
 **起源**：由 HashiCorp 於 2014 年發布，出自 Terraform／Vault／Nomad 同一家「基礎設施即工具」的公司。它的立場是把**服務發現、健康檢查、KV 配置、乃至服務網格**整合進一個工具——尤其強調**跨資料中心、跨雲、跨 VM 與容器**的異質環境連接，這正是純 K8s 生態工具（如 etcd）較弱的地帶。2023 年 HashiCorp 把 Consul（連同其產品線）從開源的 MPL 改為 **BUSL 商業源授權**，是近年開源商業化爭議的標誌事件，選型時務必留意授權條款。
 
-**技術核心**：Consul 巧妙地**在同一個系統裡疊了兩套分散式協定**。伺服器節點之間用 **Raft 共識**維護強一致的狀態（服務目錄、KV 配置）——這保證了「權威資料」的一致性；而所有節點（含大量 agent 客戶端）之間的**成員關係與故障偵測**，則用**基於 SWIM 的 gossip 協定**（Serf 庫）——這是一種去中心化的「流言傳播」機制，每個節點定期隨機探測幾個同伴、把「誰活著誰掛了」的資訊像八卦一樣擴散開，**能在幾千節點規模下低開銷地快速收斂**，不需要中央權威逐一輪詢。每個服務主機上跑一個 **Consul agent**，負責註冊本機服務、執行**健康檢查**（HTTP／TCP／腳本探活），不健康的實例會被自動從服務目錄剔除。它對外提供 **DNS 介面**（`redis.service.consul` 直接解析出健康實例）與 HTTP API，讓服務發現對應用幾乎透明。**Consul Connect** 則在此之上做服務網格：用 sidecar 代理為服務間通訊自動套上基於憑證的 **mTLS** 與 intention 授權策略，且天生支援 K8s 與 VM 混合、多資料中心互聯。
+**技術核心**：Consul 巧妙地**在同一個系統裡疊了兩套分散式協定**。伺服器節點之間用 **Raft 共識**維護強一致的狀態（服務目錄、KV 配置）——這保證了「權威資料」的一致性；而所有節點（含大量 agent 客戶端）之間的**成員關係與故障偵測**，則用**基於 SWIM 的 gossip 協定**（Serf 庫）——這是一種去中心化的「流言傳播」機制，每個節點定期隨機探測幾個同伴、把「誰活著誰掛了」的資訊像八卦一樣擴散開，**能在幾千節點規模下低開銷地快速收斂**，不需要中央權威逐一輪詢。每個服務主機上跑一個 **Consul agent**，負責註冊本機服務、執行**健康檢查**（HTTP／TCP／腳本探活），不健康的實例會被自動從服務目錄剔除。它對外提供 **DNS 介面**（`redis.service.consul` 直接解析出健康實例）與 HTTP API，讓服務發現對應用幾乎透明。**Consul Connect** 則在此之上做服務網格：用 sidecar 代理為服務間通訊自動套上基於憑證的 **mTLS** 與 intention 授權策略，且天生支援 K8s 與 VM 混合、多資料中心互聯。在 K8s 部署上，較新的架構已改用更輕量的 **Consul Dataplane**——sidecar 直接以單一 gRPC 長連線對接 Consul server、代管 Envoy 的 bootstrap 設定，取代傳統每節點常駐、需要雙向多埠網路才能跑 gossip 的 client agent，也讓伺服器版本升級不再牽動所有節點。
 
 **解決的痛點**：微服務與混合雲環境下，「服務在哪、還活著嗎、配置怎麼即時下發」的動態連接難題——尤其是 K8s 與傳統 VM／多資料中心並存的異質場景，Consul 是少數能一把抓的方案。
 
@@ -400,7 +400,7 @@
 **標籤**：`#負載平衡` `#L4` `#L7` `#高併發` `#反向代理` `#事件驅動` `#C語言` `#高可用`
 **Repo**：官方主庫 `https://git.haproxy.org/`；GitHub 官方鏡像 `https://github.com/haproxy/haproxy`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 5k（官方鏡像）｜核心維護者 Willy Tarreau ＋ HAProxy Technologies｜貢獻者 數百｜授權 GPLv2｜主語言 C
+**GitHub 體檢**：⭐ 約 7k（官方鏡像）｜核心維護者 Willy Tarreau ＋ HAProxy Technologies｜貢獻者 數百｜授權 GPLv2｜主語言 C
 
 **起源**：由法國工程師 **Willy Tarreau**（同時是 Linux 核心維護者）於 2001 年獨立開發，名字直白就是 **H**igh **A**vailability **Proxy**。二十多年來它幾乎由 Tarreau 一人以近乎偏執的工程潔癖主導，成為高併發負載平衡領域最可靠、效能最極致的開源選擇。GitHub、Stack Overflow、Reddit 等一票超高流量站點的流量入口，長年靠它分流。
 
@@ -439,7 +439,7 @@
 **標籤**：`#分散式KV` `#Raft` `#強一致` `#Kubernetes` `#Watch` `#Lease` `#MVCC` `#Go` `#CNCF`
 **Repo**：`https://github.com/etcd-io/etcd`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 48k｜核心維護者 CNCF etcd 社群（源自 CoreOS）｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 52k｜核心維護者 CNCF etcd 社群（源自 CoreOS）｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Go
 
 **起源**：由 **CoreOS** 團隊於 2013 年發起，名字取自 Unix 的 `/etc` 配置目錄加上 distributed 的 「d」——它就是「分散式的 `/etc`」，一個給整個叢集共用配置與協調狀態的強一致儲存。它的命運在 Kubernetes 選它作為**唯一的狀態儲存後端**時被徹底改寫：從此 etcd 成為雲原生時代最關鍵的基礎設施之一，現為 CNCF 畢業專案。與 071 的 ZooKeeper 相比，etcd 更輕、API 更現代（gRPC）、且與 K8s 生態深度綁定，是新一代分散式協調的事實首選。
 
