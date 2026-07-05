@@ -10,11 +10,11 @@
 **標籤**：`#TypeScript` `#RPC` `#端到端型別安全` `#全棧` `#Zod` `#無代碼生成` `#DX`
 **Repo**：`https://github.com/trpc/trpc`
 **面向**：🏆 最紅｜🔥 最新熱度
-**GitHub 體檢**：⭐ 約 35k｜核心維護者 Alex Johansson（KATT）＋核心組｜貢獻者 400+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 40k｜核心維護者 Alex Johansson（KATT）＋核心組｜貢獻者 400+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 Alex Johansson（社群暱稱 KATT）於 2020 年前後發起，隨後成為知名全棧模板 **T3 Stack**（Next.js＋Prisma＋tRPC）的靈魂。它的動機非常務實：在一個前後端都用 TypeScript 的專案裡，為什麼要為了「型別安全」去養一整套 GraphQL schema 或 OpenAPI 生成器？tRPC 的答案是——**什麼都不生成，直接讓型別在編譯器裡流動**。
 
-**技術核心**：它的殺招是**「零代碼生成的端到端型別安全」**。傳統做法（GraphQL、gRPC、OpenAPI）都要維護一份中間 schema，再靠 codegen 產出前後端型別；tRPC 徹底跳過這一步。伺服器端你用 `router` 定義一組 **procedure**（`query` 讀、`mutation` 寫、`subscription` 訂閱），每個 procedure 的輸入輸出型別由 TypeScript 自動推導出來；前端**只 import 伺服器那個 `AppRouter` 的「型別」**（`import type`，編譯後不留任何 runtime 程式碼），TypeScript 的**結構化型別系統**就把整條呼叫鏈的型別打通了。你在後端把某個欄位從 `string` 改成 `number`，前端呼叫處**當場紅字編譯錯誤**——不必等到 runtime、不必跑測試。runtime 的輸入驗證交給 **Zod**（或 Yup、Valibot）這類 schema 函式庫，`superjson` 這樣的 transformer 則負責把 `Date`、`Map`、`Set` 這些 JSON 表達不了的型別無損序列化。傳輸端用**可組合的 link 鏈**（概念類似 Apollo Link）串起中介邏輯，預設的 `httpBatchLink` 還會把同一個 tick 內的多個 procedure 呼叫**自動合批成一個 HTTP 請求**，省下往返數；整個框架本質上是**一層極薄的型別膠水**，跑在既有的 HTTP 或 WebSocket 之上。
+**技術核心**：它的殺招是**「零代碼生成的端到端型別安全」**。傳統做法（GraphQL、gRPC、OpenAPI）都要維護一份中間 schema，再靠 codegen 產出前後端型別；tRPC 徹底跳過這一步。伺服器端你用 `router` 定義一組 **procedure**（`query` 讀、`mutation` 寫、`subscription` 訂閱），每個 procedure 的輸入輸出型別由 TypeScript 自動推導出來；前端**只 import 伺服器那個 `AppRouter` 的「型別」**（`import type`，編譯後不留任何 runtime 程式碼），TypeScript 的**結構化型別系統**就把整條呼叫鏈的型別打通了。你在後端把某個欄位從 `string` 改成 `number`，前端呼叫處**當場紅字編譯錯誤**——不必等到 runtime、不必跑測試。runtime 的輸入驗證交給 **Zod**（或 Yup、Valibot）這類 schema 函式庫，`superjson` 這樣的 transformer 則負責把 `Date`、`Map`、`Set` 這些 JSON 表達不了的型別無損序列化。傳輸端用**可組合的 link 鏈**（概念類似 Apollo Link）串起中介邏輯，預設的 `httpBatchLink` 還會把同一個 tick 內的多個 procedure 呼叫**自動合批成一個 HTTP 請求**，省下往返數；整個框架本質上是**一層極薄的型別膠水**，跑在既有的 HTTP 或 WebSocket 之上。2025 年 3 月釋出的 **v11** 把它再推進一步：新增 `httpBatchStreamLink` 讓 procedure 能用 async generator **邊產生邊串流回應**、原生支援以 SSE 做訂閱傳輸、可收發 FormData／Blob／`Uint8Array` 等非 JSON 內容型別，並全面對接 TanStack Query v5 與 React Server Components 的 prefetch helper——顯示這層「型別膠水」仍在積極進化，而非停滯的老專案。
 
 **解決的痛點**：全棧團隊最日常的摩擦——「後端改了介面、前端渾然不知，直到線上 500」。tRPC 把這種對接錯誤從 runtime 提前到編譯期。
 
@@ -49,11 +49,11 @@
 **標籤**：`#Node.js` `#TypeScript` `#依賴注入` `#裝飾器` `#模組化` `#企業級` `#IoC`
 **Repo**：`https://github.com/nestjs/nest`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 70k｜核心維護者 Kamil Myśliwiec ＋核心團隊｜貢獻者 600+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 76k｜核心維護者 Kamil Myśliwiec ＋核心團隊｜貢獻者 600+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 Kamil Myśliwiec 於 2017 年發起。當時 Node.js 後端最大的痛不是效能，而是**「毫無架構共識」**——十個團隊有十種目錄結構，Express 只給你一個 `req`／`res`，其餘全靠自律。Kamil 把前端 **Angular** 那套嚴謹的模組化、依賴注入與裝飾器思想整組搬到後端，NestJS 就此成為 Node 世界裡「架構最像 Java Spring」的框架。
 
-**技術核心**：它的骨幹是**控制反轉（IoC）容器與依賴注入（DI）**。你用 `@Injectable()` 標記一個 service、用 `@Controller()` 標記路由層、用 `@Module()` 把它們組成模組；框架靠 **reflect-metadata** 在執行期讀取這些裝飾器上的型別中繼資料——TypeScript 開啟 `emitDecoratorMetadata` 後，編譯器會把建構子每個參數的型別以 `design:paramtypes` 寫進中繼資料，DI 容器據此反查「該注入哪個 provider」，自動把 service 的實例「注入」到需要它的建構子裡（預設是**單例（singleton）作用域**，全 app 共用一個實例；必要時可宣告 `REQUEST`／`TRANSIENT` 作用域）——你永遠不用手動 `new`，依賴關係由容器統一管理與解析。這帶來**可測試性**（測試時輕鬆替換成 mock）與**低耦合**。請求會流經一條精心設計的**生命週期管線**：`Guards`（鑑權）→ `Interceptors`（切面，如日誌、快取、回應轉換）→ `Pipes`（驗證與轉型）→ Controller → 再回到 `Interceptors` → `Exception Filters`（統一錯誤處理），這其實是把 **AOP（面向切面編程）** 落實到 HTTP 層。底層預設用 Express，但可一鍵換成更快的 **Fastify**（platform adapter 抽象）。它原生支援 microservices（TCP／Redis／NATS／gRPC／Kafka 多種 transport）、GraphQL、WebSocket 與排程，是「全都給你、且都用同一套 DI 風格」的重型框架。
+**技術核心**：它的骨幹是**控制反轉（IoC）容器與依賴注入（DI）**。你用 `@Injectable()` 標記一個 service、用 `@Controller()` 標記路由層、用 `@Module()` 把它們組成模組；框架靠 **reflect-metadata** 在執行期讀取這些裝飾器上的型別中繼資料——TypeScript 開啟 `emitDecoratorMetadata` 後，編譯器會把建構子每個參數的型別以 `design:paramtypes` 寫進中繼資料，DI 容器據此反查「該注入哪個 provider」，自動把 service 的實例「注入」到需要它的建構子裡（預設是**單例（singleton）作用域**，全 app 共用一個實例；必要時可宣告 `REQUEST`／`TRANSIENT` 作用域）——你永遠不用手動 `new`，依賴關係由容器統一管理與解析。這帶來**可測試性**（測試時輕鬆替換成 mock）與**低耦合**。★留意一個常被忽略的生態變動：TypeScript 5.0 已把 TC39 Stage 3 的「標準裝飾器」轉正、`experimentalDecorators` 理論上不再必要，但**NestJS 的 DI 骨幹依然綁死舊式裝飾器**——因為標準裝飾器規格根本不支援「參數裝飾器」，而 NestJS 建構子注入正是靠參數層級的中繼資料識別型別；這也是為什麼新專案的 `tsconfig.json` 裡，`experimentalDecorators`／`emitDecoratorMetadata` 仍會被 NestJS CLI 乖乖打開，不會跟著語言標準一起「畢業」。請求會流經一條精心設計的**生命週期管線**：`Guards`（鑑權）→ `Interceptors`（切面，如日誌、快取、回應轉換）→ `Pipes`（驗證與轉型）→ Controller → 再回到 `Interceptors` → `Exception Filters`（統一錯誤處理），這其實是把 **AOP（面向切面編程）** 落實到 HTTP 層。底層預設用 Express，但可一鍵換成更快的 **Fastify**（platform adapter 抽象）。它原生支援 microservices（TCP／Redis／NATS／gRPC／Kafka 多種 transport）、GraphQL、WebSocket 與排程，是「全都給你、且都用同一套 DI 風格」的重型框架。
 
 **解決的痛點**：中大型團隊在 Node.js 上做長期維護的企業系統時，缺乏統一架構、程式碼各自為政、難以測試與擴充的結構性痛。
 
@@ -88,7 +88,7 @@
 **標籤**：`#Java` `#Servlet` `#Jakarta EE` `#Web伺服器` `#JSP` `#NIO` `#Apache`
 **Repo**：`https://github.com/apache/tomcat`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 7.5k（官方鏡像）｜核心維護者 Apache 軟體基金會 committer 群｜貢獻者 數百｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 8k（官方鏡像）｜核心維護者 Apache 軟體基金會 committer 群｜貢獻者 數百｜授權 Apache-2.0｜主語言 Java
 
 **起源**：源頭可追到 1999 年——**Servlet API 的作者 James Duncan Davidson** 在 Sun 寫下最初的參考實作，隨後捐給 Apache 軟體基金會，與 JSP 一起成為 Apache Jakarta 專案的旗艦，核心引擎取名 **Catalina**。它是開源界最古老、也最經得起考驗的伺服器之一，二十五年來安靜地跑在無數企業機房裡。
 
@@ -127,9 +127,9 @@
 **標籤**：`#WebRTC` `#SFU` `#即時通訊` `#Go` `#音視訊` `#低延遲` `#AI Agents`
 **Repo**：`https://github.com/livekit/livekit`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 12k｜核心維護者 LiveKit 團隊（Russ d'Sa、David Zhao 等）｜貢獻者 200+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 20k｜核心維護者 LiveKit 團隊（Russ d'Sa、David Zhao 共同創辦）｜貢獻者 200+｜授權 Apache-2.0｜主語言 Go
 
-**起源**：由 LiveKit 團隊於 2021 年發起，目標是把過去昂貴、封閉的即時音視訊能力（傳統上被 Agora、Twilio 這類商業服務壟斷）做成完全開源、可自建的基礎設施。2024 年後，它因為成為 **OpenAI 語音模式（Advanced Voice）** 等即時語音 AI 的底層通道而聲名大噪，一躍成為「AI 通訊層」的代名詞。
+**起源**：由 Russ d'Sa（CEO）與 David Zhao（CTO）於 2021 年共同創辦，目標是把過去昂貴、封閉的即時音視訊能力（傳統上被 Agora、Twilio 這類商業服務壟斷）做成完全開源、可自建的基礎設施。2024 年後，它因為成為 **OpenAI 語音模式（ChatGPT Advanced Voice）** 的底層通道而聲名大噪；2026 年 1 月更完成由 Index Ventures 領投、Salesforce Ventures 等跟投的 **1 億美元 C 輪**，公司估值達 **10 億美元**，客戶名單延伸到 xAI、Salesforce、Tesla，是「AI 通訊層」如今最具代表性的獨角獸。
 
 **技術核心**：它的骨架是一個高效能的 **SFU（Selective Forwarding Unit，選擇性轉發單元）**。要理解它的價值，得先看三種即時通訊拓撲：**Mesh**（人人互連，N 人房間要開 N² 條流，四五人就爆頻寬）、**MCU**（伺服器把所有畫面混成一路再發，省頻寬但 CPU 極貴、延遲高）、以及 **SFU**——伺服器**只轉發、不解碼混流**，每個參與者上傳一路、伺服器按需把別人的流「選擇性」轉發給你。SFU 是延遲與成本的最佳平衡點，也是現代多人音視訊的事實標準。LiveKit 用 **Go** 打造，底層基於純 Go 的 WebRTC 實作 **Pion**（不依賴 C 的 libwebrtc，編出來就是一顆單一二進位、部署極簡），媒體走 **RTP/UDP＋DTLS-SRTP** 加密、訊令走 WebSocket，支援 **Simulcast**（同一路影像編多種解析度，伺服器依接收端網路挑一檔發）、**SVC** 可分層編碼、以及 **GCC** 擁塞控制（靠 transport-wide-cc 回饋估算頻寬、即時降碼率保流暢）。要橫向擴展時，多個 SFU 節點透過 **Redis** 交換房間狀態、把同一房間跨節點的參與者串起來，突破單機的連線與頻寬上限。最關鍵的時代武器是 **LiveKit Agents 框架**：它把「STT（語音轉文字）→ LLM → TTS（文字轉語音）」串成一條可插拔的即時管線，並直接對接 OpenAI Realtime API 這種語音對語音模型，讓一個 AI Agent 能像真人一樣**即時打斷、即時回話**。
 
@@ -166,7 +166,7 @@
 **標籤**：`#HTTP` `#Promise` `#攔截器` `#前端` `#Node.js` `#Isomorphic` `#XHR`
 **Repo**：`https://github.com/axios/axios`
 **面向**：🏆 最紅｜👥 最多人用
-**GitHub 體檢**：⭐ 約 106k｜核心維護者 社群維護組（原作者 Matt Zabriskie）｜貢獻者 500+｜授權 MIT｜主語言 JavaScript
+**GitHub 體檢**：⭐ 約 109k｜核心維護者 社群維護組（原作者 Matt Zabriskie）｜貢獻者 500+｜授權 MIT｜主語言 JavaScript
 
 **起源**：由 Matt Zabriskie 於 2014 年發起，正值原生 `XMLHttpRequest` API 醜陋難用、`fetch` 尚未普及的年代。axios 用一套乾淨的 Promise 介面把發請求這件事變得優雅，很快成為整個 JS 生態最普及的 HTTP 客戶端，npm 週下載量長年以「數千萬」計。
 
@@ -180,7 +180,7 @@
 
 **新人須知（大廠第一週）**：①任何前端專案的 API 層，`axios.get()`／`axios.post()` 幾乎第一天就會用到。②最少要會：`axios.create()` 建一個帶 baseURL 與預設 header 的實例、用 request/response interceptor 統一塞 token 與處理 401。③最常踩的雷——**忘了 axios 對 4xx/5xx 會直接進 `catch`**（跟 fetch 相反），以及在 Node 端疏於設定逾時導致連線卡死；還有 CORS 問題其實是瀏覽器與伺服器的事，換 axios 換 fetch 都救不了。
 
-**優點 / 罩門**：API 優雅、攔截器強大、同構、生態與範例天下最多、遷移成本近乎零。罩門是**它在「原生 fetch 已夠好」的時代顯得多餘**——現代瀏覽器與 Node 都內建 fetch，多背一個依賴的理由變薄；且它的包體積（相對零依賴的輕量替代品）偏大，在追求極致 bundle size 的前端會被斟酌。此外它**並非零依賴**（內部仍拉 `follow-redirects`、`form-data` 等），歷來也出過數個 CVE（跨源重導向時洩漏 `Authorization` 標頭、SSRF、ReDoS），是供應鏈盤點時會被點名的對象。
+**優點 / 罩門**：API 優雅、攔截器強大、同構、生態與範例天下最多、遷移成本近乎零。罩門是**它在「原生 fetch 已夠好」的時代顯得多餘**——現代瀏覽器與 Node 都內建 fetch，多背一個依賴的理由變薄；且它的包體積（相對零依賴的輕量替代品）偏大，在追求極致 bundle size 的前端會被斟酌。此外它**並非零依賴**（內部仍拉 `follow-redirects`、`form-data` 等），歷來也出過數個具體 CVE——**CVE-2025-27152**（`baseURL` 與絕對路徑組合時可能把請求導到非預期主機，連帶洩漏 `Authorization`／API Key）、CVE-2024-39338（相對路徑被誤判為協定相對路徑造成 SSRF）、CVE-2021-3749（XSRF cookie 名稱未跳脫正則特殊字元導致 ReDoS）——是供應鏈盤點時會被點名的對象，也是「越普及、越是攻擊者優先掃描目標」的活教材。
 
 **競品對照**：
 
@@ -205,7 +205,7 @@
 **標籤**：`#Python` `#ASGI` `#Pydantic` `#型別提示` `#OpenAPI` `#非同步` `#Starlette`
 **Repo**：`https://github.com/fastapi/fastapi`
 **面向**：🔥 最新熱度｜🏆 最紅
-**GitHub 體檢**：⭐ 約 80k｜核心維護者 Sebastián Ramírez（tiangolo）｜貢獻者 600+｜授權 MIT｜主語言 Python
+**GitHub 體檢**：⭐ 約 100k｜核心維護者 Sebastián Ramírez（tiangolo）｜貢獻者 600+｜授權 MIT｜主語言 Python
 
 **起源**：由 Sebastián Ramírez（社群暱稱 tiangolo）於 2018 年發起。當時 Python Web 兩大主力 Flask 與 Django 都誕生於同步（WSGI）時代，面對高併發 I/O 與現代 API 開發顯得笨重；FastAPI 站在兩個新地基上——非同步的 **ASGI** 與型別驅動的 **Pydantic**——一舉成為 AI 與資料服務時代 Python 後端的當紅炸子雞，如今幾乎是「把模型包成 API」的默認選擇。
 
@@ -235,7 +235,7 @@
 > **FastAPI 的天才，是讓「型別提示」這個原本只是給編輯器看的裝飾，一躍成為驗證、文檔與契約的唯一真相來源——一份宣告，三處收割。**
 
 > 🔍 老手視角──真正的門道
-> FastAPI 之所以能後來居上壓過 Flask，真正原因是它精準踩中兩個時代浪潮：**Python 型別提示的成熟**與 **AI 服務對非同步 API 的爆量需求**。資深視角的門道是——**別把非同步當免費午餐**。FastAPI 的高效能只在「I/O 密集、且全鏈路非同步」時才兌現；一旦你的工作是 CPU 密集（跑本地推理、重運算），事件迴圈反而是枷鎖，該用的是多進程或把運算移到別的 worker。看懂「這個服務是 I/O 密集還是 CPU 密集」，比會不會寫 `async` 更能決定你架構的成敗。
+> FastAPI 之所以能後來居上壓過 Flask，真正原因是它精準踩中兩個時代浪潮：**Python 型別提示的成熟**與 **AI 服務對非同步 API 的爆量需求**。資深視角的門道是——**別把非同步當免費午餐**。FastAPI 的高效能只在「I/O 密集、且全鏈路非同步」時才兌現；一旦你的工作是 CPU 密集（跑本地推理、重運算），事件迴圈反而是枷鎖，該用的是多進程或把運算移到別的 worker。看懂「這個服務是 I/O 密集還是 CPU 密集」，比會不會寫 `async` 更能決定你架構的成敗。順帶一提商業動態：tiangolo 本人已於 2024 年拿 Sequoia Capital 種子輪創立 **FastAPI Labs**，推出付費的 FastAPI Cloud 部署服務——一個純開源專案的作者，靠著生態的心佔率反過來孵化出商業公司，這也是「開源專案紅到一定規模，維護者本身就是門商業機會」的活案例。
 
 ---
 
@@ -244,11 +244,11 @@
 **標籤**：`#Java` `#Spring` `#IoC` `#自動配置` `#企業級` `#微服務` `#JVM`
 **Repo**：`https://github.com/spring-projects/spring-boot`
 **面向**：👥 最多人用｜🏆 最紅
-**GitHub 體檢**：⭐ 約 76k｜核心維護者 VMware／Broadcom 旗下 Spring 團隊｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 81k｜核心維護者 VMware／Broadcom 旗下 Spring 團隊｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：由 Pivotal 團隊於 2014 年推出，解決一個折磨 Java 工程師十年的老問題——**Spring 框架本身雖強大，但配置繁瑣到令人崩潰**，動輒上百行 XML、一堆樣板才能跑起一個 Hello World。Spring Boot 的口號是「約定優於配置（Convention over Configuration）」，讓你 `java -jar` 一行就啟動一個內嵌伺服器的完整應用。它至今仍是全球企業、尤其**金融、電信、政府**這些「求穩不求新」的重型後端的絕對主流。
 
-**技術核心**：它的地基是 Spring 的 **IoC／DI 容器**——`ApplicationContext` 管理所有 Bean 的生命週期與依賴注入，這是整個 Spring 生態的心臟。Spring Boot 在其上加了三件關鍵魔法：①**自動配置（Auto-configuration）**——啟動時掃描 classpath，「看到你引入了 H2 就自動配一個記憶體資料庫、看到 Web 依賴就自動配一個內嵌 Tomcat」，靠的是 `@Conditional` 系列（`@ConditionalOnClass`／`@ConditionalOnMissingBean` 等）做的條件式裝配，候選清單在 Spring Boot 2.7 前列於 `META-INF/spring.factories`、之後改用 `AutoConfiguration.imports`；②**Starter 依賴**——`spring-boot-starter-web` 這種「一個依賴帶齊一整套」的聚合包，終結手動湊版本的地獄；③**內嵌伺服器**——把 Tomcat／Jetty／Undertow 打進 JAR，應用自帶伺服器、不必再部署到外部容器。它同時提供 **Actuator**（生產級健康檢查、metrics、監控端點）、**AOP**（切面，做交易 `@Transactional`、日誌、安全，底層靠**執行期動態代理**——介面走 JDK Proxy、類別走 CGLIB 生成子類攔截方法，這也是「同一類別內部方法互呼叫會讓 `@Transactional`／`@Cacheable` 意外失效」這個經典坑的根因，因為呼叫沒經過代理物件）。Web 層分兩條路線：傳統阻塞的 **Spring MVC**（Servlet 模型）與非同步反應式的 **Spring WebFlux**（基於 Netty 與 Project Reactor 的背壓串流）。近年更擁抱 **GraalVM Native Image**，把啟動時間從數秒壓到毫秒、記憶體大降，正面回應雲原生時代對啟動速度的要求。
+**技術核心**：它的地基是 Spring 的 **IoC／DI 容器**——`ApplicationContext` 管理所有 Bean 的生命週期與依賴注入，這是整個 Spring 生態的心臟。Spring Boot 在其上加了三件關鍵魔法：①**自動配置（Auto-configuration）**——啟動時掃描 classpath，「看到你引入了 H2 就自動配一個記憶體資料庫、看到 Web 依賴就自動配一個內嵌 Tomcat」，靠的是 `@Conditional` 系列（`@ConditionalOnClass`／`@ConditionalOnMissingBean` 等）做的條件式裝配，候選清單在 Spring Boot 2.7 前列於 `META-INF/spring.factories`、之後改用 `AutoConfiguration.imports`；②**Starter 依賴**——`spring-boot-starter-web` 這種「一個依賴帶齊一整套」的聚合包，終結手動湊版本的地獄；③**內嵌伺服器**——把 Tomcat／Jetty／Undertow 打進 JAR，應用自帶伺服器、不必再部署到外部容器。它同時提供 **Actuator**（生產級健康檢查、metrics、監控端點）、**AOP**（切面，做交易 `@Transactional`、日誌、安全，底層靠**執行期動態代理**——介面走 JDK Proxy、類別走 CGLIB 生成子類攔截方法，這也是「同一類別內部方法互呼叫會讓 `@Transactional`／`@Cacheable` 意外失效」這個經典坑的根因，因為呼叫沒經過代理物件）。Web 層分兩條路線：傳統阻塞的 **Spring MVC**（Servlet 模型）與非同步反應式的 **Spring WebFlux**（基於 Netty 與 Project Reactor 的背壓串流）。近年更擁抱 **GraalVM Native Image**，把啟動時間從數秒壓到毫秒、記憶體大降，正面回應雲原生時代對啟動速度的要求；2025 年 11 月正式發布的 **Spring Boot 4.0**（搭配 Spring Framework 7）把這條路走得更實——最低仍相容 Java 17，但官方建議搭配最新 LTS（如 Java 25），且 GraalVM Native Image 支援正式**脫離實驗性**、大量修補了 `RuntimeHints` 與既有生態庫的原生編譯相容性，顯示「Java 啟動慢」這個老包袱正被系統性地拆解。
 
 **解決的痛點**：讓 Java 這門「囉唆但穩」的語言在企業級開發裡把樣板成本降到最低，同時保留 JVM 生態二十年沉澱的穩定性、工具鏈與人才池。
 
@@ -283,7 +283,7 @@
 **標籤**：`#JavaScript執行環境` `#V8` `#libuv` `#事件迴圈` `#非阻塞IO` `#單執行緒` `#npm`
 **Repo**：`https://github.com/nodejs/node`
 **面向**：👥 最多人用｜🏆 最紅
-**GitHub 體檢**：⭐ 約 108k｜核心維護者 OpenJS 基金會與 TSC 核心組｜貢獻者 3,000+｜授權 MIT｜主語言 C++／JavaScript
+**GitHub 體檢**：⭐ 約 118k｜核心維護者 OpenJS 基金會與 TSC 核心組｜貢獻者 3,000+｜授權 MIT｜主語言 C++／JavaScript
 
 **起源**：由 Ryan Dahl 於 2009 年在 JSConf 上發表，一段「用 JavaScript 寫伺服器、且天生擅長高併發」的 demo 震撼全場。當時主流後端（Apache 一連線一執行緒）在面對大量並發連線時，執行緒切換與記憶體開銷會把伺服器壓垮（著名的 C10K 問題）。Ryan 的洞見是——**把 Google 為 Chrome 打造的極快 V8 引擎，接上一套非同步、事件驅動的 I/O 模型**，讓伺服器用單執行緒就能扛住上萬並發連線。Node.js 由此誕生，並把 JavaScript 從「瀏覽器裡的玩具」一舉推上伺服器王座。
 
@@ -322,9 +322,9 @@
 **標籤**：`#gRPC` `#Go` `#Protocol Buffers` `#HTTP2` `#RPC` `#微服務` `#串流`
 **Repo**：`https://github.com/grpc/grpc-go`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 22k｜核心維護者 gRPC 團隊（Google 發起）｜貢獻者 400+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 23k｜核心維護者 gRPC 團隊（Google 發起）｜貢獻者 400+｜授權 Apache-2.0｜主語言 Go
 
-**起源**：由 Google 於 2015 年開源。它的前身是 Google 內部用了十多年、支撐其龐大微服務叢集的 RPC 框架 **Stubby**；Google 把這套經過超大規模驗證的通訊範式抽象、標準化後開源成 **gRPC**，`grpc-go` 則是其 Go 語言的官方實作，也是雲原生（Kubernetes、etcd、大量 CNCF 專案）內部通訊的事實標準。（這是客觀事實：gRPC 確為 Google 出品，但它的價值評斷不綁定任何公司或職級。）
+**起源**：由 Google 於 2015 年開源。它的前身是 Google 內部用了十多年、支撐其龐大微服務叢集的 RPC 框架 **Stubby**；Google 把這套經過超大規模驗證的通訊範式抽象、標準化後開源成 **gRPC**，`grpc-go` 則是其 Go 語言的官方實作，也是雲原生（Kubernetes、etcd、大量 CNCF 專案）內部通訊的事實標準。
 
 **技術核心**：它踩在兩塊硬核地基上。第一是 **Protocol Buffers（protobuf）**——一種 **schema-first 的二進位序列化格式**：你在 `.proto` 檔（IDL，介面定義語言）裡宣告服務方法與訊息結構，`protoc` 編譯器據此為各種語言生成強型別的 client／server 樁碼（stub）。相比 JSON，protobuf 的二進位編碼**體積小數倍、序列化快數倍**：每個欄位在線上只寫成 `tag（欄位號 << 3 | wire type）＋值`，整數用 **varint**（變長編碼，小數字只佔 1 byte）、帶號整數再用 **zigzag** 把負數摺疊成小的無號數（否則 `int32` 的負值會佔滿 10 bytes），且**線上完全不帶欄位名**——這既是它省空間的祕密，也是它天生向後相容（欄位號不變就能自由增減欄位）、卻無法像 JSON 那樣肉眼自描述的根源。第二是 **HTTP/2** 作為傳輸層，帶來三個關鍵能力：**多工（Multiplexing）**——單一連線上並行跑多個請求，不必為每個請求開新連線（消滅 HTTP/1.1 的隊頭阻塞）；**HPACK 標頭壓縮**；以及**雙向串流**。這讓 gRPC 支援四種 RPC 模式：**Unary**（一問一答）、**Server streaming**（一問多答，如推播）、**Client streaming**（多問一答，如上傳）、**Bidirectional streaming**（雙向即時，如即時對話）。它還內建**攔截器**（統一做認證、metrics、tracing）、**deadline／超時傳播**、**客戶端負載均衡**，並能透過 **xDS** 協定接入 service mesh 做動態流量治理。
 
@@ -332,7 +332,7 @@
 
 **理論基礎**：**RPC（遠端程序呼叫）**範式與 **IDL（介面定義語言）** 驅動的契約優先設計；HTTP/2 的二進位分幀與多工模型。
 
-**在 AI Agent 時代的角色**：它是 **AI 叢集內部通訊的骨幹**。分散式模型推理、參數伺服器、GPU 叢集之間搬運張量與梯度，對「低延遲、高吞吐、跨語言（Python 訓練、Go／C++ 服務）」的剛需，正好是 gRPC 的主場；它的雙向串流也天生適合「模型持續吐 token、下游持續消費」的串流推理場景。許多 AI 基礎設施（模型服務框架、向量 DB 的內部協定）都以 gRPC 為傳輸層。
+**在 AI Agent 時代的角色**：它是 **AI 叢集內部通訊的骨幹**。分散式模型推理、參數伺服器、GPU 叢集之間搬運張量與梯度，對「低延遲、高吞吐、跨語言（Python 訓練、Go／C++ 服務）」的剛需，正好是 gRPC 的主場；它的雙向串流也天生適合「模型持續吐 token、下游持續消費」的串流推理場景。許多 AI 基礎設施（模型服務框架、向量 DB 的內部協定）都以 gRPC 為傳輸層。2026 年最值得留意的新戰場是 **MCP（Model Context Protocol）**——Agent 與工具伺服器目前預設走 JSON-RPC，Google Cloud 已在推動把 gRPC 納入 MCP 的**可插拔傳輸層（pluggable transport）**選項，目的正是解決 Agent 大規模呼叫工具時 JSON-RPC 在效能與強型別上的天花板，等於是把「微服務界的老標準」搬進「Agent 界的新協定」，是 gRPC 在 AI 浪潮下的下一個必爭之地。
 
 **新人須知（大廠第一週）**：①一進做微服務的後端團隊，你很快會看到滿地的 `.proto` 檔——那就是服務間的契約。②最少要會：讀寫 `.proto`、跑 `protoc` 生成樁碼、理解四種串流模式、知道 gRPC 走 HTTP/2 而非普通 HTTP。③最常踩的雷——**想從瀏覽器直接呼叫 gRPC**。瀏覽器不能直接發原生 gRPC（HTTP/2 幀控制受限），必須透過 **gRPC-Web** 加一層 proxy（如 Envoy）轉譯；很多新手在前端直連 gRPC 卡住半天才發現這個限制。另一個雷是忘了 protobuf 欄位號一旦上線就不能亂改，否則破壞相容。
 
@@ -361,7 +361,7 @@
 **標籤**：`#Python` `#ASGI` `#非同步` `#依賴注入` `#msgspec` `#高性能` `#DTO`
 **Repo**：`https://github.com/litestar-org/litestar`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 6k｜核心維護者 Litestar 組織（社群治理，多位核心維護者）｜貢獻者 200+｜授權 MIT｜主語言 Python
+**GitHub 體檢**：⭐ 約 8k｜核心維護者 Litestar 組織（社群治理，多位核心維護者）｜貢獻者 200+｜授權 MIT｜主語言 Python
 
 **起源**：於 2021 年誕生，原名 **Starlite**，後於 2023 年更名 **Litestar**（一來避免與底層曾用的 Starlette／Starlite 混淆，二來宣示它已自成一格、不再是誰的封裝）。它的定位很直接：在 FastAPI 開創的「型別驅動 ASGI 框架」路線上，做一個**效能更高、功能更完整、且採社群治理（非單一作者主導）**的替代品。
 
@@ -400,9 +400,9 @@
 **標籤**：`#TypeScript` `#Edge` `#Web Standards` `#零依賴` `#Cloudflare Workers` `#輕量` `#RegExpRouter`
 **Repo**：`https://github.com/honojs/hono`
 **面向**：🏆 最紅｜🔥 最新熱度
-**GitHub 體檢**：⭐ 約 22k｜核心維護者 Yusuke Wada（yusukebe）＋核心組｜貢獻者 400+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 31k｜核心維護者 Yusuke Wada（yusukebe）＋核心組｜貢獻者 400+｜授權 MIT｜主語言 TypeScript
 
-**起源**：由 Yusuke Wada 於 2021 年發起（Hono，日文「炎」，意為火焰）。它誕生於**邊緣運算（Edge Computing）**崛起的浪潮——Cloudflare Workers 這類跑在全球節點、毫秒級冷啟動的運算環境，容不下 Express 那種為 Node 而生、依賴一堆 Node 專屬 API 的重框架。Hono 就是為「在任何 JavaScript runtime 上都能極速跑起來」而生，如今已是 Edge 後端的當紅之選。
+**起源**：由 Yusuke Wada 於 2021 年發起（Hono，日文「炎」，意為火焰）。它誕生於**邊緣運算（Edge Computing）**崛起的浪潮——Cloudflare Workers 這類跑在全球節點、毫秒級冷啟動的運算環境，容不下 Express 那種為 Node 而生、依賴一堆 Node 專屬 API 的重框架。Hono 就是為「在任何 JavaScript runtime 上都能極速跑起來」而生，如今已是 Edge 後端的當紅之選；Wada 本人後來也加入 **Cloudflare** 擔任 Developer Advocate（2023 年至今），讓 Hono 與 Workers 生態的關係從「一個外部專案」變得更加緊密。
 
 **技術核心**：它有兩張王牌。第一是**建在 Web Standards 之上**——Hono 只用標準的 `Request`／`Response`／`fetch` 這些 Web 平台原生 API，不綁任何 runtime 專屬能力，因此**同一份程式碼可原封不動跑在 Cloudflare Workers、Deno、Bun、Node.js、Vercel、AWS Lambda、Fastly** 等幾乎所有環境上，這種「一次寫、到處跑」的可移植性是它最強的護城河。第二是**極致的路由效能**——它的招牌 **RegExpRouter** 會把你註冊的所有路由**預先編譯成單一個大正則表達式**，匹配時一次比對搞定，達到近乎 O(1) 的常數級路由查找（多數框架是逐條線性比對）；對無法用單一正則涵蓋的動態情況再退回 **TrieRouter**，而預設的 **SmartRouter** 會在首次請求時自動在兩者間挑出最適合的一個。加上它**零依賴、體積極小**（核心僅十幾 KB），冷啟動幾乎無感——這在按執行時間計費、且對冷啟動極敏感的 Edge/Serverless 環境是決定性優勢。它還提供優雅的中介層系統、以及一個類似 tRPC 的 **RPC 模式**：靠 TypeScript 型別推導，讓前端 client 拿到後端路由的型別安全呼叫，端到端型別打通。
 
@@ -430,7 +430,7 @@
 > **Hono 賭的是一個未來：當所有 runtime 都向 Web 標準看齊，框架就不該再為某個環境量身訂做——寫一次、跑遍天下，才是後端該有的自由。**
 
 > 🔍 老手視角──真正的門道
-> Hono 崛起的真正原因，是它精準押注了「**runtime 中立化**」這個結構性趨勢——當 Cloudflare、Deno、Bun、Vercel 都在向同一套 Web 標準 API 收斂，一個只依賴標準、不綁任何環境的框架，就自然成為 Edge 時代的最大公約數。資深視角的門道是——**先判斷你的工作負載適不適合上 Edge**。Edge 的甜蜜點是「輕、快、無狀態、全球分發」的 API 網關與邊緣邏輯；一旦你需要長連線、大量狀態、重運算或緊挨資料庫，把它硬塞到邊緣反而是逆流而行。把 Hono 用在對的邊緣場景，它輕快得像沒有存在感；用錯地方，Edge 的種種限制會讓你處處碰壁。看懂這條「哪些該放邊緣、哪些該留中心」的分界，比追捧任何新框架都重要。
+> 一個具體的數字比任何形容詞都有說服力：2026 年 Hono 的 npm 週下載量已逼近 2,000 萬，而稱霸 Node 生態十餘年的 Express 約 3,500 萬——差距仍在，但 Hono 是那條快速逼近的曲線、Express 已是存量為主的老盤。Hono 崛起的真正原因，是它精準押注了「**runtime 中立化**」這個結構性趨勢——當 Cloudflare、Deno、Bun、Vercel 都在向同一套 Web 標準 API 收斂，一個只依賴標準、不綁任何環境的框架，就自然成為 Edge 時代的最大公約數。資深視角的門道是——**先判斷你的工作負載適不適合上 Edge**。Edge 的甜蜜點是「輕、快、無狀態、全球分發」的 API 網關與邊緣邏輯；一旦你需要長連線、大量狀態、重運算或緊挨資料庫，把它硬塞到邊緣反而是逆流而行。把 Hono 用在對的邊緣場景，它輕快得像沒有存在感；用錯地方，Edge 的種種限制會讓你處處碰壁。看懂這條「哪些該放邊緣、哪些該留中心」的分界，比追捧任何新框架都重要。
 
 ---
 
