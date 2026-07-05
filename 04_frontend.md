@@ -10,11 +10,11 @@
 **標籤**：`#全棧框架` `#React` `#RSC` `#SSR` `#ISR` `#Vercel` `#Edge`
 **Repo**：`https://github.com/vercel/next.js`
 **面向**：🏆 最紅｜👥 最多人用
-**GitHub 體檢**：⭐ 約 130k｜核心維護者 Vercel 團隊（Tim Neutkens 等）｜貢獻者 3,000+｜授權 MIT｜主語言 JavaScript／Rust（Turbopack）
+**GitHub 體檢**：⭐ 約 140k｜核心維護者 Vercel 團隊（Tim Neutkens 等）｜貢獻者 3,000+｜授權 MIT｜主語言 JavaScript／Rust（Turbopack）
 
 **起源**：由 Vercel（前身 ZEIT，創辦人 Guillermo Rauch，也是 Socket.io 作者）於 2016 年發布。當時 React 只給你一把「畫 UI 的槍」，路由、資料抓取、伺服器渲染（SSR）、打包全要自己拼裝，光是把一個 React 專案配到能在伺服器上跑就是一場工程惡夢。Next.js 用**約定優於配置（convention over configuration）**的哲學一次收編這些散件，把「React 該怎麼做成一個正經產品」訂成了事實標準。
 
-**技術核心**：它的真正殺招是 2023 年 App Router 帶來的 **React Server Components（RSC）** 範式。傳統 SSR 是「伺服器先把整棵樹渲染成 HTML 字串、再把整包 JS 送到瀏覽器做**水合（hydration）**」——問題是 JS 送越多、可互動的時間（TTI）就越晚。RSC 把元件切成兩種身分：**Server Component 在伺服器上執行、直接讀資料庫、只把渲染結果（一種特製的序列化 RSC Payload）串流給前端，它的程式碼永遠不進 bundle**；只有標了 `"use client"` 的互動元件才送 JS。這等於**在元件粒度上決定「哪塊在雲端算完、哪塊在瀏覽器活著」**。搭配 **Server Actions**（前端直接 `await` 一個跑在伺服器的函式，免手寫 API route）、**串流式 SSR（Streaming + Suspense）** 讓頁面分塊漸進吐出、以及招牌的 **ISR（Incremental Static Regeneration）**——靜態頁面可在背景按 TTL 自動再生，或用 `revalidatePath`／`revalidateTag` 做**按需再生（on-demand revalidation）**：在資料真正變動時精準戳破指定快取，兼得 CDN 靜態的快與動態內容的鮮。請求進門前還有一道 **Middleware** 跑在 **Edge Runtime**（一種只給 Web 標準 API、冷啟動近乎為零的輕量 V8 isolate，而非完整 Node.js），適合做 A/B 導流、地理改寫與鑑權等貼近使用者的邊緣邏輯。底層打包正從 Webpack 遷往 Rust 寫的 **Turbopack**，編譯與 HMR 走函式級增量快取。
+**技術核心**：它的真正殺招是 2023 年 App Router 帶來的 **React Server Components（RSC）** 範式。傳統 SSR 是「伺服器先把整棵樹渲染成 HTML 字串、再把整包 JS 送到瀏覽器做**水合（hydration）**」——問題是 JS 送越多、可互動的時間（TTI）就越晚。RSC 把元件切成兩種身分：**Server Component 在伺服器上執行、直接讀資料庫、只把渲染結果（一種特製的序列化 RSC Payload）串流給前端，它的程式碼永遠不進 bundle**；只有標了 `"use client"` 的互動元件才送 JS。這等於**在元件粒度上決定「哪塊在雲端算完、哪塊在瀏覽器活著」**。搭配 **Server Actions**（前端直接 `await` 一個跑在伺服器的函式，免手寫 API route）、**串流式 SSR（Streaming + Suspense）** 讓頁面分塊漸進吐出、以及招牌的 **ISR（Incremental Static Regeneration）**——靜態頁面可在背景按 TTL 自動再生，或用 `revalidatePath`／`revalidateTag` 做**按需再生（on-demand revalidation）**：在資料真正變動時精準戳破指定快取，兼得 CDN 靜態的快與動態內容的鮮。請求進門前還有一層跑在 **Edge Runtime**（一種只給 Web 標準 API、冷啟動近乎為零的輕量 V8 isolate，而非完整 Node.js）的攔截層——舊稱 **Middleware**，Next.js 16 起正式更名為 **Proxy**（`proxy.ts`，官方理由是「middleware」太容易被誤認成 Express 那種應用內中介層，而它做的其實是「應用之前的一道網路邊界」），適合做 A/B 導流、地理改寫與鑑權等貼近使用者的邊緣邏輯。底層打包器 **Turbopack**（Rust 寫成）已於 Next.js 16 轉正——`next dev` 與 `next build` 皆預設啟用，官方實測正式建置提速 2–5 倍，並帶上持久化的檔案系統快取，編譯與 HMR 走函式級增量快取；Webpack 從此退居選配。
 
 **解決的痛點**：React 專案「要能 SEO、要首屏快、又要動態互動」時，路由、渲染策略、資料流、快取全靠人肉拼裝的碎片化痛。
 
@@ -30,7 +30,7 @@
 
 | 對手 | 定位 | 相對優勢 | 相對劣勢 |
 |------|------|---------|---------|
-| Remix / React Router | 貼近 Web 標準的全棧 React 框架 | 擁抱原生表單與 Web API、心智更直觀、可攜性高 | 生態與熱度不及 Next.js、ISR 類靜態再生較弱 |
+| React Router（v7，原 Remix 核心） | 貼近 Web 標準的全棧 React 框架 | 擁抱原生表單與 Web API、心智更直觀、可攜性高 | 生態與熱度不及 Next.js、ISR 類靜態再生較弱 |
 | Nuxt | Vue 生態的 Next.js 對等物 | Vue 陣營全棧首選、DX 圓潤 | 綁定 Vue，React 天下的招聘與生態較窄 |
 | Astro | 內容站優先的 Islands 框架 | 內容/行銷站首屏 JS 幾近為零 | 重互動的大型應用非其主場 |
 
@@ -49,11 +49,11 @@
 **標籤**：`#Islands` `#局部水合` `#內容優先` `#Zero-JS` `#MPA` `#Vite` `#SSG`
 **Repo**：`https://github.com/withastro/astro`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 50k｜核心維護者 Fred Schott ＋ Astro 團隊｜貢獻者 900+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 61k｜核心維護者 Fred Schott ＋ Astro 團隊｜貢獻者 900+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 Fred Schott（Snowpack 作者）等人於 2021 年發起。當時的前端被 **SPA（單頁應用）的過度水合**綁架——一個只是給人「讀文章」的部落格，卻要下載整包 React runtime、把整頁重新水合一遍，首屏慢、電量耗、SEO 吃虧。Astro 的立場針鋒相對：**大多數網站其實是內容，不是應用，憑什麼要讓讀者付整個框架的 JS 稅？**
 
-**技術核心**：它的招牌是 **Islands Architecture（群島架構）**。頁面預設是**伺服器渲染出的純靜態 HTML，送到瀏覽器的 JavaScript 是零**；只有真正需要互動的區塊（一個輪播、一個讚按鈕）才被標記成一座「島」，做**局部水合（partial hydration）**。你還能用 `client:load`、`client:idle`、`client:visible` 這些指令**精細控制每座島何時才載入 JS**——例如 `client:visible` 讓島捲進視窗才水合，頁面下方的互動元件在使用者滑到之前完全不耗一分資源。更絕的是它**框架無關（framework-agnostic）**：同一頁裡你可以左邊擺一座 React 島、右邊擺一座 Svelte 島、中間一座 Vue 島，Astro 只當那個把靜態外殼與各家小島編排在一起的總導演。`.astro` 元件本身在建構期就跑完、不留執行時。底層建構走 Vite，天生吃到 ESM 與極速 HMR。
+**技術核心**：它的招牌是 **Islands Architecture（群島架構）**。頁面預設是**伺服器渲染出的純靜態 HTML，送到瀏覽器的 JavaScript 是零**；只有真正需要互動的區塊（一個輪播、一個讚按鈕）才被標記成一座「島」，做**局部水合（partial hydration）**。你還能用 `client:load`、`client:idle`、`client:visible` 這些指令**精細控制每座島何時才載入 JS**——例如 `client:visible` 讓島捲進視窗才水合，頁面下方的互動元件在使用者滑到之前完全不耗一分資源。更絕的是它**框架無關（framework-agnostic）**：同一頁裡你可以左邊擺一座 React 島、右邊擺一座 Svelte 島、中間一座 Vue 島，Astro 只當那個把靜態外殼與各家小島編排在一起的總導演。`.astro` 元件本身在建構期就跑完、不留執行時。底層建構走 Vite，天生吃到 ESM 與極速 HMR；再往上還有實驗性的 **Server Islands**（`server:defer`）讓個別區塊在首屏之後才由伺服器異步補渲，兼顧「大多數內容純靜態」與「少數區塊需要個人化資料」兩種需求。2026 年中發布的 **Astro 7** 更把建構工具鏈整批換血：`.astro` 編譯器從 Go 重寫成 **Rust**（官方測得建置提速 15–61%），Vite 8 底層也換上 Rust 寫的 Rolldown 取代 esbuild/Rollup——這條「把工具鏈 Rust 化」的路線與 Next.js 的 Turbopack、Tailwind 的 Oxide 是同一場正在發生的前端底層遷徙。
 
 **解決的痛點**：內容型網站（部落格、文件、電商行銷頁、新聞站）被 SPA 過度水合拖慢首屏、拉低 Core Web Vitals 的剛性痛。
 
@@ -79,7 +79,7 @@
 > **Astro 問了一個所有 SPA 都不敢正視的問題：如果這一頁根本不需要互動，我們為什麼要讓每個讀者都付一整個框架的下載稅？效能的極致，有時就是「什麼都不送」。**
 
 > 🔍 老手視角──真正的門道
-> Astro 紅的真正原因，是它精準卡進了「內容站被 SPA 綁架」這個十年沉痾，並把 Core Web Vitals 這個**直接影響 Google 排名與廣告成本**的硬指標當成賣點——這在行銷、媒體、電商圈是白紙黑字的錢。真正的門道是認清一條選型分界線：**「內容為主、互動為輔」用 Astro，「應用為主」用 Next.js**，中間地帶才是選型的藝術。可落地的方向：做一套「把既有 SPA 內容頁自動群島化」的遷移工具或效能顧問服務——幫大型媒體站把首屏 JS 砍掉七八成，按跑分提升與廣告 CPM 增益分潤，是一門看得見 ROI 的生意。
+> Astro 紅的真正原因，是它精準卡進了「內容站被 SPA 綁架」這個十年沉痾，並把 Core Web Vitals 這個**直接影響 Google 排名與廣告成本**的硬指標當成賣點——這在行銷、媒體、電商圈是白紙黑字的錢。真正的門道是認清一條選型分界線：**「內容為主、互動為輔」用 Astro，「應用為主」用 Next.js**，中間地帶才是選型的藝術。可落地的方向：做一套「把既有 SPA 內容頁自動群島化」的遷移工具或效能顧問服務——幫大型媒體站把首屏 JS 砍掉七八成，按跑分提升與廣告 CPM 增益分潤，是一門看得見 ROI 的生意。另有一則 2026 年選型者該記住的動態：當年 1 月 **Cloudflare 收購了 Astro 背後的 The Astro Technology Company**（官方承諾維持開源）。這把 Astro 過去「不像 Next.js 那樣被單一雲綁死」的形象，換成了另一種靠山——它會不會複製 Next.js／Vercel 那套「框架—平台」飛輪、把甜頭往 Cloudflare Pages／Workers 傾斜，是接下來選型時該持續觀察的變數。
 
 ---
 
@@ -88,11 +88,11 @@
 **標籤**：`#UI函式庫` `#VirtualDOM` `#Fiber` `#Hooks` `#JSX` `#單向資料流` `#Meta`
 **Repo**：`https://github.com/facebook/react`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 230k｜核心維護者 Meta React 團隊｜貢獻者 1,600+｜授權 MIT｜主語言 JavaScript
+**GitHub 體檢**：⭐ 約 245k｜核心維護者 Meta React 團隊｜貢獻者 1,600+｜授權 MIT｜主語言 JavaScript
 
 **起源**：由 Meta（時為 Facebook）工程師 Jordan Walke 於 2011 年內部打造、2013 年開源。當年前端在 jQuery 的 DOM 手術與雙向綁定的混亂中掙扎——資料一多，「誰改了畫面、畫面又反過來改了誰」變成一團無法推理的意大利麵。React 帶著一個顛覆性的簡單命題登場：**UI = f(state)**，把畫面看成狀態的純函式投影，你只管描述「資料長這樣時畫面該長怎樣」，怎麼更新 DOM 交給框架。這個心智模型重寫了整個前端行業。
 
-**技術核心**：它的第一代招牌是 **Virtual DOM（虛擬 DOM）**——每次狀態變動，React 先在記憶體裡建一棵輕量的 JS 物件樹描述新 UI，再與上一棵做 **reconciliation（協調 / diff）**，用啟發式演算法（同層比對 + key 標識）算出**最小的真實 DOM 變更集**，只動該動的那幾個節點。2017 年的 **Fiber 架構重寫**更是里程碑：它把渲染工作拆成一個個可中斷、可續作的**工作單元（fiber node）**，以鏈結串列串接、由 React **自建的排程器**（走 `MessageChannel` 巨集任務做時間切片，而非早年設想、後被否決的 `requestIdleCallback`）分片執行，讓高優先的使用者輸入能**打斷**低優先的背景渲染。React 18 更把優先級模型從舊的 `expirationTime` 換成 **lane（車道）位元遮罩**——用一個 31 bit 整數同時編碼多組並行更新的優先級，這正是 Concurrent Rendering、`useTransition`、`Suspense` 的排程地基。2019 年的 **Hooks**（`useState`/`useEffect`/`useMemo`）用閉包把「狀態與副作用」重組成可組合的函式、廢掉 class 的 `this` 地獄；但閉包也帶來招牌的**閉包陷阱（stale closure）**——`useEffect`/`useCallback` 捕捉的是「該次 render 當下的變數快照」，**依賴陣列（dependency array）** 一漏填，回呼裡讀到的就是過期的舊狀態。搭配 **JSX**（經典轉換編譯成 `React.createElement`；React 17+ 的 automatic runtime 則編譯成 `react/jsx-runtime` 的 `jsx()` 呼叫）與**單向資料流**，構成一套自洽的宣告式體系。
+**技術核心**：它的第一代招牌是 **Virtual DOM（虛擬 DOM）**——每次狀態變動，React 先在記憶體裡建一棵輕量的 JS 物件樹描述新 UI，再與上一棵做 **reconciliation（協調 / diff）**，用啟發式演算法（同層比對 + key 標識）算出**最小的真實 DOM 變更集**，只動該動的那幾個節點。2017 年的 **Fiber 架構重寫**更是里程碑：它把渲染工作拆成一個個可中斷、可續作的**工作單元（fiber node）**，以鏈結串列串接、由 React **自建的排程器**（走 `MessageChannel` 巨集任務做時間切片，而非早年設想、後被否決的 `requestIdleCallback`）分片執行，讓高優先的使用者輸入能**打斷**低優先的背景渲染。React 18 更把優先級模型從舊的 `expirationTime` 換成 **lane（車道）位元遮罩**——用一個 31 bit 整數同時編碼多組並行更新的優先級，這正是 Concurrent Rendering、`useTransition`、`Suspense` 的排程地基。2019 年的 **Hooks**（`useState`/`useEffect`/`useMemo`）用閉包把「狀態與副作用」重組成可組合的函式、廢掉 class 的 `this` 地獄；但閉包也帶來招牌的**閉包陷阱（stale closure）**——`useEffect`/`useCallback` 捕捉的是「該次 render 當下的變數快照」，**依賴陣列（dependency array）** 一漏填，回呼裡讀到的就是過期的舊狀態。搭配 **JSX**（經典轉換編譯成 `React.createElement`；React 17+ 的 automatic runtime 則編譯成 `react/jsx-runtime` 的 `jsx()` 呼叫）與**單向資料流**，構成一套自洽的宣告式體系。2024 年底的 **React 19** 補上幾塊長年缺口：`use()` 這個新 Hook 能在渲染中直接讀一個 Promise 或 Context、且允許寫在條件式裡（打破「Hooks 不能被條件呼叫」的老規矩）；`ref` 可以直接當一般 prop 傳遞，`forwardRef` 從此非必要；**Actions**（`useActionState`、`useOptimistic`）把「送出去、等結果、失敗要回滾」這套表單/樂觀更新模式收進了官方寫法。而 2025 年底轉正的 **React Compiler**（原代號 React Forget）從另一個方向動刀：它是建構期的靜態分析器，讀懂元件裡 props/state/衍生值間的資料流，自動插入等效於 `useMemo`／`useCallback`／`React.memo` 的記憶化——輸出仍是普通 JavaScript、不改變 React 執行時的行為，只是把「這段渲染其實沒必要重算」這件事，從工程師手動標記變成編譯器自動推導。
 
 **解決的痛點**：命令式 DOM 操作在複雜互動下不可維護、狀態與畫面同步靠人腦追蹤的認知崩潰。
 
@@ -102,7 +102,7 @@
 
 **新人須知（大廠第一週）**：①幾乎任何前端團隊，React 都是你繞不開的第一課；到職八成第一個 PR 就在改某個 React 元件。②最少要會：`useState`/`useEffect` 的心智模型、**依賴陣列（dependency array）** 怎麼填、以及 list 渲染為何一定要給穩定的 `key`。③最常踩的雷——**在 `useEffect` 依賴上打架導致無限重渲染或資料不更新**，還有把衍生狀態硬存進 `useState`（該用 `useMemo` 算），以及不懂 render 是「宣告」不是「執行時機」，在渲染函式裡直接做副作用。
 
-**優點 / 罩門**：生態宇宙級龐大、招聘市場最深、心智模型經十年驗證、Concurrent 能力領先。罩門是**它只是「UI 函式庫」不是框架**——路由、狀態、資料抓取全要自己選外掛，選型自由的代價是新人的決策疲勞；且 Virtual DOM 的 diff 有其**執行時開銷**，這正是 Svelte、Solid 這類「編譯期消解 VDOM」流派攻擊它的主戰場。
+**優點 / 罩門**：生態宇宙級龐大、招聘市場最深、心智模型經十年驗證、Concurrent 能力領先。罩門是**它只是「UI 函式庫」不是框架**——路由、狀態、資料抓取全要自己選外掛，選型自由的代價是新人的決策疲勞；且 Virtual DOM 的 diff 有其**執行時開銷**，這正是 Svelte、Solid 這類「編譯期消解 VDOM」流派攻擊它的主戰場（React Compiler 能自動抹平「不必要的重渲染」這一塊，但協調樹本身的 diff 成本仍在，並非架構級的根治）。
 
 **競品對照**：
 
@@ -127,11 +127,11 @@
 **標籤**：`#企業級框架` `#TypeScript` `#依賴注入` `#RxJS` `#AOT` `#Signals` `#Google`
 **Repo**：`https://github.com/angular/angular`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 96k｜核心維護者 Google Angular 團隊｜貢獻者 1,700+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 100k｜核心維護者 Google Angular 團隊｜貢獻者 1,700+｜授權 MIT｜主語言 TypeScript
 
 **起源**：AngularJS（1.x）由 Google 於 2010 年推出，開創了雙向綁定的先河；但它的架構隨規模膨脹難以維護。2016 年 Google 團隊**推倒重來、全程以 TypeScript 打造 Angular 2+**（與 1.x 完全不相容的斷代重寫），目標明確：做一個給大型企業、長生命週期專案的**「什麼都幫你決定好」的固執己見（opinionated）全套框架**。它不像 React 只給一把槍，而是連路由、表單、HTTP、測試、i18n 全給你配齊。
 
-**技術核心**：它有三根硬核支柱。第一是**依賴注入（Dependency Injection, DI）**——Angular 內建一套分層的 DI 容器，服務（service）透過建構子注入、由框架管理生命週期與作用域，這套源自後端（Spring/企業 Java）的控制反轉思想，讓大型專案的模組解耦與單元測試變得工整可控。第二是 **RxJS 的響應式編程**：HTTP 回應、事件、路由變化全被包成 **Observable 資料流**，用 `map`/`switchMap`/`debounceTime` 等操作子做函式式的非同步編排，優雅處理複雜的事件串接與競態。第三是 **AOT（Ahead-of-Time）預編譯**——建構期就把模板編譯成高效的 JS 指令、順帶做型別檢查與 tree-shaking，執行時無需帶著編譯器、首屏更快更安全。傳統上它靠 **Zone.js**（monkey-patch `setTimeout`、事件、XHR 等所有非同步 API）在任務結束時觸發**變更偵測**，而變更偵測本身是一輪由根而下的**髒檢查（dirty checking）**；Angular 16+ 引入的 **Signals（訊號）** 正把它推向**細粒度響應式**——精準追蹤依賴、只更新真正變動的視圖節點，配合 17／18 起的 **zoneless（去 Zone.js）** 模式與 **standalone components** 淡化過去笨重的 NgModule，逐步擺脫全域髒檢查的開銷。
+**技術核心**：它有三根硬核支柱。第一是**依賴注入（Dependency Injection, DI）**——Angular 內建一套分層的 DI 容器，服務（service）透過建構子注入、由框架管理生命週期與作用域，這套源自後端（Spring/企業 Java）的控制反轉思想，讓大型專案的模組解耦與單元測試變得工整可控。第二是 **RxJS 的響應式編程**：HTTP 回應、事件、路由變化全被包成 **Observable 資料流**，用 `map`/`switchMap`/`debounceTime` 等操作子做函式式的非同步編排，優雅處理複雜的事件串接與競態。第三是 **AOT（Ahead-of-Time）預編譯**——建構期就把模板編譯成高效的 JS 指令、順帶做型別檢查與 tree-shaking，執行時無需帶著編譯器、首屏更快更安全。傳統上它靠 **Zone.js**（monkey-patch `setTimeout`、事件、XHR 等所有非同步 API）在任務結束時觸發**變更偵測**，而變更偵測本身是一輪由根而下的**髒檢查（dirty checking）**；Angular 16+ 引入的 **Signals（訊號）** 把它推向**細粒度響應式**——精準追蹤依賴、只更新真正變動的視圖節點，配合 **standalone components** 取代笨重的 NgModule 成為新專案預設。這條路線在 2026 年中發布的 **Angular 22** 上正式收尾：**zoneless（去 Zone.js）模式宣告穩定**、預設變更偵測策略改為 `OnPush`，Zone.js 徹底變成選配；連 **Signal Forms**、**Resource API**、**Angular Aria** 這些訊號生態的下游拼圖也一併轉正——十年來靠 Zone.js monkey-patch 全域非同步 API、由根而下做髒檢查的舊模型，到此才算真正走完退場。
 
 **解決的痛點**：數百人團隊、十年生命週期的大型企業應用，對「強型別、強架構約束、可長期維護、新人接手不迷路」的秩序剛需。
 
@@ -157,7 +157,7 @@
 > **Angular 的固執不是缺點，而是一種對「規模」的敬畏——當一百個工程師要在同一份代碼庫裡活十年，自由的代價太高，框架替你把守的秩序，反而是最珍貴的自由。**
 
 > 🔍 老手視角──真正的門道
-> Angular 常被前端潮流圈唱衰，卻在企業內網世界穩如泰山——因為它紅的真正原因不是「潮」，而是**它把後端工程的紀律（DI、強型別、分層架構）搬進了前端**，正中大型組織「可維護、可審計、可交接」的命門。選型的門道是看團隊形態：**十人以下的產品迭代選 React 的靈活；百人級、長生命週期的企業系統，Angular 的架構約束反而是省錢的**（新人上手慢，但整個系統十年不爛帳）。可落地的洞見：Signals 的引入是 Angular 補上細粒度響應式的關鍵一役，正把它與 Solid/Svelte 的效能差距抹平——盯著這條線，別再拿五年前的 Zone.js 印象評判今天的它。
+> Angular 常被前端潮流圈唱衰，卻在企業內網世界穩如泰山——因為它紅的真正原因不是「潮」，而是**它把後端工程的紀律（DI、強型別、分層架構）搬進了前端**，正中大型組織「可維護、可審計、可交接」的命門。選型的門道是看團隊形態：**十人以下的產品迭代選 React 的靈活；百人級、長生命週期的企業系統，Angular 的架構約束反而是省錢的**（新人上手慢，但整個系統十年不爛帳）。可落地的洞見：Signals 的引入是 Angular 補上細粒度響應式的關鍵一役，把它與 Solid/Svelte 的效能差距大幅抹平——這件事在 2026 年的 Angular 22 上已經塵埃落定（zoneless 穩定、Zone.js 走入選配），別再拿五年前的舊印象評判今天的它。
 
 ---
 
@@ -166,11 +166,11 @@
 **標籤**：`#WebGL` `#WebGPU` `#3D渲染` `#場景圖` `#GLSL` `#元宇宙` `#空間計算`
 **Repo**：`https://github.com/mrdoob/three.js`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 102k｜核心維護者 Ricardo Cabello（Mr.doob）＋社群｜貢獻者 1,900+｜授權 MIT｜主語言 JavaScript
+**GitHub 體檢**：⭐ 約 113k｜核心維護者 Ricardo Cabello（Mr.doob）＋社群｜貢獻者 1,900+｜授權 MIT｜主語言 JavaScript
 
 **起源**：由西班牙開發者 Ricardo Cabello（網名 **Mr.doob**）於 2010 年發起。當時瀏覽器剛有了 **WebGL**——一套幾乎照搬 OpenGL ES 的底層 3D API，強大但反人類：要在網頁畫一個會轉的立方體，你得手寫頂點著色器、管理緩衝區、算投影矩陣，動輒數百行。Three.js 的使命就是把這套硬核圖形學封裝成人類能理解的物件語言，讓「網頁做 3D」從博士級技藝降維成前端工程師也能上手的活。
 
-**技術核心**：它的核心抽象是一套經典的**場景圖（Scene Graph）** 三件套——**Scene（場景）+ Camera（相機）+ Renderer（渲染器）**，物件以父子階層組織、變換矩陣沿樹逐層繼承。你操作的是 **Geometry（幾何，頂點與面的資料結構）**、**Material（材質，決定表面如何響應光）**、**Mesh（幾何+材質的可渲染實體）**、**Light（光源）** 這些高階概念，Three.js 在底層把它們翻譯成 WebGL 的 draw call、著色器程式與緩衝上傳。它內建 **PBR（Physically Based Rendering，基於物理的渲染）** 材質、陰影貼圖、後處理管線、以及 glTF/OBJ 等模型格式載入器。效能關鍵在於**減少 draw call**——透過 `InstancedMesh`（實例化渲染，一次 draw call 畫上萬個重複物件）與幾何合併壓榨 GPU。近年它正把渲染後端從 WebGL 遷往 **WebGPU**（更貼近現代 GPU、支援 compute shader），並推出 **TSL（Three.js Shading Language）** 讓著色器能跨 WebGL/WebGPU 後端書寫。
+**技術核心**：它的核心抽象是一套經典的**場景圖（Scene Graph）** 三件套——**Scene（場景）+ Camera（相機）+ Renderer（渲染器）**，物件以父子階層組織、變換矩陣沿樹逐層繼承。你操作的是 **Geometry（幾何，頂點與面的資料結構）**、**Material（材質，決定表面如何響應光）**、**Mesh（幾何+材質的可渲染實體）**、**Light（光源）** 這些高階概念，Three.js 在底層把它們翻譯成 WebGL 的 draw call、著色器程式與緩衝上傳。它內建 **PBR（Physically Based Rendering，基於物理的渲染）** 材質、陰影貼圖、後處理管線、以及 glTF/OBJ 等模型格式載入器。效能關鍵在於**減少 draw call**——透過 `InstancedMesh`（實例化渲染，一次 draw call 畫上萬個重複物件）與幾何合併壓榨 GPU。它已把渲染後端的重心從 WebGL 移向 **WebGPU**（r171 起 `WebGPURenderer` 轉正、更貼近現代 GPU 且支援 compute shader），並在 r184 讓 **TSL（Three.js Shading Language）** 轉正——著色器只需寫一份 JS 風格的節點圖，就能同時轉譯成 WGSL（WebGPU）與 GLSL（WebGL2）兩種後端，換渲染器往往只是改一行 import；沒有 WebGPU 的少數瀏覽器會自動退回 WebGL2，新舊裝置兩頭兼顧。
 
 **解決的痛點**：想在瀏覽器做 3D 產品展示、資料視覺化、遊戲、數位孿生，卻被 WebGL 的底層複雜度勸退的剛性門檻。
 
@@ -205,7 +205,7 @@
 **標籤**：`#編譯期框架` `#無VirtualDOM` `#Runes` `#細粒度響應式` `#零執行時` `#Rich-Harris`
 **Repo**：`https://github.com/sveltejs/svelte`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 80k｜核心維護者 Rich Harris ＋ Svelte 團隊｜貢獻者 800+｜授權 MIT｜主語言 TypeScript／JavaScript
+**GitHub 體檢**：⭐ 約 87k｜核心維護者 Rich Harris ＋ Svelte 團隊｜貢獻者 800+｜授權 MIT｜主語言 TypeScript／JavaScript
 
 **起源**：由《紐約時報》互動記者 **Rich Harris**（也是 Rollup 作者）於 2016 年發起。他對「框架執行時開銷」有著記者式的實用主義不滿——為什麼使用者的瀏覽器要下載一個 React/Vue 執行時，只為了讓框架在**執行期**幫你算 diff？Svelte 提出一個離經叛道的答案：**把框架的工作全部搬到編譯期做完，執行時什麼框架都不留。**
 
@@ -244,11 +244,11 @@
 **標籤**：`#原子化CSS` `#Utility-first` `#JIT` `#DesignTokens` `#靜態萃取` `#DX`
 **Repo**：`https://github.com/tailwindlabs/tailwindcss`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 83k｜核心維護者 Adam Wathan ＋ Tailwind Labs｜貢獻者 300+｜授權 MIT｜主語言 TypeScript／CSS
+**GitHub 體檢**：⭐ 約 96k｜核心維護者 Adam Wathan ＋ Tailwind Labs｜貢獻者 300+｜授權 MIT｜主語言 TypeScript／CSS
 
 **起源**：由 Adam Wathan 於 2017 年發起。他對傳統 CSS 開發的「命名之痛」忍無可忍——為了套幾個樣式，要絞盡腦汁想 class 名稱（`.card-title-wrapper-inner`？）、要在 HTML 與越滾越大的 CSS 檔之間來回跳、還永遠不敢刪任何一條 CSS 深怕哪裡在用。他寫了一篇著名的〈CSS Utility Classes and "Separation of Concerns"〉挑戰「內容與樣式必須分離」的教條，Tailwind 就是這個異端主張的具現化。
 
-**技術核心**：它的核心是 **Utility-first（原子化優先）**——不寫語義 class，而是直接在 HTML 元素上組合大量單一用途的原子類：`flex items-center gap-4 px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600`。每個 class 只做一件事、對應一條 CSS。這聽起來像倒退回 inline style，但關鍵差異在於它們**受一套設計 token（spacing、color、typography 的比例尺度）約束**——你不是隨手寫 `13px`，而是從 `p-3`/`p-4` 這種一致的尺度裡選，天生產出視覺協調的介面。工程上的殺招是 **JIT（Just-in-Time）編譯器 + 靜態萃取（static extraction）**：建構時 Tailwind **掃描你的原始碼字串**，只**產生你真正用到的那些 class 的 CSS**，未用的一律不生成。這讓最終的 CSS 檔小到極致（一個大型專案往往只有幾 KB 到十幾 KB gzip），徹底根除了傳統 CSS「只增不減、越滾越肥」的癌變。因為 class 是原子且可複用的，樣式表大小**趨近於一個上限、與專案規模解耦**。（2025 年的 **v4** 更把引擎以 Rust 重寫（代號 Oxide）、掃描與建構快上數倍，並轉向 **CSS-first 配置**——用 `@import "tailwindcss"` 與 `@theme` 指令直接在 CSS 裡定義設計 token，舊的 `tailwind.config.js` 退為選配。）
+**技術核心**：它的核心是 **Utility-first（原子化優先）**——不寫語義 class，而是直接在 HTML 元素上組合大量單一用途的原子類：`flex items-center gap-4 px-6 py-3 rounded-lg bg-blue-500 hover:bg-blue-600`。每個 class 只做一件事、對應一條 CSS。這聽起來像倒退回 inline style，但關鍵差異在於它們**受一套設計 token（spacing、color、typography 的比例尺度）約束**——你不是隨手寫 `13px`，而是從 `p-3`/`p-4` 這種一致的尺度裡選，天生產出視覺協調的介面。工程上的殺招是 **JIT（Just-in-Time）編譯器 + 靜態萃取（static extraction）**：建構時 Tailwind **掃描你的原始碼字串**，只**產生你真正用到的那些 class 的 CSS**，未用的一律不生成。這讓最終的 CSS 檔小到極致（一個大型專案往往只有幾 KB 到十幾 KB gzip），徹底根除了傳統 CSS「只增不減、越滾越肥」的癌變。因為 class 是原子且可複用的，樣式表大小**趨近於一個上限、與專案規模解耦**。（2025 年初發布的 **v4** 把引擎以 Rust 重寫（代號 Oxide）、掃描與建構快上數倍，並轉向 **CSS-first 配置**——用 `@import "tailwindcss"` 與 `@theme` 指令直接在 CSS 裡定義設計 token，舊的 `tailwind.config.js` 退為選配；截至 2026 年中已迭代到 **v4.3**，陸續補上 `text-shadow-*`、`mask-*`、原生捲軸樣式等工具類與更完整的舊瀏覽器相容，CSS-first 路線已從「新賣點」變成穩定的既定現實。）
 
 **解決的痛點**：CSS 命名地獄、樣式表無限膨脹、改一處樣式怕波及全站的「不敢刪」恐懼、以及 HTML/CSS 兩檔來回切換的上下文切換成本。
 
@@ -283,11 +283,11 @@
 **標籤**：`#元件驅動開發` `#設計系統` `#視覺測試` `#沙盒` `#Story` `#文件化`
 **Repo**：`https://github.com/storybookjs/storybook`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 85k｜核心維護者 Storybook 團隊（Chromatic 公司主導）｜貢獻者 1,900+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 90k｜核心維護者 Storybook 團隊（Chromatic 公司主導）｜貢獻者 1,900+｜授權 MIT｜主語言 TypeScript
 
 **起源**：2016 年以「React Storybook」之名誕生（最初由 Arunoda Susiripala 等人打造），後演化為框架無關的獨立工具。它解決一個所有元件化團隊都遇過的尷尬：**你寫了一個 `<Button>`，要看它 loading、disabled、danger 各種狀態長怎樣，難道要先把整個 App 跑起來、一路點進某個藏在三層路由後的頁面？** Storybook 讓元件脫離應用、在一個獨立沙盒裡「自己活給你看」。
 
-**技術核心**：它的核心概念是 **Story（故事）**——你為一個元件的每一種狀態寫一個 story（`Button.stories.tsx` 裡的 `Primary`、`Disabled`、`Loading`），Storybook 把這些 story 收集起來，在一個**與主應用完全隔離的開發伺服器**裡逐一渲染成可互動的實例。這正是 **CDD（Component-Driven Development，元件驅動開發）** 的落地：先在隔離環境把元件的各種邊界狀態打磨到完美，再組裝進頁面。它框架無關（React/Vue/Svelte/Angular/Web Components 通吃），靠一套 **addon（外掛）** 生態擴展能力——`Controls`（用旋鈕即時調 props 看效果）、`Actions`（捕捉事件回呼）、`a11y`（無障礙檢測）、`Interactions`（用 play function 寫元件級互動測試並在瀏覽器重播）、`Docs`（從 story 自動生成元件文件與 API 表）。再往上，配合 Chromatic 這類服務能做**視覺回歸測試（visual regression testing）**：每次提交自動截圖比對每個 story 的像素差異，UI 一有意外變動就在 CI 攔下——這讓「設計系統」從一份 Figma 稿變成有自動化守門的活文件。
+**技術核心**：它的核心概念是 **Story（故事）**——你為一個元件的每一種狀態寫一個 story（`Button.stories.tsx` 裡的 `Primary`、`Disabled`、`Loading`），Storybook 把這些 story 收集起來，在一個**與主應用完全隔離的開發伺服器**裡逐一渲染成可互動的實例。這正是 **CDD（Component-Driven Development，元件驅動開發）** 的落地：先在隔離環境把元件的各種邊界狀態打磨到完美，再組裝進頁面。它框架無關（React/Vue/Svelte/Angular/Web Components 通吃），靠一套 **addon（外掛）** 生態擴展能力——`Controls`（用旋鈕即時調 props 看效果）、`Actions`（捕捉事件回呼）、`a11y`（無障礙檢測）、`Interactions`（用 play function 寫元件級互動測試並在瀏覽器重播）、`Docs`（從 story 自動生成元件文件與 API 表）。再往上，配合 Chromatic 這類服務能做**視覺回歸測試（visual regression testing）**：每次提交自動截圖比對每個 story 的像素差異，UI 一有意外變動就在 CI 攔下——這讓「設計系統」從一份 Figma 稿變成有自動化守門的活文件。2025 年起的 **Storybook 9／10** 更把這些測試型 addon 收攏進與 **Vitest** 深度整合的核心：同一份 story 既是 UI 文件、也直接變成可由 Vitest 執行的元件測試（互動、a11y、覆蓋率），取代舊的 Jest-based test-runner，核心體積也因此明顯瘦身。
 
 **解決的痛點**：元件開發要反覆手動進入應用深處才能看到、UI 狀態難窮舉測試、設計系統文件與程式碼脫節腐爛的老問題。
 
@@ -322,7 +322,7 @@
 **標籤**：`#全棧框架` `#Svelte` `#Vite` `#SSR` `#Adapter` `#檔案路由` `#零執行時`
 **Repo**：`https://github.com/sveltejs/kit`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 19k｜核心維護者 Rich Harris ＋ Svelte 團隊｜貢獻者 700+｜授權 MIT｜主語言 TypeScript／JavaScript
+**GitHub 體檢**：⭐ 約 21k｜核心維護者 Rich Harris ＋ Svelte 團隊｜貢獻者 700+｜授權 MIT｜主語言 TypeScript／JavaScript
 
 **起源**：由 Svelte 團隊（Rich Harris 主導）打造，1.0 於 2022 年底發布。如果說 Svelte 是「UI 層的編譯器」，那 SvelteKit 就是它的**官方全棧上層框架**——對標 Next.js 之於 React。它要回答的問題是：一個用 Svelte 寫的專案，路由、SSR、資料載入、API endpoint、部署適配該怎麼一站式解決，而不必用戶自己拼裝散件。
 
@@ -361,7 +361,7 @@
 **標籤**：`#伺服器狀態` `#快取` `#SWR` `#資料同步` `#去重` `#背景更新` `#框架無關`
 **Repo**：`https://github.com/TanStack/query`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 44k｜核心維護者 Tanner Linsley ＋ TanStack 團隊｜貢獻者 800+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 50k｜核心維護者 Tanner Linsley ＋ TanStack 團隊｜貢獻者 800+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 Tanner Linsley 於 2019 年以 **React Query** 之名發起，後隨支援 Vue/Solid/Svelte 而更名 TanStack Query。它擊中一個被誤解多年的痛點：前端社群長期把 **Redux 這類全域狀態庫**拿去管「從伺服器抓來的資料」，結果寫一堆 `loading`/`error`/`data` 的樣板、手動處理快取與失效，苦不堪言。Tanner 一針見血地區分了**「客戶端狀態」與「伺服器狀態」是兩種根本不同的東西**——後者是遠端的、非同步的、會過期的、你並不真正擁有的。
 
@@ -400,7 +400,7 @@
 **標籤**：`#設計系統` `#Radix` `#Tailwind` `#Copy-Paste` `#無依賴黑盒` `#CLI` `#可擁有`
 **Repo**：`https://github.com/shadcn-ui/ui`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 80k｜核心維護者 shadcn（Hunter）｜貢獻者 500+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 118k｜核心維護者 shadcn（Hunter）｜貢獻者 500+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由開發者 **shadcn**（Vercel 團隊成員）於 2023 年發起，一年內火箭式竄紅。它挑戰了元件庫這門生意存在多年的預設模式——傳統元件庫（MUI、Ant Design）是 `npm install` 一個黑盒，你被鎖在它的 API 與樣式體系裡，想改個圓角或動畫得跟它的抽象層搏鬥。shadcn 拋出一句幾乎是異端的口號：**「This is not a component library. It's how you build your component library.」**（這不是元件庫，而是你打造自己元件庫的方式。）
 
@@ -410,7 +410,7 @@
 
 **理論基礎**：**Headless UI（無頭 UI）** 範式——把「行為/無障礙」與「外觀」徹底解耦；以及軟體工程的**「程式碼所有權（code ownership）優於依賴黑盒」**主張。
 
-**在 AI Agent 時代的角色**：Shadcn UI 是**當前 AI 生成 UI 的頭號元件底座**——v0 的產出、無數 AI codegen 的預設 UI 全建立在它之上。原因是它的元件是**純原始碼（Tailwind + Radix，無私有 API 黑盒）**，LLM 生成與修改時完全透明可控、無需理解某個閉源元件庫的專有抽象；且它與 Tailwind 的天作之合正好是 AI 最擅長生成的樣式語言。它幾乎定義了「AI 時代的介面預設長相」。
+**在 AI Agent 時代的角色**：Shadcn UI 是**當前 AI 生成 UI 的頭號元件底座**——v0 的產出、無數 AI codegen 的預設 UI 全建立在它之上。原因是它的元件是**純原始碼（Tailwind + Radix，無私有 API 黑盒）**，LLM 生成與修改時完全透明可控、無需理解某個閉源元件庫的專有抽象；且它與 Tailwind 的天作之合正好是 AI 最擅長生成的樣式語言。它幾乎定義了「AI 時代的介面預設長相」。2025 年起官方推出的 **MCP Server**（`shadcn registry mcp`）更進一步，讓 AI coding agent 能直接讀 registry、用自然語言搜尋並把元件安裝進專案——連「複製貼上」這個動作都交給 agent 代勞，shadcn 因此從「AI 生成 UI 的樣式母語」，進化成「AI agent 能直接操作的元件供應鏈」。
 
 **新人須知（大廠第一週）**：①現代 React/Next.js 專案（尤其新創與 AI 產品）你極可能一進去就看到 `components/ui/` 底下一堆 shadcn 元件。②最少要會：用 `npx shadcn add <component>` 把元件拉進專案、理解**這些檔案是你的**可以直接改、以及它依賴 Radix + Tailwind 的分工。③最常踩的雷——**把它當普通 npm 套件等升級**：它沒有「版本升級」，元件進了你的 repo 就是你的，官方更新了你得手動 re-copy 並 merge 差異；新手常誤以為改壞了能靠 `npm update` 救回來。還有漏裝 Radix peer 依賴或 Tailwind 設定沒配好導致樣式全崩。
 
@@ -439,7 +439,7 @@
 **標籤**：`#狀態管理` `#極簡` `#無Provider` `#Hook` `#不可變` `#pmndrs` `#框架無關核心`
 **Repo**：`https://github.com/pmndrs/zustand`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 48k｜核心維護者 Poimandres（pmndrs）／Daishi Kato 等｜貢獻者 300+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 58k｜核心維護者 Poimandres（pmndrs）／Daishi Kato 等｜貢獻者 300+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由開源集體 **Poimandres（pmndrs，也是 react-three-fiber、Jotai、Valtio 的搖籃）** 於 2019 年推出，Daishi Kato 是核心推手。它是對 **Redux 繁瑣儀式**的直接反叛——Redux 要 action、reducer、dispatcher、middleware、還要用 Provider 把整棵樹包起來，為了改一個計數器要碰四五個檔案。Zustand（德文「狀態」）的態度是：**狀態管理不該是一場宗教儀式，它可以只是一個 Hook。**
 
@@ -478,11 +478,11 @@
 **標籤**：`#原子化CSS` `#零執行時` `#靜態萃取` `#型別安全` `#DesignTokens` `#Recipes` `#ChakraUI團隊`
 **Repo**：`https://github.com/chakra-ui/panda`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 5k｜核心維護者 Segun Adebayo ＋ Chakra UI 團隊｜貢獻者 100+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 6k｜核心維護者 Segun Adebayo ＋ Chakra UI 團隊｜貢獻者 100+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 **Chakra UI 的作者 Segun Adebayo** 與其團隊於 2023 年推出。它誕生於一個明確的技術轉折點——**CSS-in-JS（styled-components、Emotion）** 曾以「在 JS 裡寫樣式、動態能力強」風靡一時，卻在 **React Server Components 時代撞牆**：這些庫依賴執行時在瀏覽器動態注入樣式，與 RSC「伺服器端渲染、不帶執行時」的模型天生衝突，還有序列化與效能開銷。Panda CSS 要提供的是「保留 CSS-in-JS 的優雅 DX 與型別安全，但把樣式生成全部搬到編譯期、執行時歸零」的新解法。
 
-**技術核心**：它的核心是 **Zero-Runtime（零執行時）+ 編譯期靜態萃取（build-time static extraction）**。你用它提供的 `css()`、`styled()`、`cva()` 等函式在 JS/TS 裡寫樣式，**Panda 的建構期工具會靜態分析你的原始碼、把這些樣式呼叫萃取出來，預先生成靜態的原子化 CSS 檔案**，執行時**沒有任何 JS 在跑著注入樣式**——最終產物就是純 CSS，效能與純手寫無異。它同時吃到**原子化 CSS 的體積優勢**：相同的樣式宣告在全站共用同一個原子類，CSS 體積與規模解耦。它的另一大賣點是**端到端型別安全**：你在 `panda.config.ts` 定義的設計 token（顏色、間距、字體）會被生成成 TypeScript 型別，寫樣式時 `color: 'brand.500'` 有自動補全、拼錯即編譯報錯——這是 Tailwind 的字串類名難以企及的。它還提供 **Recipes（`cva`，樣式變體配方）** 與 **Patterns（佈局原語如 `stack`、`grid`）**，把「元件有幾種樣式變體」用型別安全的結構化方式描述。本質上，它想同時拿下 **Tailwind 的原子化與零執行時、CSS-in-JS 的 DX 與型別安全**兩邊的好處。
+**技術核心**：它的核心是 **Zero-Runtime（零執行時）+ 編譯期靜態萃取（build-time static extraction）**。你用它提供的 `css()`、`styled()`、`cva()` 等函式在 JS/TS 裡寫樣式，**Panda 的建構期工具會靜態分析你的原始碼、把這些樣式呼叫萃取出來，預先生成靜態的原子化 CSS 檔案**，執行時**沒有任何 JS 在跑著注入樣式**——最終產物就是純 CSS，效能與純手寫無異。它同時吃到**原子化 CSS 的體積優勢**：相同的樣式宣告在全站共用同一個原子類，CSS 體積與規模解耦。它的另一大賣點是**端到端型別安全**：你在 `panda.config.ts` 定義的設計 token（顏色、間距、字體）會被生成成 TypeScript 型別，寫樣式時 `color: 'brand.500'` 有自動補全、拼錯即編譯報錯——這是 Tailwind 的字串類名難以企及的。它還提供 **Recipes（`cva`，樣式變體配方）** 與 **Patterns（佈局原語如 `stack`、`grid`）**，把「元件有幾種樣式變體」用型別安全的結構化方式描述。本質上，它想同時拿下 **Tailwind 的原子化與零執行時、CSS-in-JS 的 DX 與型別安全**兩邊的好處。這套打法最有力的驗證來自它自己的娘家：重寫後的 **Chakra UI v3** 直接把樣式引擎換成 Panda CSS（元件行為邏輯則交給建立在 Zag.js 狀態機之上的 Ark UI）——等於原作者用自己旗下最大的 React 元件庫，替 Panda 的零執行時打法做了一次生產級驗證。
 
 **解決的痛點**：CSS-in-JS 執行時開銷與 RSC 不相容、Tailwind 字串類名缺乏型別安全、以及設計 token 難以在樣式中被靜態檢查的痛。
 
