@@ -10,7 +10,7 @@
 **標籤**：`#靜態分析` `#SAST` `#程式碼質量` `#技術債` `#規則引擎` `#Quality-Gate` `#Java`
 **Repo**：`https://github.com/SonarSource/sonarqube`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 9k（sonarqube 主庫）｜核心維護者 SonarSource 公司團隊｜貢獻者 200+｜授權 LGPL-3.0（Community Edition）｜主語言 Java／TypeScript
+**GitHub 體檢**：⭐ 約 11k（sonarqube 主庫，2026 年查證約 10.8k）｜核心維護者 SonarSource 公司團隊｜貢獻者 200+｜授權 LGPL-3.0（2024 年底品牌更名：Community Edition → **SonarQube Community Build**，SonarQube 本體同步改稱 SonarQube Server）｜主語言 Java／TypeScript
 
 **起源**：由法國公司 **SonarSource**（Freddy Mallet、Olivier Gaudin、Simon Brandhof）於 2007 年以 **Sonar** 之名創立。當年團隊 code review 只能靠人肉抓風格與明顯錯誤，「這段程式碼到底有多少技術債、多少潛在漏洞」完全沒有客觀量尺。SonarQube 就是要把「品質」從主觀吵架，變成一塊**能掛在 CI 上、過不了就擋 merge 的鐵閘門**。
 
@@ -20,7 +20,7 @@
 
 **理論基礎**：**SQALE**（Software Quality Assessment based on Lifecycle Expectations）技術債評估方法論，以及「Clean as You Code」增量治理範式。
 
-**在 AI Agent 時代的角色**：它是 **LLM 生成程式碼的品質守門員**——AI 一次吐出上百行，人眼根本審不完，SonarQube 能自動擋下 AI 幻覺出的 SQL injection 與資源洩漏；反過來，掃出的 issue 也能餵給 AI Agent 做**一鍵自動修復（auto-fix）**，形成「掃描—修復—再掃描」的閉環。
+**在 AI Agent 時代的角色**：它是 **LLM 生成程式碼的品質守門員**——AI 一次吐出上百行，人眼根本審不完，SonarQube 能自動擋下 AI 幻覺出的 SQL injection 與資源洩漏。這已經不只是想像：官方已推出 **AI CodeFix**（用 LLM——如 Claude Sonnet 4／GPT-5.1——針對掃到的 issue 直接生成修復建議）與 **AI Code Assurance**（把 AI 生成的程式碼標記出來、套用比人寫程式碼更嚴格的 Quality Gate），把「掃描—修復—再掃描」的閉環做成了正式產品功能。
 
 **新人須知（大廠第一週）**：①你的 PR 送出後，CI 上那個叫 `SonarQube` / `Sonar Quality Gate` 的檢查若變紅，merge 鈕就是灰的——你會第一時間撞見它。②最少要會：讀懂 issue 面板的三分類與嚴重度、跑 `sonar-scanner`、看懂 Quality Gate 為什麼 fail（多半是新程式碼覆蓋率不足或有 blocker）。③最常踩的雷——**跟誤報（false positive）死磕**。它不是神，會有誤判；正確姿勢是用 `// NOSONAR` 或標記 won't-fix 並說明理由，而不是硬改出更醜的程式碼去哄過規則。
 
@@ -49,7 +49,7 @@
 **標籤**：`#壓力測試` `#效能測試` `#Python` `#gevent` `#協程` `#分散式` `#Load-Testing`
 **Repo**：`https://github.com/locustio/locust`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 25k｜核心維護者 Jonatan Heyman ＋ Lars Holmberg 等｜貢獻者 300+｜授權 MIT｜主語言 Python
+**GitHub 體檢**：⭐ 約 28k｜核心維護者 Jonatan Heyman ＋ Lars Holmberg 等｜貢獻者 300+｜授權 MIT｜主語言 Python
 
 **起源**：由 Jonatan Heyman 等人約 2011 年發起。當年壓測界的老大是 JMeter，但它的 XML 設定檔笨重、GUI 綁死、而且**每個虛擬用戶開一條作業系統執行緒**——想模擬幾萬人就得吃掉幾萬條 thread，單機根本壓不上去。Locust（蝗蟲）的名字很直白：**一大群輕量的蟲子一起啃你的伺服器**，而每隻蟲子只是一段你用 Python 寫的行為腳本。
 
@@ -79,7 +79,7 @@
 > **Locust 最聰明的一步，是把「一萬個用戶」從「一萬條執行緒」重新定義成「一萬個協程」——併發的天花板從來不是用戶數，而是你為每個用戶付出的資源代價。**
 
 > 🔍 老手視角──真正的門道
-> Locust 之所以在工程師圈長紅，是因為它把壓測腳本變回了「程式碼」——能進 Git、能 code review、能複用邏輯，這對追求 IaC（Infrastructure as Code）紀律的團隊是決定性的。真正的門道是：**壓測數字本身沒意義，除非它綁著監控**。單看 Locust 報 5000 RPS 沒用，得同時盯 Prometheus 上的 CPU、連線池、GC 曲線，才知道拐點在哪、下一台機器該加在哪一層。可落地的方向：把 Locust ＋ Prometheus ＋ 自動化拐點分析包成一個「容量規劃即服務」，賣給那些「大促前才臨時抱佛腳壓測」的中型電商——他們最怕的就是憑感覺加機器。
+> Locust 之所以在工程師圈長紅，是因為它把壓測腳本變回了「程式碼」——能進 Git、能 code review、能複用邏輯，這對追求 IaC（Infrastructure as Code）紀律的團隊是決定性的。真正的門道是：**壓測數字本身沒意義，除非它綁著監控**。單看 Locust 報 5000 RPS 沒用，得同時盯 Prometheus 上的 CPU、連線池、GC 曲線，才知道拐點在哪、下一台機器該加在哪一層。這條路已經有人在走：核心維護者 Lars Holmberg 本人於 2024 年由 Open Core Ventures 背書創立 **Locust Technologies**，推出託管版 **Locust Cloud**，把「容量規劃即服務」從假設變成真實產品——也印證了「先靠社群信任把工具做成事實標準，再商業化週邊基礎設施」這條路徑，在壓測這種基礎工具上一樣走得通。
 
 ---
 
@@ -88,11 +88,11 @@
 **標籤**：`#瀏覽器自動化` `#CDP` `#Headless-Chrome` `#爬蟲` `#E2E` `#Node.js` `#網頁截圖`
 **Repo**：`https://github.com/puppeteer/puppeteer`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 89k｜核心維護者 Google Chrome 團隊｜貢獻者 500+｜授權 Apache-2.0｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 95k｜核心維護者 Google Chrome 團隊｜貢獻者 500+｜授權 Apache-2.0｜主語言 TypeScript
 
 **起源**：由 **Google 的 Chrome 團隊**於 2017 年發布（客觀事實：出自 Chrome DevTools 團隊之手）。在它之前，控制瀏覽器做自動化幾乎只能靠 Selenium，透過 HTTP 的 WebDriver 協定隔靴搔癢，又慢又脆。Puppeteer 決定**繞過中間層，直接用 Chrome 自己的內部控制協定去驅動它**。
 
-**技術核心**：它的本質是一個 Node.js 函式庫，透過 **CDP（Chrome DevTools Protocol）**——一個基於 WebSocket 的雙向 JSON-RPC 協定——直接指揮 headless（無頭）Chromium。這條路和 Selenium 的 WebDriver（HTTP 往返）本質不同：CDP 是你打開 Chrome 開發者工具時瀏覽器內部在講的那套「母語」，能直接操縱 DOM、攔截網路請求、注入並執行 JS、擷取渲染後的截圖與 PDF、監聽事件，延遲與可控性都是另一個檔次。它能等 SPA（單頁應用）把 JavaScript 跑完、畫面渲染出來後再抓內容，這是傳統 `curl`＋正則爬蟲根本做不到的。`puppeteer-core` 讓你接自己的 Chrome，完整版則自帶一份匹配的 Chromium。
+**技術核心**：它的本質是一個 Node.js 函式庫，透過 **CDP（Chrome DevTools Protocol）**——一個基於 WebSocket 的雙向 JSON-RPC 協定——直接指揮 headless（無頭）Chromium。這條路和 Selenium 的 WebDriver（HTTP 往返）本質不同：CDP 是你打開 Chrome 開發者工具時瀏覽器內部在講的那套「母語」，能直接操縱 DOM、攔截網路請求、注入並執行 JS、擷取渲染後的截圖與 PDF、監聽事件，延遲與可控性都是另一個檔次。它能等 SPA（單頁應用）把 JavaScript 跑完、畫面渲染出來後再抓內容，這是傳統 `curl`＋正則爬蟲根本做不到的。`puppeteer-core` 讓你接自己的 Chrome，完整版則自帶一份匹配的 Chromium。★2026 年現況更新：自 v23（2024 年）起，Puppeteer 已**正式轉正、非實驗性支援 Firefox**——改走 **WebDriver BiDi**（W3C 正在標準化中的跨瀏覽器協定，Gecko／Chromium 都已有實作），於是同一套 API 下 Chrome 走 CDP、Firefox 走 BiDi 並存，不再是外界普遍認知的「純 Chrome 限定」工具。
 
 **解決的痛點**：現代網站重度依賴前端 JS 渲染，靜態抓取拿到的只是空殼；同時 E2E 測試與批量網頁截圖／PDF 生成缺一個穩、快、可程式化的瀏覽器遙控器。
 
@@ -102,7 +102,7 @@
 
 **新人須知（大廠第一週）**：①做爬蟲、自動化截圖、把網頁轉 PDF、或跑 E2E 冒煙測試時，你會第一個想到它。②最少要會：`page.goto()`、`page.$()` / `page.evaluate()` 在頁面上下文執行 JS、`waitForSelector()` 等元素出現。③最常踩的雷——**不等頁面就抓，抓到空值**（沒 `await` 對非同步渲染的等待，是新手 90% 的 flaky 來源）；其次是**被反爬偵測**（headless 指紋、無滑鼠軌跡），以及在 Docker 裡忘了裝 Chromium 相依函式庫導致啟動失敗。
 
-**優點 / 罩門**：CDP 直連速度快、Google 官方維護、API 直觀、生態龐大。罩門是**基本只綁 Chrome/Chromium**（Firefox 支援仍屬實驗性）、**沒有像 Playwright 那樣的自動等待**（要自己寫等待邏輯，容易寫出 flaky 測試），且 headless 容易被高級反爬指紋識破。
+**優點 / 罩門**：CDP 直連速度快、Google 官方維護、API 直觀、生態龐大，且已補上官方穩定的 Firefox 支援。罩門是**沒有像 Playwright 那樣的自動等待**（要自己寫等待邏輯，容易寫出 flaky 測試）、**仍不支援 WebKit／Safari**（跨瀏覽器覆蓋比 Playwright 少一家），且 headless 容易被高級反爬指紋識破。
 
 **競品對照**：
 
@@ -118,7 +118,7 @@
 > **Puppeteer 的高明，在於它不去「模擬」瀏覽器，而是直接拿起 Chrome 的內部遙控器——當你能講瀏覽器的母語（CDP），那些隔著 HTTP 喊話的工具就注定慢你一拍。**
 
 > 🔍 老手視角──真正的門道
-> Puppeteer 紅的真正原因，是它站在 Chrome 的肩膀上——CDP 是瀏覽器自家協定，這種「原廠直供」的地位讓它天生比繞路的 Selenium 快且穩。但選型時要清醒：Puppeteer 是**單瀏覽器的利刃**，Playwright 才是**跨瀏覽器的軍團**。若你只爬 Chrome 能渲染的站、只做內部工具，Puppeteer 更輕更直接；若你要保證產品在 Safari／Firefox 都能跑，別省那點遷移成本。可落地的商業機會：把 Puppeteer 叢集包成「網頁轉結構化資料／Markdown」的 API，直供 RAG 與 AI 訓練管線——這正是 2026 年最缺、最值錢的一種基礎設施。
+> Puppeteer 紅的真正原因，是它站在 Chrome 的肩膀上——CDP 是瀏覽器自家協定，這種「原廠直供」的地位讓它天生比繞路的 Selenium 快且穩。但選型時要清醒：Puppeteer 補上 Firefox 後仍是**雙瀏覽器的利刃**（Chrome＋Firefox），Playwright 才是**三瀏覽器的軍團**（再加 WebKit）。若你只爬 Chrome／Firefox 能渲染的站、只做內部工具，Puppeteer 更輕更直接；若你要保證產品在 Safari 也能跑，那道 WebKit 的門檻還是只有 Playwright 邁得過去，別省那點遷移成本。可落地的商業機會：把 Puppeteer 叢集包成「網頁轉結構化資料／Markdown」的 API，直供 RAG 與 AI 訓練管線——這正是 2026 年最缺、最值錢的一種基礎設施。
 
 ---
 
@@ -127,7 +127,7 @@
 **標籤**：`#CI/CD` `#自動化伺服器` `#Pipeline-as-Code` `#Groovy` `#插件生態` `#Java` `#自架`
 **Repo**：`https://github.com/jenkinsci/jenkins`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 24k｜核心維護者 Jenkins 社群（CDF/Linux 基金會旗下）｜貢獻者 2,000+｜授權 MIT｜主語言 Java
+**GitHub 體檢**：⭐ 約 26k｜核心維護者 Jenkins 社群（CDF/Linux 基金會旗下）｜貢獻者 2,000+｜授權 MIT｜主語言 Java
 
 **起源**：由 **Kohsuke Kawaguchi** 於 2004 年在 Sun Microsystems 內部打造，原名 **Hudson**。2011 年 Oracle 收購 Sun 後與社群就商標鬧翻，社群憤而 fork 出 **Jenkins**，並帶走了絕大多數貢獻者。它是「持續整合／持續交付」這個概念從理論走進千萬工程師日常的最大功臣——在它之前，「build」還是某個工程師手動在自己機器上跑的儀式。
 
@@ -166,7 +166,7 @@
 **標籤**：`#程式碼格式化` `#AST` `#Opinionated` `#前端` `#JavaScript` `#pre-commit`
 **Repo**：`https://github.com/prettier/prettier`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 50k｜核心維護者 Prettier 社群小組｜貢獻者 900+｜授權 MIT｜主語言 JavaScript
+**GitHub 體檢**：⭐ 約 52k｜核心維護者 Prettier 社群小組｜貢獻者 900+｜授權 MIT｜主語言 JavaScript
 
 **起源**：由 **James Long** 於 2017 年發起。當年前端團隊的 PR 有一半留言在吵「分號要不要」「縮排兩格還四格」「這裡該不該換行」——純粹的內耗。Prettier 的立場極端而解脫：**這些爭論全部沒有意義，交給工具，一鍵重排，誰也別吵。**
 
@@ -205,7 +205,7 @@
 **標籤**：`#組態管理` `#IaC` `#Agentless` `#SSH` `#冪等` `#YAML` `#自動化部署`
 **Repo**：`https://github.com/ansible/ansible`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 63k｜核心維護者 Red Hat（IBM）團隊 ＋ 社群｜貢獻者 5,000+｜授權 GPL-3.0｜主語言 Python
+**GitHub 體檢**：⭐ 約 69k｜核心維護者 Red Hat（IBM）團隊 ＋ 社群｜貢獻者 5,000+｜授權 GPL-3.0｜主語言 Python
 
 **起源**：由 **Michael DeHaan** 於 2012 年打造，2015 年被 **Red Hat** 收購。當年配置管理的兩強 Puppet、Chef 都要在每台被管機器上**裝一個常駐 agent**、學一套自家 DSL，門檻不低。Ansible 的立場很反骨：**你的伺服器早就開著 SSH 了，我為什麼還要在上面裝東西？** 它用「無 agent ＋人類可讀的 YAML」把配置管理的門檻砍到腳踝。
 
@@ -215,7 +215,7 @@
 
 **理論基礎**：**基礎設施即程式碼（Infrastructure as Code）**、**冪等性（Idempotency）**與**宣告式期望狀態（Declarative Desired State）**。
 
-**在 AI Agent 時代的角色**：可做「**自然語言運維 Agent**」——工程師說「幫我把這批機器的 nginx 升到某版、順便關掉 TLS 1.0」，AI 生成對應 playbook、先 `--check`（dry-run）預演差異、確認無誤才真正套用，把運維從「敲指令」升級成「下意圖」。
+**在 AI Agent 時代的角色**：這已不只是願景——Red Hat 已在 **Ansible Lightspeed** 中預覽 **MCP（Model Context Protocol）** 支援，讓任何 LLM／AI Agent 能直接呼叫 Ansible Automation Platform 執行 playbook，並搭配 **OPA（Open Policy Agent）** 政策為 AI 的操作畫出護欄，避免它自作主張改壞生產環境。理想的落地流程仍是：工程師說「幫我把這批機器的 nginx 升到某版、順便關掉 TLS 1.0」，AI 生成對應 playbook、先 `--check`（dry-run）預演差異、確認無誤才真正套用，把運維從「敲指令」升級成「下意圖」。
 
 **新人須知（大廠第一週）**：①要批量佈建、配置、部署一群伺服器時，Ansible 幾乎是預設選項；你的第一份「基礎設施程式碼」很可能就是一個 playbook。②最少要會：寫 playbook 的 `tasks` / `modules`、管 inventory、理解「冪等」為什麼是核心、用 `--check` 做乾跑。③最常踩的雷——**在 playbook 裡濫用 `shell` / `command` 模組跑裸指令**，直接破壞冪等性（每次都重跑、狀態不可控）；其次是 **YAML 縮排錯**（空白一亂整個劇本崩）、把密碼明文寫進 playbook（該用 Ansible Vault 加密），以及低估**大規模下 SSH 逐台推送的速度瓶頸**。
 
@@ -244,7 +244,7 @@
 **標籤**：`#單元測試` `#Vite` `#ESM` `#HMR` `#Jest相容` `#TypeScript` `#前端測試`
 **Repo**：`https://github.com/vitest-dev/vitest`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 14k｜核心維護者 Anthony Fu ＋ Vitest 團隊（VoidZero）｜貢獻者 700+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 17k｜核心維護者 Anthony Fu 等人創立、現由 VoidZero 團隊主導日常維護｜貢獻者 700+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 Anthony Fu 等 Vite 生態核心成員於 2021 年發起。當時前端測試的王者是 Meta 的 Jest，但在 Vite 專案裡它格格不入——你得為 Jest 另外配一套 babel／transform，跟 Vite 本身的建構管線**兩套設定各跑各的**，還要跟 ESM 支援搏鬥。Vitest 的想法直接了當：**測試環境為什麼不能直接復用專案本來就有的 Vite 引擎？**
 
@@ -274,7 +274,7 @@
 > **Vitest 最聰明的一步，是根本不自己造引擎——它直接借用你專案裡那台已經發動的 Vite。測試最大的摩擦從來不是斷言怎麼寫，而是「測試環境和真實環境不是同一套」；它把這道裂縫一次縫死。**
 
 > 🔍 老手視角──真正的門道
-> Vitest 的崛起是一場「生態綁定」的教科書：它不跟 Jest 拼功能，而是賭「Vite 會贏下前端建構」——只要 Vite 是你的建構器，Vitest 就是零摩擦的自然延伸。真正的門道是：選測試框架時，別只比 API，要比**「它跟你的建構工具是不是同一套內核」**——雙套內核的維護稅，長期比你想的貴。這也是為什麼 Jest 在非 Vite 世界依然穩固，而在 Vite 世界幾乎被 Vitest 完整替換。
+> Vitest 的崛起是一場「生態綁定」的教科書：它不跟 Jest 拼功能，而是賭「Vite 會贏下前端建構」——只要 Vite 是你的建構器，Vitest 就是零摩擦的自然延伸。真正的門道是：選測試框架時，別只比 API，要比**「它跟你的建構工具是不是同一套內核」**——雙套內核的維護稅，長期比你想的貴。這也是為什麼 Jest 在非 Vite 世界依然穩固，而在 Vite 世界幾乎被 Vitest 完整替換。★2026 年 6 月最新變數：VoidZero（Vite／Vitest／Rolldown／Oxc 背後的公司，由 Evan You 創立）被 **Cloudflare 收購**，雙方公開承諾這套工具鏈維持 MIT 開源、廠商中立，並撥出百萬美元成立獨立生態基金——但「整條建構鏈的維護權集中到單一雲端供應商手上」終究是選型時該記下的風險變數，這正呼應本書反覆強調的鐵律：一個專案紅了之後，背後究竟是誰在買單、誰握有話語權，永遠值得多問一句。
 
 ---
 
@@ -283,11 +283,11 @@
 **標籤**：`#構建工具` `#依賴管理` `#Java` `#POM` `#BOM` `#傳遞依賴` `#Maven-Central`
 **Repo**：`https://github.com/apache/maven`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 4.5k｜核心維護者 Apache Maven PMC｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 5.3k｜核心維護者 Apache Maven PMC｜貢獻者 500+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：由 Jason van Zyl 在 Apache 社群於 2004 年打造。前 Maven 時代的 Java 構建是 Ant 的天下——每個專案自己寫一大坨 XML 定義「怎麼編譯」，而且**所有第三方 JAR 得自己手動下載、手動塞進 classpath**，版本一亂就是傳說中的「JAR hell」。Maven 帶來一句口號：**約定優於配置（Convention over Configuration）**——照標準目錄結構走，構建這件事就不必每次重新發明。
 
-**技術核心**：它的兩大承重能力是**傳遞依賴解析**與 **BOM**。你在 **POM（Project Object Model）**這份 XML 裡用座標（`groupId:artifactId:version`）宣告依賴，Maven 會**自動把「你的依賴的依賴」也一路拉齊**——它建出一棵依賴樹，遇到同一函式庫多版本衝突時，用「**最近者勝（nearest-wins）**」策略仲裁。這解決了手動管 JAR 的惡夢，但也帶來**「鑽石依賴」衝突**這種新麻煩。**BOM（Bill of Materials，物料清單）**則是它治理大型多模組專案的利器：在 `dependencyManagement` 裡集中鎖定一整組函式庫的版本，讓幾十個子模組**引用同一套經過驗證、彼此相容的版本組合**（Spring、JUnit 都提供官方 BOM），根治「A 模組用 5.1、B 模組用 5.3，湊在一起就爆」的地獄。它還定義了標準**生命週期**（compile → test → package → install → deploy），靠 **Maven Central** 這個全球中央倉庫與插件體系運轉。
+**技術核心**：它的兩大承重能力是**傳遞依賴解析**與 **BOM**。你在 **POM（Project Object Model）**這份 XML 裡用座標（`groupId:artifactId:version`）宣告依賴，Maven 會**自動把「你的依賴的依賴」也一路拉齊**——它建出一棵依賴樹，遇到同一函式庫多版本衝突時，用「**最近者勝（nearest-wins）**」策略仲裁。這解決了手動管 JAR 的惡夢，但也帶來**「鑽石依賴」衝突**這種新麻煩。**BOM（Bill of Materials，物料清單）**則是它治理大型多模組專案的利器：在 `dependencyManagement` 裡集中鎖定一整組函式庫的版本，讓幾十個子模組**引用同一套經過驗證、彼此相容的版本組合**（Spring、JUnit 都提供官方 BOM），根治「A 模組用 5.1、B 模組用 5.3，湊在一起就爆」的地獄。它還定義了標準**生命週期**（compile → test → package → install → deploy），靠 **Maven Central** 這個全球中央倉庫與插件體系運轉。醞釀多年的 **Maven 4**（截至 2026 年仍在 release candidate 階段、尚未正式 GA）是一次架構級手術：把過去混在一起的 **build POM（你編輯的那份）與 consumer POM（發布出去讓別人依賴的那份）拆開**，並換上效能更好的 Resolver 2.0 依賴解析器——這是它二十年來對「約定優於配置」哲學最大的一次自我修正，但也代表寫這段文字的當下，它依然是「還沒交卷」的進行式。
 
 **解決的痛點**：Java 的 classpath 地獄與 JAR hell——手動管理成百上千個相依 JAR 及其版本相容性，是前 Maven 時代 Java 工程師最大的隱形時間黑洞。
 
@@ -322,7 +322,7 @@
 **標籤**：`#錯誤監控` `#可觀測性` `#APM` `#Source-Map` `#錯誤聚合` `#分散式追蹤` `#全棧`
 **Repo**：`https://github.com/getsentry/sentry`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 40k｜核心維護者 Sentry（Functional Software）團隊｜貢獻者 1,000+｜授權 FSL／BSL（近年改採來源可得授權）｜主語言 Python／TypeScript
+**GitHub 體檢**：⭐ 約 44k｜核心維護者 Sentry（Functional Software）團隊｜貢獻者 1,000+｜授權 **FSL-1.1**（Functional Source License，由 BSL 演變而來的來源可得授權，發布數年後自動轉為 Apache-2.0）｜主語言 Python／TypeScript
 
 **起源**：由 **David Cramer** 於 2008 年在一個 Django 專案裡當內部工具寫出來、隨後開源。傳統做法是「錯誤寫進 log，出事了再登伺服器 `grep`」——但生產環境每天百萬條 log，真正的例外淹沒其中，且**minify 過的前端錯誤堆疊根本讀不懂**。Sentry 要做的是：**在使用者踩到 bug 的那一刻，就把完整現場、還原成人看得懂的樣子，主動推到你面前。**
 
@@ -332,7 +332,7 @@
 
 **理論基礎**：**錯誤聚合（Error Aggregation）**與**分散式追蹤（Distributed Tracing）**，並逐步對齊 **OpenTelemetry** 可觀測性標準。
 
-**在 AI Agent 時代的角色**：一是它自己的 **AI 錯誤分診與自動修復**（讀堆疊＋相關 commit，直接建議或生成修復 PR）；二是它成了 **LLM 應用的可觀測性後端**——追蹤 prompt、token 用量、模型延遲與失敗，把「AI 為什麼答錯／逾時」也納入監控視野。
+**在 AI Agent 時代的角色**：一是它自家的 AI 除錯代理 **Seer**——走「根因分析→解法辨識→程式碼生成」三段流程，讀堆疊、追 trace、比對程式碼庫，直接生成修復並可選擇交棒給 Claude Code／Cursor／GitHub Copilot 等外部 coding agent 接手落地；二是它成了 **LLM 應用的可觀測性後端**——追蹤 prompt、token 用量、模型延遲與失敗，把「AI 為什麼答錯／逾時」也納入監控視野。
 
 **新人須知（大廠第一週）**：①產品上線後，那個一有例外就在 Slack 叮你、點進去能看到完整堆疊與用戶軌跡的平台，就是 Sentry。②最少要會：`Sentry.init()` 接上 DSN、上傳 source map、綁 release、設告警規則。③最常踩的雷——**忘了上傳 source map**（前端堆疊全是亂碼、等於白裝）；其次是**噪音錯誤炸掉配額**（一個高頻但無害的錯誤把事件額度燒光、真正重要的被淹沒），以及**把用戶 PII（個資）誤傳進事件**觸發合規問題。
 
@@ -361,7 +361,7 @@
 **標籤**：`#跨瀏覽器` `#E2E` `#自動等待` `#瀏覽器自動化` `#Trace-Viewer` `#多語言` `#CDP`
 **Repo**：`https://github.com/microsoft/playwright`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 70k｜核心維護者 Microsoft 團隊｜貢獻者 700+｜授權 Apache-2.0｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 92k｜核心維護者 Microsoft 團隊｜貢獻者 700+｜授權 Apache-2.0｜主語言 TypeScript
 
 **起源**：由 **微軟**於 2020 年發布（客觀事實：核心團隊正是當年在 Google 打造 Puppeteer 的那批人，後來加入微軟）。他們帶著 Puppeteer 的經驗，決心解掉它兩個最痛的限制：**只綁 Chrome**、以及**沒有自動等待導致的測試 flaky**。Playwright 的野心從名字就看得出——它要當**所有瀏覽器**的「劇作家」。
 
@@ -371,7 +371,7 @@
 
 **理論基礎**：**可操作性檢查與自動等待（Actionability / Auto-wait）**模型，以及瀏覽器 context 隔離的並行測試架構。
 
-**在 AI Agent 時代的角色**：它是 **2026 年「AI 操作網頁」的事實標準底座**。透過官方 **Playwright MCP**，AI Agent 能以結構化的可及性快照（accessibility snapshot）而非純截圖來理解頁面、精準定位並操作元素——比純視覺點座標穩定得多，是 AI 自動化網頁任務（訂票、填表、資料採集）最可靠的手腳。
+**在 AI Agent 時代的角色**：它是 **2026 年「AI 操作網頁」的事實標準底座**。除了官方 **Playwright MCP** 讓 AI Agent 以結構化的可及性快照（accessibility snapshot）而非純截圖理解頁面、精準定位並操作元素，微軟更進一步推出 **Playwright CLI／Test Agents**——把 planner／generator／healer 三段式流程包成專為 Claude Code、GitHub Copilot 這類 coding agent 設計的殼層指令，並用 `toMatchAriaSnapshot` 這類「對照可及性樹」的斷言取代脆弱的像素比對，讓 AI 寫測試、修測試的自我迭代迴路完全在無頭瀏覽器裡閉環，比純視覺點座標穩定得多。
 
 **新人須知（大廠第一週）**：①團隊要建 E2E 測試、或要保證產品在多瀏覽器都能跑時，Playwright 幾乎是當下首選；你寫的第一個端對端測試很可能就用它。②最少要會：`page.locator()` 搭 role／text 定位、`expect()` 的 web-first 斷言、fixtures、Trace Viewer 看失敗回放、`codegen` 錄操作。③最常踩的雷——**用 `waitForTimeout` 死等而不用自動等待斷言**（把 Playwright 用回 Puppeteer 的老毛病，測試又變 flaky）；其次是**用脆弱的 CSS／XPath 選擇器**（該優先用 `getByRole`／`getByText` 這類語義定位），以及忘了隔離 context 導致測試互相污染。
 
@@ -400,7 +400,7 @@
 **標籤**：`#日誌採集` `#ELK` `#Fluentd` `#結構化日誌` `#Pipeline` `#CNCF` `#Grok`
 **Repo**：Logstash `https://github.com/elastic/logstash`；Fluentd `https://github.com/fluent/fluentd`
 **面向**：👥 最多人用
-**GitHub 體檢**：Logstash ⭐ 約 14k｜Fluentd ⭐ 約 13k｜維護者 Elastic／CNCF 社群｜授權 Apache-2.0｜主語言 Ruby／C
+**GitHub 體檢**：Logstash ⭐ 約 15k｜Fluentd ⭐ 約 14k｜維護者 Elastic／CNCF 社群｜授權 Logstash 主體 Apache-2.0（`x-pack` 模組另採 Elastic License）／Fluentd Apache-2.0｜主語言 Ruby／C
 
 **起源**：這是**兩個解同一個問題、卻分屬不同陣營的日誌管線**。**Logstash** 由 Jordan Sissel 於 2009 年打造，後來成為 Elastic 家 **ELK（Elasticsearch + Logstash + Kibana）**三件套的中間那個 L。**Fluentd** 由 Sadayuki Furuhashi（Treasure Data）於 2011 年推出，主打「統一日誌層」、後來從 **CNCF 畢業**成為雲原生日誌採集的標準之一。它們共同解決一個古老亂象：**日誌散落在幾百台機器、格式各異、無法集中搜尋。**
 
@@ -439,11 +439,11 @@
 **標籤**：`#監控` `#時序資料庫` `#Pull模型` `#PromQL` `#雲原生` `#CNCF` `#告警`
 **Repo**：`https://github.com/prometheus/prometheus`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 57k｜核心維護者 Prometheus 社群（CNCF）｜貢獻者 900+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 65k｜核心維護者 Prometheus 社群（CNCF）｜貢獻者 900+｜授權 Apache-2.0｜主語言 Go
 
 **起源**：由 **SoundCloud** 的工程師（Matt Proud、Julius Volz）於 2012 年打造，靈感直接源自 Google 內部的監控系統 **Borgmon**。它是繼 Kubernetes 之後**第二個從 CNCF 畢業**的專案——這個「二號畢業生」的身份，本身就說明了它在雲原生棧裡的地位。動態、短命的容器讓傳統「盯固定主機」的監控徹底失效，Prometheus 就是為「監控成千上萬個隨時生滅的容器」而生。
 
-**技術核心**：它的三大殺招是 **pull 模型**、**多維資料模型**與 **PromQL**。**pull（拉）模型**——Prometheus **主動去各目標的 HTTP `/metrics` 端點抓指標**，而非等目標推過來；配合服務發現（K8s、Consul），容器一生出來就被自動發現並開始抓，天然契合動態環境。**多維資料模型**——每個指標是「名稱 ＋ 一組 key-value 標籤（label）」，例如 `http_requests_total{method="POST", status="500"}`，讓你能沿任意維度切片聚合。**PromQL** 是它的靈魂查詢語言，`rate()`、`histogram_quantile()`、`sum by (label)` 這類算子能對時序資料做出極強的即時運算。底層是自研的 **TSDB 儲存引擎**：新樣本先進記憶體中的 **head block**、同時寫入 **WAL（write-ahead log）**保證當機可回復，每兩小時把 head 壓實成不可變的磁碟 block（各帶獨立索引）；壓縮採 **Gorilla 論文**的編碼——時間戳走 **delta-of-delta**、數值走 **XOR**——把樣本壓到平均約 1.3 bytes，效率驚人。長期存儲與跨叢集則靠 **remote write** 把樣本外送 Thanos／Mimir 等後端。告警交給獨立的 **Alertmanager**（去重、分組、路由、靜默），指標暴露靠遍地開花的 **exporter**（如 `node_exporter`）。
+**技術核心**：它的三大殺招是 **pull 模型**、**多維資料模型**與 **PromQL**。**pull（拉）模型**——Prometheus **主動去各目標的 HTTP `/metrics` 端點抓指標**，而非等目標推過來；配合服務發現（K8s、Consul），容器一生出來就被自動發現並開始抓，天然契合動態環境。**多維資料模型**——每個指標是「名稱 ＋ 一組 key-value 標籤（label）」，例如 `http_requests_total{method="POST", status="500"}`，讓你能沿任意維度切片聚合。**PromQL** 是它的靈魂查詢語言，`rate()`、`histogram_quantile()`、`sum by (label)` 這類算子能對時序資料做出極強的即時運算。底層是自研的 **TSDB 儲存引擎**：新樣本先進記憶體中的 **head block**、同時寫入 **WAL（write-ahead log）**保證當機可回復，每兩小時把 head 壓實成不可變的磁碟 block（各帶獨立索引）；壓縮採 **Gorilla 論文**的編碼——時間戳走 **delta-of-delta**、數值走 **XOR**——把樣本壓到平均約 1.3 bytes，效率驚人。2024 年底發布的 **Prometheus 3.0** 是七年來最大一次改版：原生支援 OpenTelemetry 資料攝入、metric／label 名稱開放 UTF-8；醞釀三年的 **原生直方圖（Native Histograms）** 也已在 2025 年底（v3.8）轉為穩定功能，用可變解析度的桶結構取代傳統手刻 bucket，讓 `histogram_quantile()` 算出的延遲分佈精度大幅提升。長期存儲與跨叢集則靠 **remote write**（新版 Remote-Write 2.0 規範可省下六成傳輸位元組）把樣本外送 Thanos／Mimir 等後端。告警交給獨立的 **Alertmanager**（去重、分組、路由、靜默），指標暴露靠遍地開花的 **exporter**（如 `node_exporter`）。
 
 **解決的痛點**：雲原生時代「監控對象隨時生滅」——傳統盯固定 IP／主機的監控在容器叢集裡完全失能；同時缺一套能沿多維度即時查詢、告警的指標系統。
 
@@ -478,11 +478,11 @@
 **標籤**：`#爬蟲` `#Rust` `#Tokio` `#高併發` `#RAG` `#AI語料` `#非同步`
 **Repo**：`https://github.com/spider-rs/spider`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 1.5k（spider-rs）｜核心維護者 Spider（spider-rs／Spider Cloud）團隊｜貢獻者 資料不詳（新興專案）｜授權 MIT｜主語言 Rust
+**GitHub 體檢**：⭐ 約 2.6k（spider-rs，較前次查證成長超過 70%）｜核心維護者 Spider（spider-rs／Spider Cloud）團隊｜貢獻者 資料不詳（新興專案）｜授權 MIT｜主語言 Rust
 
 **起源**：由 spider-rs 團隊在近幾年打造，踩著 LLM 訓練與 RAG 對「海量網頁語料」的爆炸性需求而起。傳統爬蟲王者是 Python 的 Scrapy，但當你要抓的不是幾千頁、而是**數百萬頁餵給大模型**時，Python 的速度天花板就成了硬傷。Spider 的定位很直白：**用 Rust 的併發極限，把整個網際網路盡可能快地抓下來、清乾淨、變成 AI 能吃的語料。**
 
-**技術核心**：它是 **Rust 寫的高併發爬蟲引擎**，殺招是靠 **Tokio 非同步執行時**把併發推到極致——工作竊取（work-stealing）排程器讓上萬條抓取任務在少數執行緒上高效流轉，配合 Rust 的**零成本抽象**與記憶體安全，單機就能達到每秒抓取數千至上萬頁的量級，遠超 Python 爬蟲。它支援串流式抓取、遵守 `robots.txt`，並能整合 headless Chrome（`chromiumoxide`）處理需要 JS 渲染的動態頁面。最關鍵的是它為 **AI 時代量身打造的輸出**：能直接把網頁清洗、轉成乾淨的 **Markdown／純文字**，剝掉導覽列與廣告雜訊，產出可直接進 RAG 向量庫或 LLM 訓練管線的語料，而非一堆待處理的原始 HTML。
+**技術核心**：它是 **Rust 寫的高併發爬蟲引擎**，殺招是靠 **Tokio 非同步執行時**把併發推到極致——工作竊取（work-stealing）排程器讓上萬條抓取任務在少數執行緒上高效流轉，配合 Rust 的**零成本抽象**與記憶體安全，單機就能達到每秒抓取數千至上萬頁的量級，遠超 Python 爬蟲。它支援串流式抓取、遵守 `robots.txt`，並能整合 headless Chrome（`chromiumoxide`）處理需要 JS 渲染的動態頁面，商業版 Spider Cloud 更疊了一層「Unblocker」——偽裝指紋＋輪替代理＋自動重試，難搞的目標站則直接丟去跑全瀏覽器 session 的 Browser Cloud。最關鍵的是它為 **AI 時代量身打造的輸出**：能直接把網頁清洗、轉成乾淨的 **Markdown／JSON／WARC** 等多種格式，剝掉導覽列與廣告雜訊，產出可直接進 RAG 向量庫或 LLM 訓練管線的語料，而非一堆待處理的原始 HTML。
 
 **解決的痛點**：Python 系爬蟲（Scrapy）在「LLM 級資料採集」規模下速度不夠、資源開銷大；且抓回來的原始 HTML 還要另做大量清洗才能餵給模型。
 
@@ -517,11 +517,11 @@
 **標籤**：`#工具鏈` `#Rust` `#格式化` `#Linter` `#CST` `#前端` `#All-in-one`
 **Repo**：`https://github.com/biomejs/biome`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 18k｜核心維護者 Biome 社群團隊｜貢獻者 600+｜授權 MIT｜主語言 Rust
+**GitHub 體檢**：⭐ 約 25k｜核心維護者 Biome 社群團隊｜貢獻者 600+｜授權 MIT／Apache-2.0 雙授權｜主語言 Rust
 
 **起源**：它是 **Rome** 工具鏈的續命者。Rome 由 Babel 之父 Sebastian McKenzie 發起、想用一個工具統一整條 JS 工具鏈，可惜商業化失敗、原專案停擺；社群在 2023 年 fork 出 **Biome** 接棒。它的野心承自 Rome：**用一個 Rust 二進位，同時幹掉 Prettier（格式化）與 ESLint（linting）——結束前端工具鏈「一堆工具、一堆配置」的碎片化。**
 
-**技術核心**：它是 **Rust 寫成的一體化工具鏈**，在單一二進位裡同時提供**格式化器 ＋ linter ＋ import 排序**。承襲 Rome 的技術底子，它用一棵**無損的 CST（Concrete Syntax Tree，具體語法樹）**——保留註解、空白等所有 trivia，這是能同時精準格式化又精準 lint 的基礎。格式化與 Prettier **高度相容（約 97%）**，遷移幾乎無感；lint 內建 **300 多條規則**，涵蓋 ESLint 常用規則集。而它最大的賣點就一個字：**快**——Rust 原生執行，格式化速度可達 Prettier 的**數十倍**，大型 monorepo 上感受尤其明顯。全部配置收攏在單一 `biome.json`，告別 `.prettierrc` ＋ `.eslintrc` ＋ 一堆 plugin 的地獄。
+**技術核心**：它是 **Rust 寫成的一體化工具鏈**，在單一二進位裡同時提供**格式化器 ＋ linter ＋ import 排序**。承襲 Rome 的技術底子，它用一棵**無損的 CST（Concrete Syntax Tree，具體語法樹）**——保留註解、空白等所有 trivia，這是能同時精準格式化又精準 lint 的基礎。格式化與 Prettier **高度相容（約 97%）**，遷移幾乎無感；lint 內建 **300 多條規則**，涵蓋 ESLint 常用規則集。而它最大的賣點就一個字：**快**——Rust 原生執行，格式化速度可達 Prettier 的**數十倍**，大型 monorepo 上感受尤其明顯。全部配置收攏在單一 `biome.json`，告別 `.prettierrc` ＋ `.eslintrc` ＋ 一堆 plugin 的地獄。2025 年 6 月發布的 **Biome v2** 補上關鍵一塊拼圖：用 **GritQL**（一種模式比對式查詢語言）打造外掛系統，讓使用者能寫 `.grit` 檔自訂 lint 規則，同時加入跨檔案分析與**不依賴 `tsc` 的輕量型別推斷**，讓 lint 規則也能做基本的型別感知判斷——但截至目前，這套外掛系統仍只能**回報診斷、還不能自動修復**。
 
 **解決的痛點**：JS/TS 工具鏈的碎片化與慢——Prettier 管格式、ESLint 管品質、各有一套配置與外掛，既要維護兩份設定、又都是 JS 寫的、在大專案上慢。
 
@@ -531,7 +531,7 @@
 
 **新人須知（大廠第一週）**：①在追求極速工具鏈的新前端專案，你會看到 `biome.json` 取代了原本的 Prettier ＋ ESLint 配置。②最少要會：`biome check`（一次跑格式化＋lint）、`biome.json` 基本配置、從 ESLint／Prettier 遷移的 migrate 指令。③最常踩的雷——**以為它能 100% 取代 ESLint 的所有規則**：它的規則數與**外掛（plugin）生態**仍不及 ESLint 龐大的社群規則庫，某些依賴特定 ESLint plugin 的專案暫時搬不過來。
 
-**優點 / 罩門**：快得離譜、一個工具一份配置搞定格式化＋lint、與 Prettier 高度相容。罩門是**規則廣度與外掛生態不及 ESLint**（歷史上長期缺自訂 plugin 能力）、相對年輕、以及少數 ESLint 專屬規則尚無對應。
+**優點 / 罩門**：快得離譜、一個工具一份配置搞定格式化＋lint、與 Prettier 高度相容、v2 起已有 GritQL 外掛系統。罩門是**規則廣度與外掛生態仍不及 ESLint**——2025 年才交出第一版外掛系統，且目前只能診斷、無法自動修復，跟 ESLint 十年份的社群規則庫比仍是新兵；相對年輕，以及少數 ESLint 專屬規則尚無對應。
 
 **競品對照**：
 
@@ -547,7 +547,7 @@
 > **Biome 賭的是一個樸素的道理：前端工程師不該為「排版」和「挑錯」各養一套慢吞吞的 JS 工具、各配一份設定。當 Rust 能把兩件事一秒做完，碎片化本身就成了該被淘汰的技術債。**
 
 > 🔍 老手視角──真正的門道
-> Biome 的機會，來自前端工具鏈長年「碎片化 ＋ 慢」的雙重疲勞——同一個團隊維護 Prettier、ESLint 兩套配置與外掛，本身就是一種內耗。真正的門道是：**Biome 的護城河不是格式化（那 Prettier 已經夠好），而是「一體化 ＋ Rust 速度」的組合價值**——在萬檔級 monorepo 與高頻 AI 迭代場景，這個組合的優勢會被指數放大。但選型要清醒：ESLint 龐大的社群規則與 plugin 生態，是十年沉澱、Biome 短期補不齊的護城河；**是否切換，取決於你有沒有依賴那些冷門 ESLint plugin**——沒有，就大膽換；有，就再等等它的 plugin 系統成熟。
+> Biome 的機會，來自前端工具鏈長年「碎片化 ＋ 慢」的雙重疲勞——同一個團隊維護 Prettier、ESLint 兩套配置與外掛，本身就是一種內耗。真正的門道是：**Biome 的護城河不是格式化（那 Prettier 已經夠好），而是「一體化 ＋ Rust 速度」的組合價值**——在萬檔級 monorepo 與高頻 AI 迭代場景，這個組合的優勢會被指數放大。但選型要清醒：Biome 2025 年才交出第一版 GritQL 外掛系統、且還停在「只能診斷、不能自動修復」階段，跟 ESLint 十年份的社群規則與 plugin 生態比仍是新兵，這道護城河不是一次版本更新就能補齊；**是否切換，取決於你有沒有依賴那些冷門 ESLint plugin**——沒有，就大膽換；有，就再等它的外掛系統補上自動修復能力。
 
 ---
 
