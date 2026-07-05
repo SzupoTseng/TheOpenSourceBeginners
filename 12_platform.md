@@ -12,7 +12,7 @@
 **Repo**：`https://github.com/n8n-io/n8n`
 **面向**：🔥 最新熱度｜👥 最多人用
 
-**GitHub 體檢**：⭐ 約 100k｜核心維護者 n8n GmbH 官方團隊 約 60 人｜貢獻者 500+｜授權 **Sustainable Use License（fair-code，非標準 OSI 開源）**｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 195k（2026 年中已從百 k 級再翻倍）｜核心維護者 n8n GmbH 官方團隊 約 100+ 人（母公司 2025 年 10 月完成 1.8 億美元 C 輪、2026 估值已達 52 億美元、全公司破千人）｜貢獻者 500+｜授權 **Sustainable Use License（fair-code，非標準 OSI 開源）**｜主語言 TypeScript
 
 **起源**：由 Jan Oberhauser 於 2019 年在柏林發起，名字 **n8n** 是「nodemation」（node + automation）的縮寫，唸作「n-eight-n」。當時市場上的自動化霸主是 Zapier、Make（原 Integromat）——強大，但是**閉源、按執行次數收費、且資料全流經別人的雲**。Jan 的立場很硬：自動化這麼核心的東西，企業憑什麼不能自己部署、自己掌控資料？n8n 就是那個「可以搬回自家機房的 Zapier」。
 
@@ -42,7 +42,7 @@
 > **n8n 真正賣的不是「不用寫程式」，而是「把資料主權握回自己手裡」——當自動化流程碰到的是你的客戶名單，能不能私有化部署，就從偏好變成了紅線。**
 
 > 🔍 老手視角──真正的門道
-> n8n 這波爆紅，本質是「反 SaaS 訂閱疲勞 + 資料合規焦慮」兩股力量的匯流：企業被 Zapier 的按次計費與 GDPR 顧慮夾擊，一個能搬回內網的替代品自然水漲船高。選型時真正要看的不是節點多寡，而是**它的 fair-code 授權邊界**——自用沒問題，一旦你想拿它做對外的多租戶託管平台，法務會直接攔下來。可落地的商業機會：在合規敏感的產業（醫療、金融、政府），做一套「n8n 私有化 + 產業專屬節點包 + 稽核日誌」的整合方案——客戶要的從來不是自動化本身，而是「自動化 + 資料不出境 + 每一步都可審計」這個組合。
+> n8n 這波爆紅，本質是「反 SaaS 訂閱疲勞 + 資料合規焦慮」兩股力量的匯流：企業被 Zapier 的按次計費與 GDPR 顧慮夾擊，一個能搬回內網的替代品自然水漲船高。選型時真正要看的不是節點多寡，而是**它的 fair-code 授權邊界**——自用沒問題，一旦你想拿它做對外的多租戶託管平台，法務會直接攔下來。值得留意的一個反差是：n8n 一邊講「資料主權、反雲端鎖定」，一邊自己已經是拿了 2.5 億美元創投、估值 52 億美元的獨角獸——**「開源」與「VC 驅動的商業化」從來不衝突，但也代表它的 fair-code 條款只會朝對公司更有利的方向持續收緊，不要假設今天的授權邊界是永久不變的**。可落地的商業機會：在合規敏感的產業（醫療、金融、政府），做一套「n8n 私有化 + 產業專屬節點包 + 稽核日誌」的整合方案——客戶要的從來不是自動化本身，而是「自動化 + 資料不出境 + 每一步都可審計」這個組合。
 
 ---
 
@@ -52,7 +52,7 @@
 **Repo**：`https://github.com/pocketbase/pocketbase`
 **面向**：🔥 最新熱度
 
-**GitHub 體檢**：⭐ 約 40k｜核心維護者 Gani Georgiev（**近乎單人主導**）｜貢獻者 100+｜授權 MIT｜主語言 Go
+**GitHub 體檢**：⭐ 約 59k｜核心維護者 Gani Georgiev（**近乎單人主導**）｜貢獻者 100+｜授權 MIT｜主語言 Go
 
 **起源**：由保加利亞開發者 **Gani Georgiev** 於 2022 年開源，幾乎是一人專案。它的哲學極端到近乎偏執：**一個後端，就該是一個檔案。** 當 Firebase 把你鎖進 Google 雲、Supabase 要你起一堆容器時，PocketBase 反問——為什麼一個中小型 App 的後端，不能就是一支下載下來 `./pocketbase serve` 就能跑的執行檔？
 
@@ -92,7 +92,7 @@
 **Repo**：`https://github.com/keycloak/keycloak`
 **面向**：👥 最多人用
 
-**GitHub 體檢**：⭐ 約 25k｜核心維護者 **Red Hat 主導**、現為 **CNCF 孵化專案**、社群團隊 約 40 人｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 35k｜核心維護者 **Red Hat 主導**、現為 **CNCF 孵化專案（2023 年加入，至 2026 年仍在 Incubating 階段、尚未畢業）**、社群團隊 約 40 人｜貢獻者 1,000+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：Keycloak 由 **Stian Thorgersen** 等人於 2014 年在 Red Hat 內部啟動並開源。在它之前，企業要做「單一登入（SSO）」，往往得買昂貴的商用 IAM（如 Okta、Ping、CA SiteMinder），或者更慘——**每個服務各自實作一套登入、各自存一份密碼**，這是資安災難的溫床。Keycloak 的使命就是把「身份」這件事**從每個應用裡抽出來，集中成一道統一的防線**。它是純客觀的事實：由 Red Hat 主導，2023 年正式捐給 CNCF 成為孵化專案，是雲原生生態裡身份治理的事實標準之一。
 
@@ -132,7 +132,7 @@
 **Repo**：`https://github.com/paperless-ngx/paperless-ngx`
 **面向**：🔥 最新熱度
 
-**GitHub 體檢**：⭐ 約 25k｜核心維護者 社群接力團隊（paperless-ng 的社群續作）約 10+ 人｜貢獻者 500+｜授權 GPL-3.0｜主語言 Python
+**GitHub 體檢**：⭐ 約 43k｜核心維護者 社群接力團隊（paperless-ng 的社群續作）約 10+ 人｜貢獻者 500+｜授權 GPL-3.0｜主語言 Python
 
 **起源**：這是一條「開源接力棒」的故事：最早是 Daniel Quinn 的 **Paperless**，後由社群 fork 成更現代的 **paperless-ng**，原作者淡出後，社群再度接力成今天由多人維護、持續活躍的 **Paperless-ngx**（ngx = next generation, community edition）。它們共同要殺死的是同一個現代痛點：**家庭與小公司抽屜裡那疊永遠找不到、也永遠不敢丟的紙——帳單、合約、保單、收據。**
 
@@ -172,11 +172,11 @@
 **Repo**：`https://github.com/appwrite/appwrite`
 **面向**：🔥 最新熱度
 
-**GitHub 體檢**：⭐ 約 45k｜核心維護者 Appwrite 官方團隊（創辦人 Eldad Fux）約 40 人｜貢獻者 800+｜授權 BSD-3-Clause｜主語言 PHP／TypeScript
+**GitHub 體檢**：⭐ 約 56k｜核心維護者 Appwrite 官方團隊（創辦人 Eldad Fux）約 40 人｜貢獻者 800+｜授權 BSD-3-Clause｜主語言 PHP／TypeScript
 
 **起源**：由以色列開發者 **Eldad Fux** 於 2019 年發起。他做過無數專案，每次都在重複同一套後端苦役——認證、資料庫、儲存、API。Appwrite 的初衷就是把這套「每個 App 都要重造」的輪子，做成一個**開源、自架、對前端與獨立開發者極度友善**的統一後端平台，直球對決 Firebase。
 
-**技術核心**：★它的核心賣點是**多資料庫抽象的 BaaS 架構**——不同於 PocketBase 綁死 SQLite，Appwrite 在資料層做了一層抽象（早期以 **MariaDB/MySQL** 為主儲存，並持續擴展支援），對開發者暴露的是統一的 **Collections / Documents / Attributes / Indexes** 概念，你不必直接寫 SQL。整體採**容器化微服務架構**：以 Docker Compose 編排一組服務——API 閘道、資料庫、**Redis**（快取與 realtime pub/sub）、佇列 worker、儲存、函式執行器等各司其職。它的模組覆蓋面很全：**Authentication**（30+ 種登入方式，含 OAuth、magic link、手機 OTP）、**Databases**、**Storage**（含圖片轉換與防毒掃描）、**Functions**（多語言 serverless runtime，你上傳一段程式、它容器化執行）、**Realtime**（WebSocket 訂閱）、**Messaging**（推播/郵件/簡訊）。底層 API 核心用 PHP 寫成、跑在自研的 **Utopia PHP** 輕量框架上。它為幾乎所有主流語言（Web/Flutter/Apple/Android/React Native）提供官方 SDK，對「前端出身、想快速補齊後端」的開發者尤其友善。
+**技術核心**：★它的核心賣點是**資料庫抽象層之上的 BaaS 架構**——不同於 PocketBase 綁死 SQLite，Appwrite 在資料層做了一層抽象，對開發者暴露的是統一的 **Collections / Documents / Attributes / Indexes** 概念，你不必直接寫 SQL；★但要誠實澄清一個常被行銷話術模糊掉的點：**截至 2026 年，Appwrite 官方正式支援、生產環境真正落地的儲存引擎仍只有 MariaDB 一種**，PostgreSQL／MySQL／MongoDB adapter 雖已在官方 RFC（#016 database-adapters）中規劃、部分實作已完成，但仍卡在 QA 與整合階段、尚未 GA——選型時別把「未來的多資料庫藍圖」誤當成「今天就能切換的能力」。整體採**容器化微服務架構**：以 Docker Compose 編排一組服務——API 閘道、資料庫、**Redis**（快取與 realtime pub/sub）、佇列 worker、儲存、函式執行器等各司其職。它的模組覆蓋面很全：**Authentication**（30+ 種登入方式，含 OAuth、magic link、手機 OTP）、**Databases**、**Storage**（含圖片轉換與防毒掃描）、**Functions**（多語言 serverless runtime，你上傳一段程式、它容器化執行）、**Realtime**（WebSocket 訂閱）、**Messaging**（推播/郵件/簡訊）。底層 API 核心用 PHP 寫成、跑在自研的 **Utopia PHP** 輕量框架上。它為幾乎所有主流語言（Web/Flutter/Apple/Android/React Native）提供官方 SDK，對「前端出身、想快速補齊後端」的開發者尤其友善。
 
 **解決的痛點**：全棧與獨立開發者不想被 Firebase 鎖進 Google 生態，又需要「認證+資料庫+儲存+函式」開箱即用的一整套後端，且要能自己部署掌控。
 
@@ -212,9 +212,9 @@
 **Repo**：`https://github.com/payloadcms/payload`
 **面向**：🔥 最新熱度
 
-**GitHub 體檢**：⭐ 約 30k｜核心維護者 Payload 團隊（創辦人 James Mikrut；2025 年被 Figma 收購）約 30 人｜貢獻者 300+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 43k（2025 年 6 月被收購時約 35k，收購後持續成長）｜核心維護者 Payload 團隊（創辦人 James Mikrut；2025 年 6 月 17 日被 Figma 收購）約 30 人｜貢獻者 300+｜授權 MIT｜主語言 TypeScript
 
-**起源**：由 **James Mikrut** 於 2021 年前後發起。他做內容網站多年，受夠了傳統 CMS（WordPress、或那些「先在網頁後台點半天才建好資料模型」的 headless CMS）——**資料結構藏在別人的資料庫裡，無法版控、無法型別檢查、無法跟著程式碼一起 code review。** Payload 的立場是徹底的「code-first」：**你的內容模型就是你 repo 裡的一份 TypeScript 設定檔。** 2025 年 Payload 被 **Figma 收購**，聲勢更盛。
+**起源**：由 **James Mikrut** 於 2021 年前後發起。他做內容網站多年，受夠了傳統 CMS（WordPress、或那些「先在網頁後台點半天才建好資料模型」的 headless CMS）——**資料結構藏在別人的資料庫裡，無法版控、無法型別檢查、無法跟著程式碼一起 code review。** Payload 的立場是徹底的「code-first」：**你的內容模型就是你 repo 裡的一份 TypeScript 設定檔。** 2025 年 6 月 Payload 被 **Figma 收購**，聲勢更盛——Figma 官方明確聲明收購後 Payload 維持開源、且會持續投入，短期內對既有用戶不變，一定程度上緩解了「被大廠收購＝專案被雪藏」的常見疑慮，但長期治理權畢竟已轉移到 Figma 手上，這點選型時仍值得放進風險評估。
 
 **技術核心**：★它的靈魂是**「配置即程式碼（config-as-code）的 headless CMS」**。你用 TypeScript 宣告 **Collections（集合）** 與 **Globals**——每個欄位、每條**存取控制規則（access control）**、每個 **hook（生命週期鉤子）**、每個關聯，全寫在版控的 `.ts` 檔裡。Payload 讀這份設定，**自動生成**：一套 REST API、一套 GraphQL API、一個以 React 打造的 Admin 後台，以及**完整的 TypeScript 型別定義**——這意味著你從資料庫到前端呼叫，全鏈路型別安全，改一個欄位，編譯器立刻告訴你哪裡會壞。它的存取控制是**函式級**的（access 是一個回傳布林或查詢過濾的函式，能做到行級、欄位級授權）。資料層上，Payload 3.0 的一大躍進是**原生跑在 Next.js 之內**（直接安裝進 App Router），並透過 **Drizzle ORM** 把儲存後端從早期的 MongoDB 擴展到 **PostgreSQL / SQLite**。它內建認證、草稿與版本、本地化、以及一套「不經過 HTTP、直接在伺服器端呼叫」的 **Local API**，效能極佳。
 
@@ -248,15 +248,15 @@
 
 ## 108　Directus — 一鍵把任何 SQL 資料庫解鎖為無頭 CMS 與數據 API
 
-**標籤**：`#HeadlessCMS` `#Database-first` `#REST` `#GraphQL` `#Node.js` `#Knex` `#資料平台` `#BSL授權`
+**標籤**：`#HeadlessCMS` `#Database-first` `#REST` `#GraphQL` `#Node.js` `#Knex` `#資料平台` `#MSCL授權`
 **Repo**：`https://github.com/directus/directus`
 **面向**：🔥 最新熱度
 
-**GitHub 體檢**：⭐ 約 30k｜核心維護者 Monospace 團隊（Ben Haynes、Rijk van Zanten）約 30 人｜貢獻者 400+｜授權 **Business Source License（BSL 1.1，非傳統 OSI 開源）**｜主語言 TypeScript／Vue
+**GitHub 體檢**：⭐ 約 36k｜核心維護者 Monospace 團隊（Ben Haynes、Rijk van Zanten）約 30 人｜貢獻者 400+｜授權 **Monospace Sustainable Core License（MSCL，源自 Fair Core License；2026 年 5 月隨 v12 發布由 BSL 1.1 轉換而來，非傳統 OSI 開源）**｜主語言 TypeScript／Vue
 
-**起源**：由 **Ben Haynes** 與 **Rijk van Zanten** 主導的 Monospace 團隊打造，歷史可追溯到 2010 年代早期。它與所有 headless CMS 最本質的分歧在於哲學：**別人是「先在 CMS 裡建模、CMS 幫你造一個資料庫」，Directus 反過來——「你已經有資料庫了，我來把它變成 API 和後台」。** 它尊重你既有的、可能已跑了十年的生產資料庫，不強迫你按它的規矩重建。
+**起源**：**Ben Haynes** 早在 **2004 年**就在自己的數位代理商 RANGER Studio 內部打造了 Directus 的雛形——當時它只是提高團隊接案效率的內部 CMS 工具，比「headless CMS」這個詞被發明還早了將近十年。直到 **2012 年前後**，**Rijk van Zanten** 加入把它現代化重寫並推上 GitHub 開源，才逐漸演變成今天由 Monospace 團隊主導的獨立產品。它與所有 headless CMS 最本質的分歧在於哲學：**別人是「先在 CMS 裡建模、CMS 幫你造一個資料庫」，Directus 反過來——「你已經有資料庫了，我來把它變成 API 和後台」。** 它尊重你既有的、可能已跑了十年的生產資料庫，不強迫你按它的規矩重建。
 
-**技術核心**：★它的核心奇招是**「database-first：一鍵把任何現有 SQL 資料庫解鎖成無頭 CMS」**。啟動時，Directus **內省（introspect）你既有資料庫的 schema**——讀出表、欄位、外鍵關聯，**不改動、不接管你的資料結構**，直接在其上生成一套動態的 **REST + GraphQL API** 與一個叫 **Data Studio** 的 Vue 管理後台。底層資料存取靠 **Knex.js** 這個 SQL query builder 做方言抽象，因此它能同時吃 **PostgreSQL、MySQL/MariaDB、SQLite、MS SQL、CockroachDB、OracleDB** 等主流資料庫——你的資料永遠是「純粹的、可被任何其他工具直接讀取的 SQL 資料」，而非鎖進某個私有格式。它疊在資料庫之上提供：細粒度的**角色與權限（role-based access，可到欄位級）**、**Flows**（事件驅動的自動化引擎，類似內建的輕量 n8n）、檔案資產管理（含即時圖片轉換）、Webhooks、以及基於 WebSocket 的即時訂閱。授權上要誠實提醒：Directus 已從早期的 GPL **改用 Business Source License（BSL 1.1）**——自用與內部使用免費，但一旦拿它經營對外的產品／服務、且組織年營收或累計募資逾 **500 萬美元**，就需付費商業授權（BSL 條款另訂 change date 後回落為開源），選型前務必看清門檻。
+**技術核心**：★它的核心奇招是**「database-first：一鍵把任何現有 SQL 資料庫解鎖成無頭 CMS」**。啟動時，Directus **內省（introspect）你既有資料庫的 schema**——讀出表、欄位、外鍵關聯，**不改動、不接管你的資料結構**，直接在其上生成一套動態的 **REST + GraphQL API** 與一個叫 **Data Studio** 的 Vue 管理後台。底層資料存取靠 **Knex.js** 這個 SQL query builder 做方言抽象，因此它能同時吃 **PostgreSQL、MySQL/MariaDB、SQLite、MS SQL、CockroachDB、OracleDB** 等主流資料庫——你的資料永遠是「純粹的、可被任何其他工具直接讀取的 SQL 資料」，而非鎖進某個私有格式。它疊在資料庫之上提供：細粒度的**角色與權限（role-based access，可到欄位級）**、**Flows**（事件驅動的自動化引擎，類似內建的輕量 n8n）、檔案資產管理（含即時圖片轉換）、Webhooks、以及基於 WebSocket 的即時訂閱。授權上要誠實提醒：Directus 的授權這幾年不只變過一次——先從早期的 GPL **改用 Business Source License（BSL 1.1）**，接著在 **2026 年 5 月隨 v12 發布再度更換**為自研的 **Monospace Sustainable Core License（MSCL，衍生自 Fair Core License）**。新門檻是年營收低於 **500 萬美元「且」員工少於 50 人**（符合即享 Innovation Grant，完全免費）；核心限制也收斂成單一條款——**「competing use」（打造直接與 Directus 競爭的產品）**，並明確允許你拿它做託管服務、疊加自有產品、或提供顧問服務，比 BSL 時代模糊的「商用即受限」清楚許多；每個版本滿 4 年會自動轉為 GPLv3，官方 SDK 則維持 MIT。選型前仍要盯緊「不能做競品」這條紅線——且授權條款兩年內已改版兩次，商業放量前務必查當下最新版本，而非任何一篇文章（包括本書）裡的舊資訊。
 
 **解決的痛點**：企業手上有一個既有的、資料寶貴的生產資料庫，想快速給它加一套管理後台與 API，卻不想把資料遷移進某個 CMS 的專有結構、被廠商鎖定。
 
@@ -264,9 +264,9 @@
 
 **在 AI Agent 時代的角色**：Directus 讓**任何一個沉睡的企業資料庫，瞬間長出一套乾淨、帶權限的 REST/GraphQL 介面**——這正是 AI Agent 安全存取企業資料的理想閘門。你不必讓 Agent 直連生產資料庫（危險），而是透過 Directus 的權限層暴露受控的 API，Agent 只能碰被授權的資料表與欄位。它的 Flows 也能把 LLM 呼叫嵌進資料事件（如「新訂單進來→AI 判斷風險→打標籤」）。
 
-**新人須知（大廠第一週）**：①當團隊有個「已經存在、不能亂動」的資料庫、又急需一個後台和 API 時，Directus 常被點名——尤其資料團隊與後端交界處。②最少要會：讓 Directus 連上既有 DB 並內省 schema、設定角色權限、用生成的 REST/GraphQL 取值。③新人最常踩的雷——**忽略 BSL 授權在商業場景的限制**（以為跟 MIT 一樣隨便用），以及**權限設太鬆把整個資料庫透過 API 曝出去**；還有人誤以為它會「幫你建資料庫」，其實它的強項是「接管你已有的」。
+**新人須知（大廠第一週）**：①當團隊有個「已經存在、不能亂動」的資料庫、又急需一個後台和 API 時，Directus 常被點名——尤其資料團隊與後端交界處。②最少要會：讓 Directus 連上既有 DB 並內省 schema、設定角色權限、用生成的 REST/GraphQL 取值。③新人最常踩的雷——**忽略授權條款在商業場景的限制**（以為跟 MIT 一樣隨便用，實際上不管是舊的 BSL 還是 2026 年 5 月換上的 MSCL，都有「不能做競品」的紅線），以及**權限設太鬆把整個資料庫透過 API 曝出去**；還有人誤以為它會「幫你建資料庫」，其實它的強項是「接管你已有的」。
 
-**優點 / 罩門**：不綁定資料結構、支援多種 SQL 資料庫、資料永遠是純 SQL 可攜、Data Studio 後台好用、內建自動化 Flows。罩門是**BSL 授權的商業使用限制**（非純開源，需留意營收門檻）、**動態內省在超複雜 schema 或大量表下效能與 UI 會吃力**、以及它終究是「資料庫之上的一層」，效能與行為受底層 DB 制約。
+**優點 / 罩門**：不綁定資料結構、支援多種 SQL 資料庫、資料永遠是純 SQL 可攜、Data Studio 後台好用、內建自動化 Flows。罩門是**授權非純開源、且條款仍在演化**（MSCL 的「不能做競品」門檻比 BSL 清楚，但兩年內已改版兩次，長期穩定性有待觀察）、**動態內省在超複雜 schema 或大量表下效能與 UI 會吃力**、以及它終究是「資料庫之上的一層」，效能與行為受底層 DB 制約。
 
 **競品對照**：
 
@@ -282,7 +282,7 @@
 > **Directus 最聰明的一步，是拒絕「再造一個資料庫」——它承認你的資料早就在那裡了，只是缺一層讓人和機器都能優雅存取的皮。與其搬家，不如開一扇門。**
 
 > 🔍 老手視角──真正的門道
-> Directus 的「database-first」是對整個 headless CMS 賽道的逆向思考——當同行都在搶「幫你建模」，它賭「尊重你的既有資料」這個更難、但更黏的位置。選型的門道：它的甜蜜點是**「有寶貴既有資料庫、想快速加後台與 API」**；若你是從零開始的新專案，強項反而不明顯。真正要寫進風險欄的是**BSL 授權**——它不是 MIT，商業放量前法務必須過目。可落地的觀察：在 AI 時代，「把企業既有資料安全地暴露成受控 API」是剛需，Directus 站在這個入口，商業空間在於「企業資料 + AI 存取的權限治理」這一層。
+> Directus 的「database-first」是對整個 headless CMS 賽道的逆向思考——當同行都在搶「幫你建模」，它賭「尊重你的既有資料」這個更難、但更黏的位置。選型的門道：它的甜蜜點是**「有寶貴既有資料庫、想快速加後台與 API」**；若你是從零開始的新專案，強項反而不明顯。真正要寫進風險欄的是**授權**——它不是 MIT，且 2026 年 5 月才剛從 BSL 1.1 換成 MSCL，商業放量前法務必須看的是「當下這一版」條款，而不是一年前哪篇部落格寫的內容。可落地的觀察：在 AI 時代，「把企業既有資料安全地暴露成受控 API」是剛需，Directus 站在這個入口，商業空間在於「企業資料 + AI 存取的權限治理」這一層。
 
 ---
 
@@ -292,7 +292,7 @@
 **Repo**：`https://github.com/openssl/openssl`
 **面向**：👥 最多人用
 
-**GitHub 體檢**：⭐ 約 26k｜核心維護者 OpenSSL 基金會/技術委員會 約 10+ 人（Heartbleed 後大幅補強）｜貢獻者 1,000+｜授權 Apache-2.0（3.0 起）｜主語言 C
+**GitHub 體檢**：⭐ 約 30k｜核心維護者 OpenSSL 基金會/技術委員會 約 10+ 人（Heartbleed 後大幅補強）｜貢獻者 1,000+｜授權 Apache-2.0（3.0 起）｜主語言 C
 
 **起源**：OpenSSL 的血脈可追溯到 1998 年，由 **Eric Young 與 Tim Hudson** 的 **SSLeay** 演化而來。它幾乎是憑一己之力，成為全人類上網最底層的加密引擎——你每一次看到瀏覽器網址列那把小鎖、每一筆刷卡、每一封加密郵件，背後大概率都有 OpenSSL 在跑。這個「隱形巨石」的重要性，在 2014 年那個叫 **Heartbleed** 的災難裡被全世界血淋淋地認識到：一個 TLS heartbeat 擴充的**緩衝區越界讀取（buffer over-read）**漏洞，讓攻擊者能一次次偷讀伺服器記憶體裡的私鑰與 session——半個網際網路連夜換憑證。那場災難也直接催生了 OpenSSL 基金會、專職資助與 LibreSSL/BoringSSL 等分支。
 
@@ -332,7 +332,7 @@
 **Repo**：`https://github.com/AppFlowy-IO/AppFlowy`
 **面向**：🔥 最新熱度
 
-**GitHub 體檢**：⭐ 約 60k｜核心維護者 AppFlowy.IO 團隊 約 20 人｜貢獻者 300+｜授權 AGPL-3.0｜主語言 Rust／Dart
+**GitHub 體檢**：⭐ 約 73k｜核心維護者 AppFlowy.IO 團隊 約 20 人｜貢獻者 300+｜授權 AGPL-3.0（2026 年查證仍維持不變，未見改授權計畫）｜主語言 Rust／Dart
 
 **起源**：AppFlowy 於 2021 年前後開源，旗幟鮮明地打出「**開源版 Notion**」。它戳中的是 Notion 用戶心裡最深的那根刺：**你的整個第二大腦——筆記、資料庫、專案——全存在別人的雲上，離線就殘廢、隱私無從掌控、哪天漲價或關站你毫無辦法。** AppFlowy 的承諾是「**Data ownership**」：你的資料先存在你自己的裝置上，要不要上雲、上誰的雲，由你決定。
 
@@ -372,7 +372,7 @@
 **Repo**：`https://github.com/public-apis/public-apis`
 **面向**：🏆 最紅
 
-**GitHub 體檢**：⭐ 約 330k（GitHub 星數最高的專案之一）｜核心維護者 社群策展團隊 約 10 人｜貢獻者 1,000+｜授權 MIT｜主語言 Markdown（清單型，非傳統程式碼專案）
+**GitHub 體檢**：⭐ 約 446k（持續攀升，穩居 GitHub 星數最高的專案之一）｜核心維護者 社群策展團隊 約 10 人｜貢獻者 1,000+｜授權 MIT｜主語言 Markdown（清單型，非傳統程式碼專案）
 
 **起源**：`public-apis/public-apis` 是一份由社群持續策展、彙整**全球免費/公開 API** 的巨型清單，多年積累下成為 GitHub 上星數最高的專案之一。它的存在源於一個所有開發者都懂的原始需求：**「我想做個小專案練手/展示，但我沒有資料——哪裡有免費、不用複雜註冊、能直接打的 API？」** 天氣、匯率、電影、笑話、地理、加密貨幣、動漫……它把散落全網的免費 API 按類別整理成一張人人可查的目錄。
 
@@ -412,7 +412,7 @@
 **Repo**：`https://github.com/asweigart/pyautogui`
 **面向**：🔥 最新熱度
 
-**GitHub 體檢**：⭐ 約 11k｜核心維護者 **Al Sweigart**（《Automate the Boring Stuff》作者）｜貢獻者 50+｜授權 BSD-3-Clause｜主語言 Python
+**GitHub 體檢**：⭐ 約 12.6k｜核心維護者 **Al Sweigart**（《Automate the Boring Stuff》作者，★但近兩年實質更新極少，原始庫已接近停滯）｜貢獻者 50+｜授權 BSD-3-Clause｜主語言 Python
 
 **起源**：由 **Al Sweigart** 打造。他因暢銷書《Automate the Boring Stuff with Python》讓無數非工程師第一次體會到「用程式自動化枯燥雜事」的爽感，而 PyAutoGUI 正是那本書裡「讓 Python 動起來操控整台電腦」的靈魂工具。它的定位極純粹：**用幾行 Python，模擬人類的滑鼠移動、點擊與鍵盤敲擊，去操作任何有圖形介面的軟體——哪怕那軟體根本沒有 API。**
 
@@ -426,7 +426,7 @@
 
 **新人須知（大廠第一週）**：①你多半在「內部流程自動化/測試/資料搬運」的雜活裡撞見它——某個沒 API 的老系統要每天匯出報表，就靠它。②最少要會：`moveTo`/`click`/`typewrite`/`press` 四件套、用 `locateOnScreen` 做影像定位、務必記得 fail-safe（甩角落停止）。③新人最常踩的雷——**寫死絕對座標**：換個螢幕解析度、視窗位置一移，整個腳本全崩；正解是盡量用**影像匹配**定位而非硬編座標。另一個大坑是**它會霸佔你的實體鍵鼠**（腳本跑起來你就動不了滑鼠），且**跑不穩、對時序敏感**（介面還沒載完就點會失敗，要適當 `sleep`/等待）。
 
-**優點 / 罩門**：跨平台、極簡易上手、能自動化任何 GUI（無需目標軟體有 API）、影像匹配讓腳本更耐介面變動、fail-safe 貼心。罩門是**極度脆弱**——依賴螢幕視覺狀態，解析度/縮放/視窗位置/介面改版任一變動都可能全盤失效；**會獨佔實體輸入裝置**（腳本執行時人無法同時用電腦）；對時序與載入延遲敏感，穩定性遠不如有正式 API 的整合。
+**優點 / 罩門**：跨平台、極簡易上手、能自動化任何 GUI（無需目標軟體有 API）、影像匹配讓腳本更耐介面變動、fail-safe 貼心。罩門是**極度脆弱**——依賴螢幕視覺狀態，解析度/縮放/視窗位置/介面改版任一變動都可能全盤失效；**會獨佔實體輸入裝置**（腳本執行時人無法同時用電腦）；對時序與載入延遲敏感，穩定性遠不如有正式 API 的整合。★另一個選型時該注意的現實：**原始倉庫本身近兩年基本停止實質開發**（最後一次有意義的程式碼提交是 2024 年中，第三方維護度掃描已將其標記為「近乎停滯」），2026 年社群已 fork 出一個叫 **pyautogui-next** 的延續專案在接手積極開發——這代表「PyAutoGUI」這個名字紅，不完全等於這個 repo 本身還在被積極打磨，選型時要分清你裝的到底是哪一個。
 
 **競品對照**：
 
@@ -442,7 +442,7 @@
 > **PyAutoGUI 的哲學很樸素也很強悍：如果一個軟體不肯給你 API，那就假裝成一雙人手，直接替它點下去。在 VLM 學會看螢幕的今天，這雙手第一次接上了會思考的大腦。**
 
 > 🔍 老手視角──真正的門道
-> PyAutoGUI 本身是個十年老庫，它 2025 年後的第二春純粹是被 AI「Computer Use」浪潮抬起來的——當模型能看懂螢幕、能決策，市場突然急需「把決策變成真實鍵鼠動作」的執行層，而它是最平民的答案。選型的門道要清醒：**基於視覺座標的自動化天生脆弱**，能有 API（Selenium 對網頁、正式 SDK 對服務）就別用它，它是「別無選擇時」的最後手段。但反過來看，這個脆弱性正是機會所在：可落地的方向是做「**VLM + 桌面自動化**的穩健化中介層」——用視覺模型做動態定位與異常自愈，補上 PyAutoGUI 寫死座標的脆弱，這正是下一代通用桌面 Agent 的產品化縫隙。
+> PyAutoGUI 本身是個十年老庫，它 2025 年後的第二春純粹是被 AI「Computer Use」浪潮抬起來的——當模型能看懂螢幕、能決策，市場突然急需「把決策變成真實鍵鼠動作」的執行層，而它是最平民的答案。但這股熱度也暴露了一個弔詭：**原作者 Al Sweigart 的重心早已轉向別處，官方倉庫近兩年幾乎沒有實質更新**，真正在吃這波紅利、認真加功能的反而是 2026 年冒出來的社群 fork——這提醒選型者，「star 數還在漲」不代表「原專案還在被積極維護」，用之前先確認你追的是哪條分支的活躍度。選型的門道要清醒：**基於視覺座標的自動化天生脆弱**，能有 API（Selenium 對網頁、正式 SDK 對服務）就別用它，它是「別無選擇時」的最後手段。但反過來看，這個脆弱性正是機會所在：可落地的方向是做「**VLM + 桌面自動化**的穩健化中介層」——用視覺模型做動態定位與異常自愈，補上 PyAutoGUI 寫死座標的脆弱，這正是下一代通用桌面 Agent 的產品化縫隙。
 
 ---
 
