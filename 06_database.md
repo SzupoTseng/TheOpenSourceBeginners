@@ -10,11 +10,11 @@
 **標籤**：`#關聯式資料庫` `#MVCC` `#WAL` `#可擴充型別` `#pgvector` `#ACID` `#SQL標準`
 **Repo**：官方主庫 `https://git.postgresql.org/gitweb/?p=postgresql.git`；GitHub 鏡像 `https://github.com/postgres/postgres`
 **面向**：🏆 最紅｜👥 最多人用
-**GitHub 體檢**：⭐ 約 16k（GitHub 為官方鏡像，主開發在郵件列表與 `git.postgresql.org`）｜核心維護者 PostgreSQL Global Development Group｜貢獻者 數百位長青 committer｜授權 PostgreSQL License（BSD 風格）｜主語言 C
+**GitHub 體檢**：⭐ 約 21k（GitHub 為官方鏡像，主開發在郵件列表與 `git.postgresql.org`）｜核心維護者 PostgreSQL Global Development Group｜貢獻者 數百位長青 committer｜授權 PostgreSQL License（BSD 風格）｜主語言 C
 
 **起源**：血統可追到 1986 年柏克萊 Michael Stonebraker 主持的 **POSTGRES** 專案（Ingres 的後繼）。1996 年社群接手、加上 SQL 支援並更名 PostgreSQL，此後三十年由一個沒有單一公司控股的全球社群以「郵件列表 + 補丁評審」的老派方式維護。正因為沒有母公司，它從未被商業收購綁架，也養成了近乎偏執的「正確性優先」文化。
 
-**技術核心**：它的靈魂是**MVCC（多版本並行控制）**——但實作方式與眾不同：每次 `UPDATE` 不是原地改資料，而是**在 heap（堆表）裡寫一個全新的 tuple 版本**，用 `xmin`／`xmax`（建立與刪除的交易 ID）標記可見性，同一列的新舊版本以 `ctid` 指標串成**版本鏈**，讓讀不阻塞寫、寫不阻塞讀；若這次更新沒動到任何被索引的欄位，還能走 **HOT（heap-only tuple）**在同一頁就地掛上新版本、省去更新每一個索引，大幅減輕高頻更新的索引寫放大。代價是產生大量**死亡 tuple**，必須靠 **VACUUM／autovacuum** 回收空間、並定期**凍結（freeze）**老舊 tuple，才能防止交易 ID 的 32-bit **wraparound（回卷）**——那是一旦逼近就得停機搶救的災難。所有變更先落 **WAL（Write-Ahead Log，預寫式日誌）**才改資料頁——這是崩潰後能精準重放、也是**串流複製（streaming replication）**的物理基礎。隔離級別預設 Read Committed，最高的 **Serializable** 用的是學術界推崇的 **SSI（Serializable Snapshot Isolation，可串行化快照隔離）**，能在不上重鎖的前提下偵測寫偏序異常。它的查詢優化器是**成本模型驅動**，join 一多還會啟用 **GEQO（遺傳演算法）**探索執行計畫。而真正讓它封神的是**可擴充性**：自訂型別、自訂運算子、自訂索引存取方法（B-tree／GiST／GIN／BRIN／SP-GiST），這套架構讓 **pgvector**（向量相似度檢索）、PostGIS（地理空間）、TimescaleDB（時序）能以外掛之姿長進核心，一個資料庫吃下大半場景。
+**技術核心**：它的靈魂是**MVCC（多版本並行控制）**——但實作方式與眾不同：每次 `UPDATE` 不是原地改資料，而是**在 heap（堆表）裡寫一個全新的 tuple 版本**，用 `xmin`／`xmax`（建立與刪除的交易 ID）標記可見性，同一列的新舊版本以 `ctid` 指標串成**版本鏈**，讓讀不阻塞寫、寫不阻塞讀；若這次更新沒動到任何被索引的欄位，還能走 **HOT（heap-only tuple）**在同一頁就地掛上新版本、省去更新每一個索引，大幅減輕高頻更新的索引寫放大。代價是產生大量**死亡 tuple**，必須靠 **VACUUM／autovacuum** 回收空間、並定期**凍結（freeze）**老舊 tuple，才能防止交易 ID 的 32-bit **wraparound（回卷）**——那是一旦逼近就得停機搶救的災難。所有變更先落 **WAL（Write-Ahead Log，預寫式日誌）**才改資料頁——這是崩潰後能精準重放、也是**串流複製（streaming replication）**的物理基礎。隔離級別預設 Read Committed，最高的 **Serializable** 用的是學術界推崇的 **SSI（Serializable Snapshot Isolation，可串行化快照隔離）**，能在不上重鎖的前提下偵測寫偏序異常。它的查詢優化器是**成本模型驅動**，join 一多還會啟用 **GEQO（遺傳演算法）**探索執行計畫。而真正讓它封神的是**可擴充性**：自訂型別、自訂運算子、自訂索引存取方法（B-tree／GiST／GIN／BRIN／SP-GiST），這套架構讓 **pgvector**（向量相似度檢索）、PostGIS（地理空間）、TimescaleDB（時序）能以外掛之姿長進核心，一個資料庫吃下大半場景。2025 年 9 月釋出的 **PostgreSQL 18** 是這條「持續補強」路線的最新例證：新的**非同步 I/O 子系統**讓循序讀取吞吐最高提升約 3 倍、多欄位 B-tree 支援 **skip scan**、`OR` 條件也能吃到索引，還加入原生 `uuidv7()`（時間排序的 UUID，比隨機 UUID v4 更不傷聚簇局部性）與虛擬產生欄位（virtual generated columns）——PostgreSQL 沒有「一次性大改版」的敘事，靠**每年一個大版號、逐步啃硬骨頭**維持領先，這種穩定節奏正是它作為「預設選項」的可信度來源。
 
 **解決的痛點**：企業既想要 ACID 強一致與豐富 SQL，又不想被商業資料庫（Oracle／SQL Server）的天價授權與供應商鎖定綁死。PostgreSQL 給出「免費、開源、卻工業級可靠」的唯一解。
 
@@ -49,7 +49,7 @@
 **標籤**：`#記憶體資料庫` `#單執行緒` `#事件迴圈` `#快取` `#資料結構` `#Pub/Sub` `#C語言`
 **Repo**：`https://github.com/redis/redis`
 **面向**：👥 最多人用｜🏆 最紅
-**GitHub 體檢**：⭐ 約 67k｜核心維護者 原作者 Salvatore Sanfilippo（antirez）交棒後由 Redis 公司與社群維護｜貢獻者 700+｜授權 歷經 BSD → SSPL/RSALv2（2024）→ 追加 AGPLv3（2025）；社群另有 Linux 基金會的 **Valkey** 分支｜主語言 C
+**GitHub 體檢**：⭐ 約 75k｜核心維護者 原作者 Salvatore Sanfilippo（antirez）交棒後由 Redis 公司與社群維護｜貢獻者 700+｜授權 歷經 BSD → 2024 年 3 月改 SSPL/RSALv2 雙授權（皆非 OSI 認可的開源授權）→ 2025 年 5 月隨 **Redis 8** GA 追加 **AGPLv3** 選項，成為三授權（AGPLv3／RSALv2／SSPLv1 擇一），2026 年中的 8.8 版仍維持此格局；社群另有 Linux 基金會旗下的 **Valkey** 分支｜主語言 C
 
 **起源**：2009 年由義大利工程師 **Salvatore Sanfilippo（antirez）**發起，最初只是為了替自己的即時網站分析工具解決「MySQL 扛不住高頻寫入」的痛。他索性把資料全放進記憶體、用最樸素的 C 寫了個資料結構伺服器，取名 **RE**mote **DI**ctionary **S**erver。之後它一路長成全世界快取層的事實標準。
 
@@ -63,7 +63,7 @@
 
 **新人須知（大廠第一週）**：①幾乎所有讀密集服務前面都擋著一層 Redis 快取，你第一週就會在某個「為什麼這個介面這麼快」的服務裡見到它。②最少要會：`GET/SET/EXPIRE`、理解快取失效策略、知道 `KEYS *` 在生產環境是禁忌（會阻塞單執行緒），要用 `SCAN`。③新人最常踩的雷——**快取雪崩／穿透／擊穿**：大量 key 同時過期、或查一個不存在的 key 反覆打穿到主庫；還有**用大 key／慢命令阻塞單執行緒**，一條 `O(N)` 的命令能把整個實例卡住。
 
-**優點 / 罩門**：延遲微秒級、資料結構豐富到能當半個應用層、單執行緒模型簡單可預測。罩門是**資料受限於記憶體容量與成本**，冷資料放記憶體極不划算；**非同步複製 + 故障轉移期間可能丟失最後幾秒的寫入**，不能當唯一真理源；單執行緒也意味著**單一慢命令會拖垮全局**。授權在 2024 年的變動更一度引發社群分裂，催生了 Valkey 分支。
+**優點 / 罩門**：延遲微秒級、資料結構豐富到能當半個應用層、單執行緒模型簡單可預測。罩門是**資料受限於記憶體容量與成本**，冷資料放記憶體極不划算；**非同步複製 + 故障轉移期間可能丟失最後幾秒的寫入**，不能當唯一真理源；單執行緒也意味著**單一慢命令會拖垮全局**。授權在 2024 年的變動更一度引發社群分裂，催生了 Linux 基金會旗下的 Valkey 分支——截至 2026 年中，**AWS ElastiCache 與 Google Cloud Memorystore 皆已把 Valkey 設為新實例的預設選項**（Redis 反而要手動選），另有 Oracle OCI、阿里雲等十餘家雲廠商提供託管 Valkey，社群分裂的代價比當初預期得更具體。
 
 **競品對照**：
 
@@ -79,7 +79,7 @@
 > **Redis 用一條單執行緒證明了一件反直覺的事：在對的瓶頸面前，不並行反而是最快的並行——省下的每一把鎖，都變成了省下的每一微秒。**
 
 > 🔍 老手視角──真正的門道
-> 大廠選型 Redis 時，真正在盯的不是「快」——那是共識——而是**「你有沒有把它當資料庫用」**這條紅線：它是快取（可丟、可重建）還是真理源（不可丟）？把這條線畫錯，一次故障轉移的資料丟失就是線上事故。2024 年的授權風波是另一堂課：把核心基礎設施押在單一公司的授權善意上，本身就是風險欄裡該寫的一條；Valkey 的出現提醒每個架構師，開源的「開」字，值多少錢要自己算。
+> 大廠選型 Redis 時，真正在盯的不是「快」——那是共識——而是**「你有沒有把它當資料庫用」**這條紅線：它是快取（可丟、可重建）還是真理源（不可丟）？把這條線畫錯，一次故障轉移的資料丟失就是線上事故。2024 年的授權風波是另一堂課：把核心基礎設施押在單一公司的授權善意上，本身就是風險欄裡該寫的一條。有意思的是 Redis 自己也在 2025 年用追加 AGPLv3 部分認錯、想把社群請回來——但雲廠商的選擇已經投票：Valkey 被三大雲廠商同時扶正為預設值，這是「開源治理權旁落給單一商業公司」這件事，第一次被具體用市占率量化出代價。Valkey 的出現提醒每個架構師，開源的「開」字，值多少錢要自己算。
 
 ---
 
@@ -88,7 +88,7 @@
 **標籤**：`#ORM` `#TypeScript` `#SQL` `#Query-Builder` `#Edge` `#Serverless` `#Zero-Runtime`
 **Repo**：`https://github.com/drizzle-team/drizzle-orm`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 24k｜核心維護者 Drizzle Team（Andrii Sherman 等）｜貢獻者 300+｜授權 Apache-2.0｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 35k｜核心維護者 Drizzle Team（Andrii Sherman 等；2026 年 3 月起整個核心團隊被 **PlanetScale** 延攬全職維護）｜貢獻者 300+｜授權 Apache-2.0｜主語言 TypeScript
 
 **起源**：2022 年由一群受夠了「重型 ORM 把 SQL 藏在一堆抽象後面」的 TypeScript 工程師發起。他們的立場很鮮明：**你早就會 SQL 了，工具不該逼你再學一套私有查詢語言**。於是 Drizzle 的口號成了「If you know SQL, you know Drizzle」。
 
@@ -118,7 +118,7 @@
 > **Drizzle 賭的是一件事：工程師厭惡的從來不是 SQL，而是那些把 SQL 藏起來、卻又藏不乾淨的抽象。它乾脆把 SQL 還給你，只多送一層型別安全。**
 
 > 🔍 老手視角──真正的門道
-> Drizzle 的熱度來自一場正在發生的遷徙——後端從長駐伺服器搬向 Edge／Serverless，而重型 ORM 在那裡水土不服。真正的門道是看清這條「無二進位、冷啟動優先」的趨勢線：誰的資料層能在 Workers 裡毫秒起跑，誰就吃到這波紅利。選型提醒：別因為它新就盲信，也別因為它薄就低估——**薄，在對的環境裡就是特性，不是缺陷**。
+> Drizzle 的熱度來自一場正在發生的遷徙——後端從長駐伺服器搬向 Edge／Serverless，而重型 ORM 在那裡水土不服。真正的門道是看清這條「無二進位、冷啟動優先」的趨勢線：誰的資料層能在 Workers 裡毫秒起跑，誰就吃到這波紅利。選型提醒：別因為它新就盲信，也別因為它薄就低估——**薄，在對的環境裡就是特性，不是缺陷**。值得一提的是它的商業模式已被驗證：團隊靠內嵌式的 **Drizzle Studio**（授權給 Neon、Replit、Turso 等平台）在 2024 年就做到自負盈虧，2026 年 3 月更被 PlanetScale 整隊延攬——一家原本靠 MySQL／Vitess 起家的公司，轉頭把籌碼押在 TypeScript 資料層工具鏈上，這條「基礎設施公司往上游買下開發者體驗」的路徑，本身就是一則值得記住的選型與投資訊號。
 
 ---
 
@@ -127,7 +127,7 @@
 **標籤**：`#NoSQL` `#文件資料庫` `#BSON` `#副本集` `#分片` `#WiredTiger` `#水平擴展`
 **Repo**：`https://github.com/mongodb/mongo`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 26k｜核心維護者 MongoDB Inc.｜貢獻者 500+｜授權 SSPL（Server Side Public License）｜主語言 C++
+**GitHub 體檢**：⭐ 約 28k｜核心維護者 MongoDB Inc.｜貢獻者 500+｜授權 SSPL（Server Side Public License）｜主語言 C++
 
 **起源**：2007 年由 10gen 公司（後更名 MongoDB Inc.）發起，名字取自 hu**mongo**us（巨大）。當年 Web 2.0 應用資料結構天天在變，關聯式資料庫的固定 schema 與繁瑣 migration 讓開發者痛不欲生。MongoDB 主打「**存 JSON 就好，schema 想改就改**」，一舉成為 NoSQL 浪潮最紅的旗手。
 
@@ -137,7 +137,7 @@
 
 **理論基礎**：**CAP 定理**中可調的 CP/AP 取捨、**BASE**（最終一致）思想，以及文件資料模型對 Codd 關聯模型的務實叛逆。
 
-**在 AI Agent 時代的角色**：**MongoDB Atlas Vector Search** 讓它把向量檢索直接長進文件庫——同一份文件裡既存業務欄位又存 embedding，Agent 做 RAG 時不必拆兩套系統。彈性 schema 也特別適合存放 LLM 產出的半結構化資料（工具呼叫記錄、對話狀態、不定形的抽取結果）。
+**在 AI Agent 時代的角色**：**MongoDB Atlas Vector Search** 讓它把向量檢索直接長進文件庫——同一份文件裡既存業務欄位又存 embedding，Agent 做 RAG 時不必拆兩套系統。2025 年初收購嵌入模型公司 **Voyage AI** 後，Atlas 進一步把 embedding 產生也內化成一等公民（2026 年的 Automated Embedding 功能讓你不必再自架一支 embedding 服務）；更關鍵的是 2026 年 MongoDB 把驅動搜尋與向量檢索的引擎 **mongot** 以 SSPL 開源，讓**自架（self-managed）的 Community Edition 也第一次原生具備全文檢索與向量搜尋**，不再是 Atlas 雲端獨占能力——這對堅持自管資料庫、不上雲的團隊是實質補強。彈性 schema 也特別適合存放 LLM 產出的半結構化資料（工具呼叫記錄、對話狀態、不定形的抽取結果）。
 
 **新人須知（大廠第一週）**：①內容型、社群型或需求高速變動的服務，後端常是 MongoDB；你第一週可能就要寫一段聚合管線查報表。②最少要會：CRUD 與 `find` 查詢語法、建索引、看懂聚合管線的 `$match/$group/$lookup`。③新人最常踩的雷——**shard key 選錯**（選了單調遞增或低基數的 key，導致寫入全打到一個分片、熱點爆炸，且 shard key 選定後極難更改）；以及**濫用巢狀文件無限成長**，撞上單文件 16MB 上限。
 
@@ -166,11 +166,11 @@
 **標籤**：`#ORM` `#TypeScript` `#Schema-First` `#型別安全` `#程式碼生成` `#Prisma-Migrate` `#DX`
 **Repo**：`https://github.com/prisma/prisma`
 **面向**：🔥 最新熱度
-**GitHub 體檢**：⭐ 約 40k｜核心維護者 Prisma Inc.｜貢獻者 800+｜授權 Apache-2.0｜主語言 TypeScript／Rust
+**GitHub 體檢**：⭐ 約 46k｜核心維護者 Prisma Inc.｜貢獻者 800+｜授權 Apache-2.0｜主語言 TypeScript（2025 年底起預設不再依賴 Rust 引擎，Rust 標籤已是歷史包袱）
 
 **起源**：脫胎自 2016 年的 GraphQL 後端框架 Graphcool，2019 年團隊轉向、推出專注資料層的 **Prisma 2**。他們瞄準的是 Node.js 生態長年的痛：老牌 ORM（TypeORM／Sequelize）型別安全薄弱、查詢寫錯要到執行期才炸。Prisma 打出「**schema 是唯一真理，型別由它生成**」的旗幟。
 
-**技術核心**：它是徹底的 **schema-first**——你在 `schema.prisma` 這份宣告式 DSL 裡定義模型與關聯，跑 `prisma generate` 就**生成一個完全型別安全的 client**：每張表的查詢方法、每個欄位型別、每個關聯，全都是 TypeScript 型別，寫錯欄位當場紅線。這是它與「query builder」路線最大的分野——Prisma 是**全功能 ORM**，query builder（如 Kysely）讓你組 SQL，Prisma 讓你用一套與 SQL 解耦的物件式 API 表達意圖。歷史上它的查詢引擎（Query Engine）**用 Rust 寫成、以 sidecar 二進位運行**，負責把 API 呼叫翻成優化過的 SQL、管連線池；這帶來一致的跨資料庫行為，但也讓包體變重、在 Edge 環境吃力——因此近期 Prisma 正**把引擎改寫為 TypeScript／WASM**，砍掉原生二進位以擁抱 Serverless。**Prisma Migrate** 從 schema diff 生成並追蹤遷移歷史；**Accelerate** 提供全球連線池與快取，解 Serverless 的連線爆炸問題。
+**技術核心**：它是徹底的 **schema-first**——你在 `schema.prisma` 這份宣告式 DSL 裡定義模型與關聯，跑 `prisma generate` 就**生成一個完全型別安全的 client**：每張表的查詢方法、每個欄位型別、每個關聯，全都是 TypeScript 型別，寫錯欄位當場紅線。這是它與「query builder」路線最大的分野——Prisma 是**全功能 ORM**，query builder（如 Kysely）讓你組 SQL，Prisma 讓你用一套與 SQL 解耦的物件式 API 表達意圖。早年它的查詢引擎（Query Engine）**用 Rust 寫成、以 sidecar 二進位運行**，負責把 API 呼叫翻成優化過的 SQL、管連線池；這帶來一致的跨資料庫行為，但也讓包體變重、在 Edge 環境吃力。這場「拆二進位」的自我革命已經走完——**2025 年 11 月釋出的 Prisma 7 正式把 Rust 查詢引擎換成 TypeScript／WASM 的查詢編譯器（Query Compiler）**，官方數據是查詢延遲最高快 3 倍（少了一趟跨語言序列化）、client 包體從約 14MB 砍到約 1.6MB，Edge／Serverless 冷啟動不再是它的弱項。**Prisma Migrate** 從 schema diff 生成並追蹤遷移歷史；**Accelerate** 提供全球連線池與快取，解 Serverless 的連線爆炸問題。
 
 **解決的痛點**：手寫 SQL 或用弱型別 ORM 時，**欄位改名、關聯寫錯要到執行期才發現**；資料庫 schema 與應用程式碼兩份真理長期漂移。Prisma 用單一 schema 生成型別，把大量 runtime 錯誤前移到編譯期。
 
@@ -180,7 +180,7 @@
 
 **新人須知（大廠第一週）**：①TypeScript 全棧或 Next.js 專案裡，Prisma 是最常見的資料層，你第一週大概就要改 `schema.prisma` 加個欄位。②最少要會：改 schema → `prisma migrate dev` → 用生成的 client 查詢這條循環，看懂關聯查詢的 `include/select`。③新人最常踩的雷——**N+1 查詢**（迴圈裡逐筆查關聯，該用 `include` 或批次載入）、以及**在 Serverless 每次冷啟動都新建連線導致連線池耗盡**（要用 Accelerate 或外部 pooler）。
 
-**優點 / 罩門**：型別安全與自動補全的 DX 業界頂尖、遷移工具鏈成熟、schema 即文件。罩門是**歷史上的 Rust 引擎二進位讓包體重、Edge 部署卡手**（正在改善）；**抽象較厚**，複雜查詢與極致效能優化時，生成的 SQL 未必最優，常需 `$queryRaw` 落回原生 SQL；大規模高並發下的連線管理需要額外方案。
+**優點 / 罩門**：型別安全與自動補全的 DX 業界頂尖、遷移工具鏈成熟、schema 即文件、Prisma 7 之後包體與延遲已大幅改善。罩門是**抽象較厚**，複雜查詢與極致效能優化時，生成的 SQL 未必最優，常需 `$queryRaw` 落回原生 SQL；大規模高並發下的連線管理需要額外方案；剛換引擎的新架構仍在吃社群的實戰考驗，長尾邊緣案例的成熟度還在追上舊 Rust 引擎的水準。
 
 **競品對照**：
 
@@ -196,7 +196,7 @@
 > **Prisma 的哲學是：schema 只該寫一次，型別、遷移、client 全從它長出來。當資料庫與程式碼共用同一份真理，那些「欄位對不上」的深夜事故，就在你按下編譯的那一刻先死了。**
 
 > 🔍 老手視角──真正的門道
-> Prisma 的熱度與焦慮同源——它的 Rust 引擎曾是「一致跨庫行為」的護城河，卻在 Serverless／Edge 時代變成包袱，於是它正上演一場「把引擎搬進 TypeScript」的自我革命。門道是看懂這條張力：**厚抽象換 DX，薄抽象換掌控**，Prisma 站在厚的一端、Drizzle 站在薄的一端，選哪個取決於你的團隊是要「快速交付、少碰 SQL」還是「精細掌控、貼近 SQL」。別把 ORM 之爭當信仰戰爭，它本質是一條可量化的取捨線。
+> Prisma 的熱度與焦慮同源——它的 Rust 引擎曾是「一致跨庫行為」的護城河，卻在 Serverless／Edge 時代變成包袱，於是它交出了一場罕見的「把引擎從 Rust 搬回 TypeScript」的自我革命，且已在 Prisma 7 落地。門道是看懂這條張力：**厚抽象換 DX，薄抽象換掌控**，Prisma 站在厚的一端、Drizzle 站在薄的一端，選哪個取決於你的團隊是要「快速交付、少碰 SQL」還是「精細掌控、貼近 SQL」。別把 ORM 之爭當信仰戰爭，它本質是一條可量化的取捨線——Prisma 這次「自砍護城河」的決定也證明：當市場的風向從「跨語言一致性」轉向「Edge 冷啟動」，連厚抽象的代表都得回頭把自己變薄。
 
 ---
 
@@ -205,7 +205,7 @@
 **標籤**：`#關聯式資料庫` `#InnoDB` `#B+tree` `#Redo-Log` `#MVCC` `#Clustered-Index` `#複製`
 **Repo**：`https://github.com/mysql/mysql-server`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 11k（`mysql/mysql-server` 官方鏡像）｜核心維護者 Oracle｜貢獻者 數百位（含 Percona／MariaDB 生態）｜授權 GPL-2.0（另有商業授權）｜主語言 C++
+**GitHub 體檢**：⭐ 約 12k（`mysql/mysql-server` 官方鏡像）｜核心維護者 Oracle｜貢獻者 數百位（含 Percona／MariaDB 生態）｜授權 GPL-2.0（另有商業授權）｜主語言 C++
 
 **起源**：1995 年由瑞典 MySQL AB（Michael Widenius 等人）發布，名字取自創辦人女兒 My。它以「簡單、夠快、免費」精準踩中網際網路爆發期，成為 LAMP（Linux/Apache/MySQL/PHP）技術棧的 M，撐起了那個時代大半個網站。2010 年隨 Sun 被 Oracle 收購，社群另立 **MariaDB** 分支延續開源純度。
 
@@ -244,7 +244,7 @@
 **標籤**：`#Query-Builder` `#TypeScript` `#型別安全` `#Zero-Runtime` `#SQL` `#Immutable`
 **Repo**：`https://github.com/kysely-org/kysely`
 **面向**：🏆 最紅（query builder 賽道）
-**GitHub 體檢**：⭐ 約 11k｜核心維護者 Sami Koskimäki 等｜貢獻者 200+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 14k｜核心維護者 Sami Koskimäki 等｜貢獻者 200+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由芬蘭工程師 Sami Koskimäki（Objection.js 作者）於 2022 年打造。他想要一個「**不多不少，只做一件事——用 TypeScript 型別安全地組 SQL**」的工具，既不像 ORM 那樣藏起 SQL，也不像手寫字串那樣毫無型別保護。
 
@@ -283,17 +283,17 @@
 **標籤**：`#NoSQL` `#寬列` `#LSM-tree` `#一致性雜湊` `#無主架構` `#最終一致` `#Dynamo`
 **Repo**：`https://github.com/apache/cassandra`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 9k｜核心維護者 Apache 軟體基金會｜貢獻者 400+｜授權 Apache-2.0｜主語言 Java
+**GitHub 體檢**：⭐ 約 10k｜核心維護者 Apache 軟體基金會｜貢獻者 400+｜授權 Apache-2.0｜主語言 Java
 
 **起源**：2008 年誕生於 **Facebook**（為收件匣搜尋而生），設計者融合了兩篇奠基論文的思想：**Amazon Dynamo** 的無主分散式架構與 **Google Bigtable** 的寬列資料模型。它取名自希臘神話中預言精準卻無人相信的女祭司 Cassandra——一個對「Oracle（甲骨文，也是神諭之意）」的辛辣雙關。後捐給 Apache，成為頂級專案。
 
-**技術核心**：它最激進的設計是**完全去中心化、無主（masterless）**——**沒有 primary，每個節點地位相同**，任何節點都能接讀寫。資料如何分佈？靠**一致性雜湊（Consistent Hashing）**把 token 環切給各節點，並用 **vnode（虛擬節點）**讓每台機器負責環上多段、使擴縮容時的資料搬遷更均勻。儲存引擎是典型的 **LSM-tree（Log-Structured Merge-tree）**，**寫入極快**：先追加 **commitlog（WAL）**保證持久，再寫進記憶體 **memtable**，滿了就**順序刷成不可變的 SSTable**，背景再做 **compaction（合併壓實，size-tiered 或 leveled 策略）**清理墓碑與舊版本。這條「只順序寫、不原地改」的路徑，正是它寫吞吐碾壓 B+tree 系的根源——代價是讀要跨多個 SSTable、需 Bloom filter 與 compaction 來壓讀放大。一致性**可調**：每次讀寫指定 **ONE／QUORUM／ALL**，只要滿足 **R + W > N** 就能在最終一致的底子上換到強一致的讀。節點間靠 **gossip 協定**傳播狀態，用 **hinted handoff**（暫存寫給暫時離線的節點）、**read repair** 與 **anti-entropy（Merkle tree 對比）**修復不一致。值得一提的是，它並未照搬 Dynamo 的**向量時鐘**，而是選了更省事的 **last-write-wins（以 cell 級時間戳定勝負）**——代價是節點間時鐘偏移時，較舊的寫入可能默默蓋掉較新的。需要線性一致時，可用 **LWT（輕量交易，底層跑 Paxos）**。查詢語言是類 SQL 的 **CQL**，但**必須依查詢模式預先設計表**（查什麼就建什麼分區），與關聯庫「先建表再自由查」的思維完全相反。
+**技術核心**：它最激進的設計是**完全去中心化、無主（masterless）**——**沒有 primary，每個節點地位相同**，任何節點都能接讀寫。資料如何分佈？靠**一致性雜湊（Consistent Hashing）**把 token 環切給各節點，並用 **vnode（虛擬節點）**讓每台機器負責環上多段、使擴縮容時的資料搬遷更均勻。儲存引擎是典型的 **LSM-tree（Log-Structured Merge-tree）**，**寫入極快**：先追加 **commitlog（WAL）**保證持久，再寫進記憶體 **memtable**，滿了就**順序刷成不可變的 SSTable**，背景再做 **compaction（合併壓實，size-tiered 或 leveled 策略）**清理墓碑與舊版本。這條「只順序寫、不原地改」的路徑，正是它寫吞吐碾壓 B+tree 系的根源——代價是讀要跨多個 SSTable、需 Bloom filter 與 compaction 來壓讀放大。一致性**可調**：每次讀寫指定 **ONE／QUORUM／ALL**，只要滿足 **R + W > N** 就能在最終一致的底子上換到強一致的讀。節點間靠 **gossip 協定**傳播狀態，用 **hinted handoff**（暫存寫給暫時離線的節點）、**read repair** 與 **anti-entropy（Merkle tree 對比）**修復不一致。值得一提的是，它並未照搬 Dynamo 的**向量時鐘**，而是選了更省事的 **last-write-wins（以 cell 級時間戳定勝負）**——代價是節點間時鐘偏移時，較舊的寫入可能默默蓋掉較新的。需要線性一致時，可用 **LWT（輕量交易，底層跑 Paxos）**。查詢語言是類 SQL 的 **CQL**，但**必須依查詢模式預先設計表**（查什麼就建什麼分區），與關聯庫「先建表再自由查」的思維完全相反。2024 年釋出的 **Cassandra 5.0**（現行穩定線 5.0.8）補上了一塊過去明顯缺席的拼圖：透過 **SAI（Storage-Attached Indexes，CEP-7）**這個貼身整合進儲存引擎的索引機制，搭配新的原生 `vector` 型別與 **CEP-30 的 ANN（近似最近鄰）向量搜尋**（底層走 HNSW 圖結構、支援 dot-product／cosine／euclidean 三種相似度函式），Cassandra 第一次原生具備了向量檢索能力，不必再外掛第三方向量庫；下一個大版號 6.0 更計畫引入 **Accord**（基於 EPaxos 思路的新共識協定），瞄準跨機房強一致交易這塊 Dynamo 血統資料庫傳統上最弱的一環。
 
 **解決的痛點**：全球級寫入洪峰（時序資料、日誌、訊息、IoT 感測流）下，傳統單主資料庫**寫入撐不住、跨機房高可用做不到**。Cassandra 用無主 + LSM + 多機房複製，提供**近線性的水平擴展與永遠可寫（no single point of failure）**。
 
 **理論基礎**：**Amazon Dynamo 論文**（一致性雜湊、向量時鐘、gossip、可調一致性）、**Bigtable 論文**（寬列模型）、**CAP 定理**中選 **AP**（可用性優先）的立場，以及 **BASE** 最終一致哲學。
 
-**在 AI Agent 時代的角色**：它是 AI 系統**海量寫入的特徵與事件儲存**——大規模 Agent 車隊每秒吐出的行為日誌、時序特徵、對話流水，用 Cassandra 的高寫吞吐吞下最順。它也常作為即時特徵庫的底層，餵給線上推理。
+**在 AI Agent 時代的角色**：它是 AI 系統**海量寫入的特徵與事件儲存**——大規模 Agent 車隊每秒吐出的行為日誌、時序特徵、對話流水，用 Cassandra 的高寫吞吐吞下最順，也常作為即時特徵庫的底層餵給線上推理。有了 5.0 的原生向量搜尋後，故事更完整：同一張已經在扛寫入洪峰的寬列表，現在能直接掛 SAI 向量索引做 RAG 檢索，省下再搭一套向量資料庫、再處理兩邊資料同步的工程成本——這對本來就用 Cassandra 撐交易日誌的團隊，是最低摩擦的 AI 化路徑。
 
 **新人須知（大廠第一週）**：①做超大規模、寫密集、要求跨機房永遠可寫的系統（訊息、時序、風控事件流）才會碰到它，一般 CRUD 業務用不上。②最少要會：**依查詢設計 partition key + clustering key**、理解一致性級別（QUORUM 是常用平衡點）、知道它不能像 SQL 那樣隨意 join 或 `WHERE` 任意欄位。③新人最常踩的雷——**用關聯庫的思維設計表**：建了個大分區塞百萬行（熱分區、GC 壓力爆炸）、對非分區鍵做 `ALLOW FILTERING` 全環掃描（線上必卡）、或製造大量墓碑（tombstone）拖垮讀取。
 
@@ -336,7 +336,7 @@
 
 **新人須知（大廠第一週）**：①在採用 API-first 流程、尤其微軟／Azure 生態或大型 API 平台團隊，你會遇到 `.tsp` 檔。②最少要會：讀懂 `model` 與 `op` 定義、知道裝飾器（如 `@route`、`@get`）在標註路由與約束、跑 emitter 生成 OpenAPI。③新人最常踩的雷——**把它當程式語言而非契約語言**：它只描述「介面長什麼樣」，不含業務邏輯；另一個雷是忽略 emitter 版本差異導致生成的 OpenAPI 與預期不符。
 
-**優點 / 罩門**：契約簡潔、型別可複用、一份定義多目標發射、由微軟大規模實戰驗證。罩門是**相對年輕、生態與第三方 emitter 仍在成長**；引入它需要團隊接受「多學一門 DSL」的成本，對只做單一 REST 的小專案可能過重。
+**優點 / 罩門**：契約簡潔、型別可複用、一份定義多目標發射、由微軟大規模實戰驗證；核心（`compiler`／`http`／`openapi`）與 `openapi3`／`json-schema` 這類主力 emitter 已於近期到達 **1.0 GA**，不再是玩具階段。罩門是**多語言 client／server 程式碼生成仍在預覽階段**，尚未全面 GA；引入它需要團隊接受「多學一門 DSL」的成本，對只做單一 REST 的小專案可能過重。
 
 **競品對照**：
 
@@ -361,7 +361,7 @@
 **標籤**：`#嵌入式資料庫` `#單檔` `#WAL` `#B-tree` `#零配置` `#ACID` `#Serverless`
 **Repo**：官方主庫（Fossil）`https://sqlite.org/src`；GitHub 官方鏡像 `https://github.com/sqlite/sqlite`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 7k（GitHub 為鏡像，官方用 Fossil 版本控制）｜核心維護者 D. Richard Hipp 與極小的核心團隊｜貢獻者 核心封閉、外部貢獻極少（有嚴格獨立測試套件）｜授權 Public Domain（公有領域）｜主語言 C
+**GitHub 體檢**：⭐ 約 10k（GitHub 為鏡像，官方用 Fossil 版本控制）｜核心維護者 D. Richard Hipp 與極小的核心團隊｜貢獻者 核心封閉、外部貢獻極少（有嚴格獨立測試套件）｜授權 Public Domain（公有領域）｜主語言 C
 
 **起源**：2000 年由 **D. Richard Hipp** 為美國海軍一套需在無資料庫伺服器的軍艦環境運行的程式而寫。他的目標是「**一個不需要伺服器、不需要設定、就是一個檔案的 SQL 資料庫**」。二十多年後，它成了**地球上部署量最大的資料庫**——每支手機、每個瀏覽器、每台電腦、無數 App 裡都躺著它。
 
@@ -400,7 +400,7 @@
 **標籤**：`#資料校驗` `#TypeScript` `#Tree-shaking` `#模組化` `#函數式` `#Schema`
 **Repo**：`https://github.com/fabian-hiller/valibot`
 **面向**：🏆 最紅（輕量校驗賽道）
-**GitHub 體檢**：⭐ 約 7k｜核心維護者 Fabian Hiller 等｜貢獻者 100+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 9k｜核心維護者 Fabian Hiller 等｜貢獻者 100+｜授權 MIT｜主語言 TypeScript
 
 **起源**：2023 年由德國開發者 Fabian Hiller 在大學研究專案中發起，動機是解 Zod 一個具體痛點：**Zod 的鏈式 API 難以 tree-shaking，整包被綁進 bundle，對 Serverless／Edge 這種對每 KB 都斤斤計較的環境太重**。Valibot 從第一行就為「砍體積」而設計。
 
@@ -414,7 +414,7 @@
 
 **新人須知（大廠第一週）**：①在講究 bundle 體積的前端或 Edge Functions 專案裡會遇到它，常被拿來與 Zod 比較。②最少要會：用 `pipe()` 組驗證管線、用 `parse()`／`safeParse()` 執行校驗、用 `InferOutput` 取型別。③新人最常踩的雷——**用 Zod 的鏈式肌肉記憶去寫 Valibot**：它是函式組合不是方法鏈，寫法要換腦；另外別忘了它的體積優勢只有在打包器正確 tree-shaking 時才成立。
 
-**優點 / 罩門**：極致的 tree-shaking 讓體積遠小於 Zod、TypeScript 型別推導完整、API 概念與 Zod 相近好遷移。罩門是**生態與周邊整合（表單庫、ORM 橋接）成熟度不及 Zod 這個巨無霸**；函式式 API 對習慣鏈式的人有短暫不適；社群規模仍在追趕。
+**優點 / 罩門**：極致的 tree-shaking 讓體積遠小於 Zod、TypeScript 型別推導完整、API 概念與 Zod 相近好遷移；已於 v1.0（穩定版，目前走到 1.4.x）正式宣告生產可用，不再是實驗性專案。罩門是**生態與周邊整合（表單庫、ORM 橋接）成熟度不及 Zod 這個巨無霸**；函式式 API 對習慣鏈式的人有短暫不適；社群規模仍在追趕。
 
 **競品對照**：
 
@@ -439,11 +439,11 @@
 **標籤**：`#SQL解析` `#AST` `#方言轉譯` `#Python` `#Transpiler` `#查詢優化` `#零依賴`
 **Repo**：`https://github.com/tobymao/sqlglot`
 **面向**：🏆 最紅（SQL 工具賽道）
-**GitHub 體檢**：⭐ 約 7k｜核心維護者 Toby Mao 等｜貢獻者 200+｜授權 MIT｜主語言 Python
+**GitHub 體檢**：⭐ 約 9k｜核心維護者 Toby Mao 等（後由其創辦的 **Tobiko Data** 持續投入）｜貢獻者 200+｜授權 MIT｜主語言 Python
 
-**起源**：由資料工程師 Toby Mao 發起，動機是資料圈一個經典噩夢：**同一段 SQL 在不同資料庫（MySQL、Postgres、BigQuery、Snowflake、Spark…）方言不同，搬遷時要人肉逐句改寫**。SQLGlot 想當那個「**能讀懂任何方言、再翻譯成另一種方言**」的通用引擎，而且**純 Python、零依賴**，`pip install` 就能用。
+**起源**：Toby Mao 在 Airbnb、Netflix 任職資料工程師期間，為了讓分析師的查詢能在 Trino 與 Spark 之間直接搬用、不必人肉逐句改寫方言而動手寫的專案。SQLGlot 想當那個「**能讀懂任何方言、再翻譯成另一種方言**」的通用引擎，而且**純 Python、零依賴**，`pip install` 就能用。這個副業後來長成了他與人合創的新創 **Tobiko Data**（開發資料轉換框架 SQLMesh，正是構築在 SQLGlot 之上）的技術地基，公司已完成數輪創投募資。
 
-**技術核心**：它是一條完整的**編譯器前端流水線**——**Tokenizer（詞法分析）→ Parser（語法分析）→ AST（抽象語法樹）→ Generator（程式碼生成）**。你丟一段 SQL 進去，它先斷詞、再依方言文法解析成一棵結構化的 **AST**（每個 SELECT、JOIN、函式、運算子都是可程式化操作的節點），然後用**目標方言的 Generator** 把 AST 印回 SQL 字串——這就是**跨方言 transpile（轉譯）**：同一棵 AST，換個 Generator 就從 Postgres 方言變成 BigQuery 方言，自動處理函式名差異（如 `NVL` ↔ `COALESCE`）、型別、引號、分頁語法等上百處方言歧異。它支援**約二十種主流方言**。因為 SQL 被解析成可操作的 AST，它遠不只是翻譯：能做 **SQL 格式化、靜態分析、欄位血緣（lineage）追蹤、query diff（比對兩段 SQL 的語意差異）**，甚至內建一個**規則式查詢優化器**（謂詞下推、常數摺疊、簡化表達式）。全程純 Python 實作、無需編譯任何 C 擴充，這讓它極易嵌入資料管線與工具鏈。
+**技術核心**：它是一條完整的**編譯器前端流水線**——**Tokenizer（詞法分析）→ Parser（語法分析）→ AST（抽象語法樹）→ Generator（程式碼生成）**。你丟一段 SQL 進去，它先斷詞、再依方言文法解析成一棵結構化的 **AST**（每個 SELECT、JOIN、函式、運算子都是可程式化操作的節點），然後用**目標方言的 Generator** 把 AST 印回 SQL 字串——這就是**跨方言 transpile（轉譯）**：同一棵 AST，換個 Generator 就從 Postgres 方言變成 BigQuery 方言，自動處理函式名差異（如 `NVL` ↔ `COALESCE`）、型別、引號、分頁語法等上百處方言歧異。它支援**逾 24 種主流方言**。因為 SQL 被解析成可操作的 AST，它遠不只是翻譯：能做 **SQL 格式化、靜態分析、欄位血緣（lineage）追蹤、query diff（比對兩段 SQL 的語意差異）**，甚至內建一個**規則式查詢優化器**（謂詞下推、常數摺疊、簡化表達式）。全程純 Python 實作、無需編譯任何 C 擴充，這讓它極易嵌入資料管線與工具鏈。
 
 **解決的痛點**：資料團隊在**跨資料庫遷移、多引擎共用查詢邏輯、程式化改寫／審計 SQL** 時，過去只能靠脆弱的正則或人肉。SQLGlot 把 SQL 變成可解析、可轉譯、可分析的**結構化物件**，讓「用程式操作 SQL」成為可能。
 
@@ -478,11 +478,11 @@
 **標籤**：`#資料校驗` `#TypeScript` `#型別語法` `#Isomorphic` `#Zero-Runtime` `#Schema`
 **Repo**：`https://github.com/arktypeio/arktype`
 **面向**：🏆 最紅（型別語法校驗賽道）
-**GitHub 體檢**：⭐ 約 6k｜核心維護者 David Blass（ssalbdivad）等｜貢獻者 100+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 8k｜核心維護者 David Blass（ssalbdivad）等｜貢獻者 100+｜授權 MIT｜主語言 TypeScript
 
 **起源**：由 David Blass 發起，帶著一個近乎瘋狂的野心：**讓你用「寫 TypeScript 型別的語法」直接定義執行期校驗**。別的校驗庫要你學一套 builder API（Zod 的 `z.object`、Valibot 的 `pipe`），ArkType 說——你早就會寫 TS 型別了，為什麼還要學第二套語法？
 
-**技術核心**：它的核心魔法是**「同構（isomorphic）」——同一份型別定義，TypeScript 在編譯期讀它、ArkType 在執行期也讀它**。你把型別寫成**字串**：`type({ name: "string", age: "number>0" })`，這串 `"number>0"` 既是 ArkType 能在**執行期解析並校驗**的 DSL，又被 ArkType 的型別系統透過 **TypeScript 的模板字面量型別（template literal types）**在**編譯期就解析成對應的 TS 靜態型別**——於是**編輯器當場知道 `age` 是 number，執行期又真的擋掉非正數**，兩端由同一份字串驅動，永不漂移。這意味著**型別層面零執行時開銷**（型別純由 TS 推導）、而執行期校驗被高度優化——它會把 schema 預編譯成高效的驗證函式，**執行速度號稱是同類庫中最快的一檔**。它同時支援物件式與這種行內字串式定義，涵蓋聯合、交集、正則、範圍、遞迴等豐富約束。
+**技術核心**：它的核心魔法是**「同構（isomorphic）」——同一份型別定義，TypeScript 在編譯期讀它、ArkType 在執行期也讀它**。你把型別寫成**字串**：`type({ name: "string", age: "number>0" })`，這串 `"number>0"` 既是 ArkType 能在**執行期解析並校驗**的 DSL，又被 ArkType 的型別系統透過 **TypeScript 的模板字面量型別（template literal types）**在**編譯期就解析成對應的 TS 靜態型別**——於是**編輯器當場知道 `age` 是 number，執行期又真的擋掉非正數**，兩端由同一份字串驅動，永不漂移。這意味著**型別層面零執行時開銷**（型別純由 TS 推導）、而執行期校驗被高度優化——它會把 schema 預編譯成高效的驗證函式，社群基準測試常見它比 Zod 快上 **3～4 倍**，是同類庫中數一數二的一檔（目前 2.x 版本、完整 bundle 約 42KB，經 tree-shaking 後約 40KB）。它同時支援物件式與這種行內字串式定義，涵蓋聯合、交集、正則、範圍、遞迴等豐富約束。
 
 **解決的痛點**：其他校驗庫的 schema DSL 與 TypeScript 型別是**兩套語法、兩份心智**，你得在「TS 怎麼寫型別」與「校驗庫怎麼寫 schema」之間反覆切換。ArkType 用「型別語法即校驗語法」把兩者合一——**學一次 TS 型別，就會了校驗**。
 
@@ -517,11 +517,11 @@
 **標籤**：`#MySQL` `#Sharding` `#分庫分表` `#雲原生` `#CNCF` `#水平擴展` `#Go`
 **Repo**：`https://github.com/vitessio/vitess`
 **面向**：👥 最多人用
-**GitHub 體檢**：⭐ 約 19k｜核心維護者 PlanetScale ＋ CNCF 社群｜貢獻者 400+｜授權 Apache-2.0｜主語言 Go
+**GitHub 體檢**：⭐ 約 21k｜核心維護者 CNCF 社群（維護者名單橫跨 PlanetScale、Slack、GitHub 等公司的工程師）｜貢獻者 400+｜授權 Apache-2.0｜主語言 Go
 
-**起源**：2010 年生於 **YouTube**——當時它的 MySQL 主庫被爆炸式增長的觀看資料撐到極限，工程師（Sugu Sougoumarane、Mike Solomon 等）打造 Vitess 來**把單一 MySQL 水平切分成上千個分片、對應用卻偽裝成一個資料庫**。2018 年成為 **CNCF 畢業專案**，如今由 PlanetScale 主導、支撐眾多超大規模 MySQL 部署。
+**起源**：2010 年生於 **YouTube**——當時它的 MySQL 主庫被爆炸式增長的觀看資料撐到極限，工程師（Sugu Sougoumarane、Mike Solomon 等）打造 Vitess 來**把單一 MySQL 水平切分成上千個分片、對應用卻偽裝成一個資料庫**。2018 年 2 月進入 CNCF 孵化，**2019 年 11 月畢業成為 CNCF Graduated 專案**，多年來由創始團隊另立的公司 PlanetScale 扛下商業化與大部分維護工作，支撐眾多超大規模 MySQL 部署；但要留意這條「單一商業金主主導」的關係在 2024 年後已經鬆動（詳見下方「優點/罩門」）。
 
-**技術核心**：它是一層**架在 MySQL 之上的分片與代理中介層**，核心是讓應用「**以為自己連的是一個普通 MySQL**」，實際背後是被切成無數片的叢集。架構有三大件：**VTGate**（無狀態的智慧代理／查詢路由器，應用連它，它負責解析 SQL、依 sharding 規則把查詢**路由或散射—聚合 scatter-gather** 到正確分片、再合併結果）、**VTTablet**（貼身跑在每個 MySQL 實例旁的 sidecar，管連線池、查詢重寫、健康檢查與備份）、以及 **Topology Service**（用 etcd 保存分片拓撲與元資料）。分片邏輯由 **VSchema** 與 **Vindex（分片索引，把邏輯 key 映射到分片）**定義，支援雜湊等多種分片函式。它最硬核的能力是**線上 resharding（重新分片）**與 **VReplication**：能在**不停機**下把資料從舊分片方案遷到新方案、加減分片、甚至跨叢集複製與變更資料捕獲（CDC）。它還內建**連線池化**（解決 MySQL 連線數易爆的老problem）、查詢保護（擋掉會拖垮分片的危險查詢）與透明的讀寫分離。整套用 **Go** 寫成、天生為 Kubernetes 設計，有官方 Operator。
+**技術核心**：它是一層**架在 MySQL 之上的分片與代理中介層**，核心是讓應用「**以為自己連的是一個普通 MySQL**」，實際背後是被切成無數片的叢集。架構有三大件：**VTGate**（無狀態的智慧代理／查詢路由器，應用連它，它負責解析 SQL、依 sharding 規則把查詢**路由或散射—聚合 scatter-gather** 到正確分片、再合併結果）、**VTTablet**（貼身跑在每個 MySQL 實例旁的 sidecar，管連線池、查詢重寫、健康檢查與備份）、以及 **Topology Service**（用 etcd 保存分片拓撲與元資料）。分片邏輯由 **VSchema** 與 **Vindex（分片索引，把邏輯 key 映射到分片）**定義，支援雜湊等多種分片函式。它最硬核的能力是**線上 resharding（重新分片）**與 **VReplication**：能在**不停機**下把資料從舊分片方案遷到新方案、加減分片、甚至跨叢集複製與變更資料捕獲（CDC）。它還內建**連線池化**（解決 MySQL 連線數易爆的老毛病）、查詢保護（擋掉會拖垮分片的危險查詢）與透明的讀寫分離。整套用 **Go** 寫成、天生為 Kubernetes 設計，有官方 Operator。
 
 **解決的痛點**：MySQL 是**單主寫入**的，當單庫資料量與寫入量撐到極限，傳統做法是應用層手寫分庫分表——**極其痛苦、易錯、且遷移時要停機**。Vitess 把「分片」這件事從應用層下沉到基礎設施層，讓應用幾乎無感地水平擴展，並支援不停機重分片。
 
@@ -531,7 +531,7 @@
 
 **新人須知（大廠第一週）**：①只有在 MySQL 規模大到單庫扛不住、需要分片的大型團隊才會遇到它，一般業務碰不到。②最少要會：理解 VTGate／VTTablet／Topology 三層職責、知道 VSchema 與 Vindex 定義了資料怎麼分片、分清路由查詢與 scatter-gather 查詢的效能差別。③新人最常踩的雷——**寫出跨分片的 scatter-gather 查詢還不自知**：一條沒帶 sharding key 的查詢會被散射到所有分片再聚合，效能斷崖；還有**分片鍵（sharding key）選錯**，跟所有分片系統一樣是難回頭的決定。
 
-**優點 / 罩門**：讓 MySQL 水平擴展到近乎無限、不停機 resharding、對應用近乎透明、連線池化解 MySQL 老痛、雲原生與 K8s 深度整合。罩門是**架構複雜、運維門檻高**（多了一整層要維護與監控）；**跨分片查詢與跨分片交易有效能與功能限制**；引入它是重大工程投資，小規模用不上也養不起。
+**優點 / 罩門**：讓 MySQL 水平擴展到近乎無限、不停機 resharding、對應用近乎透明、連線池化解 MySQL 老痛、雲原生與 K8s 深度整合。罩門是**架構複雜、運維門檻高**（多了一整層要維護與監控）；**跨分片查詢與跨分片交易有效能與功能限制**；引入它是重大工程投資，小規模用不上也養不起。**★選型時必須更新的一個事實**：PlanetScale 在 2024 年宣布不再把商業重心押在既有的 Vitess/MySQL 平台上（同期收掉免費方案），轉而投資自家原生分片的 PostgreSQL 產品（代號 Neki，不架構在 Vitess 之上）；Vitess 本身仍是 CNCF 畢業專案、持續有新版釋出（如 Vitess 22），但選型前該想清楚：你依賴的是「一個健康的開源社群專案」，還是「曾經有一家公司拚命替它衝商業案例」——這兩者現在已經分開了。
 
 **競品對照**：
 
@@ -547,7 +547,7 @@
 > **Vitess 的哲學是「別換掉你的資料庫，換掉你對它的視角」——它不推翻 MySQL，而是在它之上織一張網，讓一千個分片在應用眼裡，依然只是那個熟悉的、單一的 MySQL。**
 
 > 🔍 老手視角──真正的門道
-> Vitess 站在一個關鍵的選型岔路口：當 MySQL 撐不住，你是**「保留 MySQL 用 Vitess 分片」**還是**「換成 TiDB/CockroachDB 這類原生分散式 SQL」**？門道在於遷移成本與團隊慣性——Vitess 讓你留住 MySQL 的生態、人才與行為習慣，代價是背上一層複雜中介層；NewSQL 讓你原生擴展，代價是換引擎、賭它的成熟度。真正的判斷是**「你的痛是 MySQL 本身，還是只是 MySQL 的單主寫入天花板」**：若是後者，Vitess 幾乎是保留投資的最佳解。這正是 PlanetScale 把它做成商業託管、切進「超大規模 MySQL 即服務」市場的底層邏輯。
+> Vitess 站在一個關鍵的選型岔路口：當 MySQL 撐不住，你是**「保留 MySQL 用 Vitess 分片」**還是**「換成 TiDB/CockroachDB 這類原生分散式 SQL」**？門道在於遷移成本與團隊慣性——Vitess 讓你留住 MySQL 的生態、人才與行為習慣，代價是背上一層複雜中介層；NewSQL 讓你原生擴展，代價是換引擎、賭它的成熟度。真正的判斷是**「你的痛是 MySQL 本身，還是只是 MySQL 的單主寫入天花板」**：若是後者，Vitess 依然是保留投資的合理解。PlanetScale 當年正是靠把它做成商業託管，切進「超大規模 MySQL 即服務」市場——但 2024 年之後它把下一步商業籌碼轉押到自家 Postgres 產品上，這提醒每個評估開源基礎設施的人：**「誰在維護」和「誰在替它的商業前途下注」，是兩個要分開追蹤的問題**，後者變了不代表前者馬上垮，卻是提前該亮起的雷達訊號。
 
 ---
 
@@ -556,11 +556,11 @@
 **標籤**：`#資料校驗` `#TypeScript` `#Schema` `#型別推導` `#TS-First` `#LLM結構化輸出`
 **Repo**：`https://github.com/colinhacks/zod`
 **面向**：🏆 最紅
-**GitHub 體檢**：⭐ 約 34k｜核心維護者 Colin McDonnell 等｜貢獻者 400+｜授權 MIT｜主語言 TypeScript
+**GitHub 體檢**：⭐ 約 43k｜核心維護者 Colin McDonnell 等｜貢獻者 400+｜授權 MIT｜主語言 TypeScript
 
 **起源**：2020 年由 Colin McDonnell 發起，解一個 TypeScript 全棧的根本裂縫：**TS 的型別只活在編譯期，執行期一到（拿到 API 回應、讀到使用者輸入、解析外部 JSON），型別保護就蒸發了**。你以為是 `User`，實際可能是任何髒資料。Zod 讓你**寫一次 schema，同時得到執行期校驗與編譯期型別**，一舉成為 TS 生態最紅的校驗庫。
 
-**技術核心**：它是徹底的 **TypeScript-first**——核心命題是**「schema 是唯一真理源，型別從 schema 推導，而非反過來」**。你用鏈式 API 定義 schema：`z.object({ name: z.string(), age: z.number().min(0) })`，然後 `z.infer<typeof schema>` **靜態推導出對應的 TS 型別**，於是**校驗規則與型別定義永遠同步、絕不漂移**——這正是它相對「先寫 TS 型別、再另寫校驗」的殺傷力所在。執行期用 `parse()`（失敗拋錯）或 `safeParse()`（回傳成功/失敗的 union，不拋錯）驗證資料，並給出結構化的錯誤細節。它支援豐富的組合子：物件、陣列、聯合、交集、遞迴、refinement（自訂規則）、transform（校驗兼轉換）、coercion（型別強制）。它的鏈式 API 極其直覺，是它人氣爆棚的關鍵——代價是**方法鏈難以 tree-shaking、整包偏重**（Valibot、ArkType 正是衝著這點來的）；Zod 4 已在效能與體積上大幅改進。它幾乎是所有現代 TS 框架（tRPC、React Hook Form、各種 API 層）的預設校驗底座。
+**技術核心**：它是徹底的 **TypeScript-first**——核心命題是**「schema 是唯一真理源，型別從 schema 推導，而非反過來」**。你用鏈式 API 定義 schema：`z.object({ name: z.string(), age: z.number().min(0) })`，然後 `z.infer<typeof schema>` **靜態推導出對應的 TS 型別**，於是**校驗規則與型別定義永遠同步、絕不漂移**——這正是它相對「先寫 TS 型別、再另寫校驗」的殺傷力所在。執行期用 `parse()`（失敗拋錯）或 `safeParse()`（回傳成功/失敗的 union，不拋錯）驗證資料，並給出結構化的錯誤細節。它支援豐富的組合子：物件、陣列、聯合、交集、遞迴、refinement（自訂規則）、transform（校驗兼轉換）、coercion（型別強制）。它的鏈式 API 極其直覺，是它人氣爆棚的關鍵——代價是**方法鏈難以 tree-shaking、整包偏重**（Valibot、ArkType 正是衝著這點來的）。2025 年釋出並轉為穩定版的 **Zod 4** 是一次硬碰硬的回應：官方基準顯示字串解析快約 14 倍、陣列快約 7 倍、物件快約 6.5 倍（對比 Zod 3），核心 bundle 縮小約 57%，還另外拆出一個專為 tree-shaking 設計的精簡發行版 **Zod Mini**（gzip 後僅約 1.9KB）——等於直接把 Valibot 的體積優勢複製了一份武裝到自己身上。它幾乎是所有現代 TS 框架（tRPC、React Hook Form、各種 API 層）的預設校驗底座。
 
 **解決的痛點**：TypeScript **型別在執行期消失**，導致「編譯過但線上炸」的邊界資料錯誤。Zod 用單一 schema 同時守住編譯期與執行期，把「外部資料是否可信」變成一次 `parse()` 就有答案的事。
 
@@ -570,7 +570,7 @@
 
 **新人須知（大廠第一週）**：①幾乎所有現代 TS 專案都用它驗 API 邊界、表單、環境變數、LLM 輸出——你第一週就會撞見 `z.object`。②最少要會：`z.object` 定義 schema、`z.infer` 取型別、`safeParse` 處理校驗結果、refinement 寫自訂規則。③新人最常踩的雷——**在熱路徑上重複 `parse` 大 schema 造成效能開銷**（Zod 校驗有成本，別在高頻迴圈裡無腦驗）；以及**只驗型別卻忘了業務約束**（型別對不代表值合理，該用 `.refine` 補業務規則）。
 
-**優點 / 罩門**：schema 即型別的單一真理源、鏈式 API 極直覺、生態整合冠絕全場（tRPC/表單/AI SDK 全內建）、社群與資源最豐富。罩門是**方法鏈難 tree-shaking、bundle 體積偏重**（Edge 場景是痛點，也是 Valibot/ArkType 的切入口）；**執行期校驗有 CPU 成本，複雜 schema 在高吞吐下不容忽視**。
+**優點 / 罩門**：schema 即型別的單一真理源、鏈式 API 極直覺、生態整合冠絕全場（tRPC/表單/AI SDK 全內建）、社群與資源最豐富、Zod 4 後效能與體積已大幅追平對手。罩門是**主線鏈式 API 仍偏重**（要真正吃到體積優勢得改用 Zod Mini 這個另外的發行版，多一層遷移與選型決策，不是無痛升級）；**執行期校驗有 CPU 成本，複雜 schema 在高吞吐下不容忽視**。
 
 **競品對照**：
 
@@ -586,7 +586,7 @@
 > **Zod 的偉大在於它守住了 TypeScript 最尷尬的那道縫——型別在編譯期無所不能、在執行期一無所有。它讓 schema 成為唯一真理，於是「外部資料能不能信」，從一場豪賭變成一次 `parse()`。**
 
 > 🔍 老手視角──真正的門道
-> Zod 的統治力來自一個時代紅利：**TypeScript 全棧化 + LLM 結構化輸出**兩股浪潮同時把「執行期型別校驗」推成剛需，而 Zod 剛好是那個 DX 最順、生態最厚的答案。門道是看清它正被兩面夾擊——**Valibot 從體積、ArkType 從速度**各切一刀，Zod 4 的自我優化就是回應。選型判斷很簡單：**要生態與省心選 Zod，要 Edge 極致體積選 Valibot，要極速與型別語法選 ArkType**。但在 AI 應用這條線上，Zod 因為與整個 LLM 工具鏈深度綁定，護城河短期內無人能撼——**讓大模型的輸出變得可被程式信任**，這門生意才剛開始。
+> Zod 的統治力來自一個時代紅利：**TypeScript 全棧化 + LLM 結構化輸出**兩股浪潮同時把「執行期型別校驗」推成剛需，而 Zod 剛好是那個 DX 最順、生態最厚的答案。門道是看清它正被兩面夾擊——**Valibot 從體積、ArkType 從速度**各切一刀，Zod 4 連夜補上 Zod Mini 這張體積牌就是最直接的回應，護城河不是靠嘴硬守住，是靠把弱點真的補起來守住。選型判斷很簡單：**要生態與省心選 Zod，要 Edge 極致體積選 Valibot（或改用 Zod 自己的 Mini 版），要極速與型別語法選 ArkType**。但在 AI 應用這條線上，Zod 因為與整個 LLM 工具鏈深度綁定，護城河短期內無人能撼——**讓大模型的輸出變得可被程式信任**，這門生意才剛開始。
 
 ---
 
